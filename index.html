@@ -7088,7 +7088,7 @@
   </div>
 
   <div class="subsection" data-qms-group="procedures">
-    <div class="subsection-title">Procedures <span style="opacity:0.6; font-weight:500; font-size:13px;">(16)</span></div>
+    <div class="subsection-title">Procedures <span style="opacity:0.6; font-weight:500; font-size:13px;">(15)</span></div>
     <div class="doc-list">
       <div class="doc-item">
         <div class="doc-icon docx">DOCX</div>
@@ -7238,16 +7238,6 @@
         </div>
         <div class="doc-action">
           <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=12tZ7tNn_gYMogOludIRqYnyS1pkgHib-" target="_blank" rel="noopener">Download</a>
-        </div>
-      </div>
-      <div class="doc-item">
-        <div class="doc-icon docx">DOCX</div>
-        <div class="doc-info">
-          <div class="doc-title">OPCO-EBL-230-QCD-DC-PRO-016 1 AAA Procedure</div>
-          <div class="doc-meta">OPCO-EBL-230-QCD-DC-PRO-016</div>
-        </div>
-        <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1gwYAMF2OQu5GoAwwmljGlrTf3hNt02At" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -8830,9 +8820,90 @@
   }
   window.updateOverviewStats = updateOverviewStats;
 
+  // QCD / HSE / SKG sub-bar'larindaki grup sayaclarini panel icindeki gercek dosyalardan say
+  function updateGroupCounters() {
+    try {
+      function setCount(btnId, n) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        const sp = btn.querySelector('.count');
+        if (sp) sp.textContent = String(n);
+      }
+      function countInPanel(panelId, groupSlug) {
+        const p = document.getElementById(panelId);
+        if (!p) return 0;
+        let total = 0;
+        p.querySelectorAll('.subsection[data-qms-group="' + groupSlug + '"] .doc-item').forEach(() => total++);
+        return total;
+      }
+
+      // --- QCD bar (panel = qms-qcd) ---
+      [
+        ['qms-group-manuals',      'manuals'],
+        ['qms-group-procedures',   'procedures'],
+        ['qms-group-plans',        'plans'],
+        ['qms-group-forms',        'forms'],
+        ['qms-group-registers',    'registers'],
+        ['qms-group-schedules',    'schedules'],
+        ['qms-group-itps',         'itps'],
+        ['qms-group-reports',      'reports'],
+        ['qms-group-punch-lists',  'punch-lists'],
+        ['qms-group-mdr',          'mdr'],
+        ['qms-group-other',        'other'],
+      ].forEach(([id, slug]) => setCount(id, countInPanel('qms-qcd', slug)));
+
+      // --- HSE bar (panel = qms-hse) ---
+      [
+        ['qms-hse-group-hse-policies',    'hse-policies'],
+        ['qms-hse-group-hse-procedures',  'hse-procedures'],
+        ['qms-hse-group-hse-plans',       'hse-plans'],
+        ['qms-hse-group-hse-forms',       'hse-forms'],
+        ['qms-hse-group-hse-inspection',  'hse-inspection'],
+        ['qms-hse-group-hse-registers',   'hse-registers'],
+      ].forEach(([id, slug]) => setCount(id, countInPanel('qms-hse', slug)));
+
+      // --- SKG bar: panel sayisindan say (disiplin panelleri toplami) ---
+      function sumPanels(ids) {
+        let t = 0;
+        ids.forEach(id => {
+          const p = document.getElementById(id);
+          if (p) t += p.querySelectorAll('.doc-item').length;
+        });
+        return t;
+      }
+      // SKG Procedures = tum disiplin panellerinin toplami
+      const skgProceduresPanels = ['skg-general','skg-pipeline','skg-piping','skg-civil','skg-electrical','skg-instrument'];
+      setCount('skg-group-procedures', sumPanels(skgProceduresPanels));
+      setCount('skg-group-itp',        sumPanels(['skg-itp']));
+      setCount('skg-group-registers',  sumPanels(['skg-registers']));
+      setCount('skg-group-plans',      sumPanels(['skg-others']));
+
+      // --- SKG disiplin 3. seviye bar (General / Pipeline / ...) ---
+      document.querySelectorAll('#skg-subtabs .sub-tab-btn').forEach(btn => {
+        const panelId = btn.getAttribute('data-tab');
+        if (!panelId) return;
+        const p = document.getElementById(panelId);
+        const sp = btn.querySelector('.count');
+        if (p && sp) sp.textContent = String(p.querySelectorAll('.doc-item').length);
+      });
+
+      // --- Projects sub-bar: SKG/HTU/HPU/PPCL butonlarindaki toplam ---
+      // SKG toplam = tum SKG panellerinin doc sayisi
+      const skgAllPanels = [...skgProceduresPanels, 'skg-itp', 'skg-registers', 'skg-others'];
+      setCount('project-skg-btn',  sumPanels(skgAllPanels));
+      setCount('project-htu-btn',  sumPanels(['project-htu']));
+      setCount('project-hpu-btn',  sumPanels(['project-hpu']));
+      setCount('project-ppcl-btn', sumPanels(['project-ppcl']));
+    } catch (e) {
+      console.warn('updateGroupCounters failed', e);
+    }
+  }
+  window.updateGroupCounters = updateGroupCounters;
+
   document.addEventListener('DOMContentLoaded', () => {
     // Overview hub istatistiklerini gercek DOM sayilarindan guncelle
     updateOverviewStats();
+    updateGroupCounters();
 
     // Son nav state'i restore et
     restoreNavState();
