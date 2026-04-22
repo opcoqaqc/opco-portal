@@ -1305,6 +1305,17 @@
     align-items: center;
     gap: 6px;
   }
+  /* LIBRARY tab ikonlari */
+  .sub-tab-btn.library-tab .lib-icon {
+    opacity: 0.7;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .sub-tab-btn.library-tab:hover .lib-icon,
+  .sub-tab-btn.library-tab.active .lib-icon {
+    opacity: 1;
+    color: var(--accent);
+  }
   .sub-tab-btn:hover { color: var(--navy); }
   .sub-tab-btn.active {
     color: var(--navy);
@@ -1761,15 +1772,46 @@
 <nav class="tabs">
   <div class="tabs-inner">
     <button class="tab-btn active" data-tab="home">OVERVIEW</button>
-    <button class="tab-btn" id="qms-btn" onclick="showQmsBar()">QMS <span class="count">476</span></button>
+    <button class="tab-btn" id="qms-btn" onclick="showQmsBar()">QMS <span class="count">376</span></button>
     <button class="tab-btn" id="projects-btn" onclick="showProjectsBar()">
       PROJECTS <span class="count">128</span>
     </button>
+    <button class="tab-btn" id="library-btn" onclick="showLibraryBar()">LIBRARY</button>
+  </div>
+  <!-- LIBRARY alt bar: PQR / WPS / WQT -->
+  <div class="sub-tabs-inner" id="library-bar" style="display:none;">
+    <button class="sub-tab-btn dept-btn library-tab" id="library-pqr-btn" onclick="selectLibrarySection('pqr')">
+      <svg class="lib-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 2h6a1 1 0 0 1 1 1v1h2a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2V3a1 1 0 0 1 1-1z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      PQR
+    </button>
+    <button class="sub-tab-btn dept-btn library-tab" id="library-wps-btn" onclick="selectLibrarySection('wps')">
+      <svg class="lib-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14 3l-2 5h4l-6 13 2-9H8l4-9h2z"/>
+      </svg>
+      WPS
+    </button>
+    <button class="sub-tab-btn dept-btn library-tab" id="library-wqt-btn" onclick="selectLibrarySection('wqt')">
+      <svg class="lib-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="10" cy="8" r="4"/>
+        <path d="M2 21c0-4 3.5-7 8-7 1.4 0 2.7.3 3.8.8"/>
+        <path d="M16 18l2 2 4-4"/>
+      </svg>
+      WQT
+    </button>
+  </div>
+  <!-- LIBRARY 3. seviye: In-Service / Pipeline / Piping (PQR-WPS-WQT altinda) -->
+  <div class="sub-tabs-inner sub-tabs-level2" id="library-subgroups" style="display:none;">
+    <button class="sub-tab-btn group-btn" id="library-sub-pipeline-btn" onclick="selectLibrarySubgroup('pipeline')">Pipeline</button>
+    <button class="sub-tab-btn group-btn" id="library-sub-piping-btn" onclick="selectLibrarySubgroup('piping')">Piping</button>
+    <button class="sub-tab-btn group-btn" id="library-sub-inservice-btn" onclick="selectLibrarySubgroup('inservice')">In-Service</button>
   </div>
   <!-- QMS departman bar'i: QCD / HSE / ADM / HRD / WHS / PRD / PCD / FND / COM -->
   <div class="sub-tabs-inner" id="qms-departments" style="display:none;">
     <button class="sub-tab-btn dept-btn" id="qms-dept-qcd" onclick="selectQmsDept('qcd')">Quality Control <span class="count">45</span></button>
-    <button class="sub-tab-btn dept-btn" id="qms-dept-hse" onclick="selectQmsDept('hse')">Health, Safety &amp; Environment <span class="count">319</span></button>
+    <button class="sub-tab-btn dept-btn" id="qms-dept-hse" onclick="selectQmsDept('hse')">Health, Safety &amp; Environment <span class="count">219</span></button>
     <button class="sub-tab-btn dept-btn" id="qms-dept-adm" onclick="selectQmsDept('adm')">Administration <span class="count">17</span></button>
     <button class="sub-tab-btn dept-btn" id="qms-dept-hrd" onclick="selectQmsDept('hrd')">Human Resources <span class="count">55</span></button>
     <button class="sub-tab-btn dept-btn" id="qms-dept-whs" onclick="selectQmsDept('whs')">Warehouse <span class="count">9</span></button>
@@ -1799,7 +1841,7 @@
     <button class="sub-tab-btn group-btn" id="qms-hse-group-hse-plans" onclick="selectHseGroup('hse-plans')">Plans <span class="count">71</span></button>
     <button class="sub-tab-btn group-btn" id="qms-hse-group-hse-forms" onclick="selectHseGroup('hse-forms')">Forms <span class="count">21</span></button>
     <button class="sub-tab-btn group-btn" id="qms-hse-group-hse-inspection" onclick="selectHseGroup('hse-inspection')">Inspection Checklist <span class="count">23</span></button>
-    <button class="sub-tab-btn group-btn" id="qms-hse-group-hse-registers" onclick="selectHseGroup('hse-registers')">Registers <span class="count">112</span></button>
+    <button class="sub-tab-btn group-btn" id="qms-hse-group-hse-registers" onclick="selectHseGroup('hse-registers')">Registers <span class="count">12</span></button>
   </div>
   <!-- Diger dept / proje panelleri icin generic grup bar'i: icerik dinamik render edilir -->
   <div class="sub-tabs-inner sub-tabs-level2" id="qms-dept-groups" style="display:none;"></div>
@@ -4094,6 +4136,916 @@
     <div class="subsection-title">HSE REGISTERS <span style="opacity:0.6; font-weight:500; font-size:13px;">(12)</span></div>
     <div class="doc-list">
       <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">1 Mechanical excavation of Quadruple flowlines  TRA - OP5</div>
+          <div class="doc-meta">1 Mechanical excavation of Quadruple flowlines  TRA - OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1pJEpOzQAoouslDnf3u5WRx2iltXhEtN9" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">1. 121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">1. 121-003-CN-PLN-0003_Surveying TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1g1HXZZMVUhKZgpG9ktCNAIlW-Wd6it70" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">1. 121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">1. 121-003-CN-PLN-0003_Surveying TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1DcCabghrntLrcb9qscggKjp3xqgfarkd" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">1. 121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">1. 121-003-CN-PLN-0003_Surveying TRA.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1QQMeM4Yu9FobOGZAks0B5VZDVXP_hoYA" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">10. 121-003-CN-PLN-0012 FOC and Cable Laying TRA</div>
+          <div class="doc-meta">10. 121-003-CN-PLN-0012_FOC and Cable Laying TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1DG-aWmtf4DTqwheAz6GBdlyW1zwEs_Pi" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">10. 121-003-CN-PLN-0012 FOC and Cable Laying TRA</div>
+          <div class="doc-meta">10. 121-003-CN-PLN-0012_FOC and Cable Laying TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1B874xNe7j-TliGSPsVYkLlVT6Io-jdSw" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">11. 121-003-CN-PLN-0013 Padding-Backfilling TRA</div>
+          <div class="doc-meta">11. 121-003-CN-PLN-0013_Padding-Backfilling TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1cNIgNQhFrWoT4ySEs7t-9foWfdb32EA_" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">11. 121-003-CN-PLN-0013 Padding-Backfilling TRA</div>
+          <div class="doc-meta">11. 121-003-CN-PLN-0013_Padding-Backfilling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1stF79CAHA_FfQacZ13G2MR8Z4GCfn0JV" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">12. 121-003-CN-PLN-0014 Skidding and De-Skidding TRA</div>
+          <div class="doc-meta">12. 121-003-CN-PLN-0014_Skidding and De-Skidding TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1wjTUziHp3uMBo88lWakVaaAvxAng9U1P" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">12. 121-003-CN-PLN-0014 Skidding and De-Skidding TRA</div>
+          <div class="doc-meta">12. 121-003-CN-PLN-0014_Skidding and De-Skidding TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1O_c7y49jBG3BYSgc9upTKudeS7MWdbOA" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0003_Surveying TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1drrUtt2XU-lfk8iIHm1KoFw3mDs1iyDJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0004 Pipe Transportation, Storage and Handling TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0004_Pipe Transportation, Storage and Handling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Mg4tNxiqML5KTrF95QFLGt6w7sDhT9TH" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0005_Right of Way Preparation TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Zbt4a-XOe6YEb0ZyAJkcs4quhFfwK70W" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0006 Stringing TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0006_Stringing TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1_ZpYT3F3h_NrDMZP6LcUJh6ksgpJDCb8" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0007 Bending TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0007_Bending TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1DYtgLdnn6a-izLJjip9Yj8u10Esfi7EG" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0008 Welding, Cutting &amp; Grinding TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0008_Welding, Cutting &amp; Grinding TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=199gJEsasI8c-F7Ygm91mPFP4KJMBhPtc" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0009 Excavataion and Trenching TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0009_Excavataion and Trenching TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1YS3ai6KyBP7JtYMr2XuXtk0_T1aArY2B" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0010 Lower &amp; Lay TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0010_Lower &amp; Lay TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1oMdDQGbdPxfJ9Fglp4ubPt3VYC88MHWe" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0011 Tie-ins</div>
+          <div class="doc-meta">121-003-CN-PLN-0011_Tie-ins.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1dErS2klrQnQ7F3GfNT7CNqPlnZ2YoJDP" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0012 FOC and Cable Laying TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0012_FOC and Cable Laying TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1_h7DGDxiOWbhWdlJrDtELaNYOPt5Aqbo" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0013 Padding-Backfilling TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0013_Padding-Backfilling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1oYHrgwSP0wMlu6fiO1q8lT0g8PXcTgsE" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0014 Skidding and De-Skidding TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0014_Skidding and De-Skidding TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1PTsQ5jgyjbFY0VA039Hi6X0gEz-xIdM4" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0015 Field Joint Coating TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0015_Field Joint Coating TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1iuBxUFQfGmll_WiNvMRU7R2_kw8jcCNa" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017B E-Caliper Pigging and Hydrotesting on live plant - Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0017B E-Caliper Pigging and Hydrotesting on live plant - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1AXt4AE14A4y4HX6-M3ANb3XvBhkMsNtX" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Draft</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Draft.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1izLgBV-JYVpwEZ_0wRrtTZkX6WQrNEeQ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Revised (003)</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Revised (003).docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1nfIdFl7UIanRoZFtBc58Fs1K1gxwtoij" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Revised (003)</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Revised (003).pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1NJsG2O8pQl3PZbCGBeT27MiKZmSjNr4T" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Revised</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Revised.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1sLmkdXP-F6_WEY39JI7URz2xMrEuTnvx" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017 KM14 Flowline Location of materials and pigging set up cleaning</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_KM14 Flowline Location of materials and pigging set up cleaning.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1sLGbNQOb8o4Ue2U59IWfjROEQ1bcA3Kg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017 KM14 Flowline Location of materials and pigging set up cleaning</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_KM14 Flowline Location of materials and pigging set up cleaning.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1k0atN9IMHEFDkDPIhFkBIgxYozHDqt0a" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017 KM14 Flowline Location of materials and pigging set up cleaning</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_KM14 Flowline Location of materials and pigging set up cleaning.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1jHtvlwZvspelq0F2b-nIlSAooeiUXY5i" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017a KM14 Cleaning and Gauging of KM14 Flowline-Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0017a KM14 Cleaning and Gauging of KM14 Flowline-Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1VMVIg7ZjWfBefSQMaUhTUErtb-ez_LGL" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017a  Cleaning and Gauging KM14 Flowline</div>
+          <div class="doc-meta">121-003-CN-PLN-0017a_ Cleaning and Gauging KM14 Flowline.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1wycClcPoVdZK5tClRnsOI7PtpGuX9xbH" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017a  Cleaning and Gauging KM14 Flowline</div>
+          <div class="doc-meta">121-003-CN-PLN-0017a_ Cleaning and Gauging KM14 Flowline.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=18vGK1WLTVa9yPg7gg1bmKWxTDkOC2Nx0" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant</div>
+          <div class="doc-meta">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=150Fvx_bTgc6U4MSUVbvH-tDfkpom9Thc" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant</div>
+          <div class="doc-meta">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1BP5w2dsTWlSwoOOaNhQpq_n8HA2YG4C9" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 NDT- Radiography of weld joints TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_NDT- Radiography of weld joints TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1IKWe_YjHt5EAajEkwEtHwKY30_IZlNSJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen Reviewed 1</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen Reviewed 1.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1mvK7s2z72kD5n9xecYY-MnSkiYiIdY07" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1kdUnC1aRT2CjE6AfMeU_gdzkEQdhgcBK" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1dK9Cal9kQbppatebxFK50l_s3WiMtu96" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14 (002) - Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14 (002) - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=18Avk6dzvIgpQwDx02o6o8UZwBVYr3jTH" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14 (002)</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14 (002).pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1w2O1vfEzBA7_p_zVUTAV5KXMAcGOlwii" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14 (002)1 - Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14 (002)1 - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1didIkK0j-OUuYXwin_YnzRAa3MLN0U0U" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1uCEexLg5B_RJaK6Mr05LlYlqUqJz2DqF" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0019 Road Crossing - HDD TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0019_Road Crossing - HDD TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1V2OWPUaaWT-w94OqBuibY3DIKTgRsIV1" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0020 Cathodic Protection TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0020_Cathodic Protection TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1m5jADhoDBS8_W5JrzQDuY9prRQEpimjb" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0021 Road Crossing - Inlet Manifold Area - TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0021_Road Crossing - Inlet Manifold Area - TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16rFhK8Fb0wZFP3tYq2ZZa-_gOMpYwHPg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">13. 121-003-CN-PLN-0015 Field Joint Coating TRA</div>
+          <div class="doc-meta">13. 121-003-CN-PLN-0015_Field Joint Coating TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Pg-KF2BlO5tMl9fim7WTa29ZuBy4VtYZ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">13. 121-003-CN-PLN-0015 Field Joint Coating TRA</div>
+          <div class="doc-meta">13. 121-003-CN-PLN-0015_Field Joint Coating TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1buvthAfD7GBUabysESf_uvEzANvyvV3o" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">14. 121-003-CN-PLN-0016 Installation of Gooseneck spool and hydrotest in KM400 TRA</div>
+          <div class="doc-meta">14. 121-003-CN-PLN-0016_Installation of Gooseneck spool and hydrotest in KM400 TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1T6CO7b1CzOiUPnFOnXdb9TEjMsle-8vn" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">14. 121-003-CN-PLN-0016 Installation, preparation equipment of hydrotest inside KM-14 TRA</div>
+          <div class="doc-meta">14. 121-003-CN-PLN-0016_Installation, preparation equipment of hydrotest inside KM-14 TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ymhjWt8BhT4UOhnkZlWdVST296NX14J9" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">14. 121-003-CN-PLN-0016 Installation, preparation equipment of hydrotest inside KM-14 TRA</div>
+          <div class="doc-meta">14. 121-003-CN-PLN-0016_Installation, preparation equipment of hydrotest inside KM-14 TRA.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1XnaXREDurN16tIssfKHpZHvF3pHClSqE" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5</div>
+          <div class="doc-meta">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1l1zEkrbmQYGCTqY49OFcHrbRqX4DnVfg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5 Neil revised</div>
+          <div class="doc-meta">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5_Neil revised.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1n3Xbe-35rFqlElEKQOGC3fOTPJ8z1475" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2 XXX TRA - OP5</div>
+          <div class="doc-meta">2 XXX TRA - OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1UuRm5n1E_D0rmaWjGZyLM45_cbDYfUoN" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2. 121-003-CN-PLN-0004 Pipe Transportation Storage and Handling TRA</div>
+          <div class="doc-meta">2. 121-003-CN-PLN-0004_Pipe Transportation Storage and Handling TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ODzK7sUJtTEo5AvG3ZQCKyXKPxm94Tsw" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2. 121-003-CN-PLN-0004 Pipe Transportation Storage and Handling TRA</div>
+          <div class="doc-meta">2. 121-003-CN-PLN-0004_Pipe Transportation Storage and Handling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1W8-XpDjOANulwMhZmAzqgapm8ONVcPp6" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1RajFt1OEe8CXGxt_HwFKxID4xTQR_X3D" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16Tb30-FJzar7BcQS5ChhdKO-9n29egWg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1LxWi4xG1TqAkQThvhG4WO8jWAkohKMlA" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1SCLhaVyyQhd2HDgb16-MF0gZitJHWZdm" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">4. 121-003-CN-PLN-0006 Stringing TRA</div>
+          <div class="doc-meta">4. 121-003-CN-PLN-0006_Stringing TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=11keky_dIw4UOBhgWAKTVxJtJxJcF8UVu" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">4. 121-003-CN-PLN-0006 Stringing TRA</div>
+          <div class="doc-meta">4. 121-003-CN-PLN-0006_Stringing TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1D2PRtIvDxJSNJetq1XDRonqxZ7LkZjNn" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">7. 121-003-CN-PLN-0009 Excavataion and Trenching TRA - Rev 1</div>
+          <div class="doc-meta">7. 121-003-CN-PLN-0009_Excavataion and Trenching TRA - Rev 1.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1yfNrKCThueumyrV1YHJFfu45Svl8KKKW" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">7. 121-003-CN-PLN-0009 Excavataion and Trenching TRA - Rev 1</div>
+          <div class="doc-meta">7. 121-003-CN-PLN-0009_Excavataion and Trenching TRA - Rev 1.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ari6mdyOlVU3gIGqfeiNUgOnrXcX2Qw0" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">8. 121-003-CN-PLN-0010 Lower  Lay TRA</div>
+          <div class="doc-meta">8. 121-003-CN-PLN-0010_Lower  Lay TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ybq0G4FX4b8-ZECTXWbwLNcTfIBBojFd" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">8. 121-003-CN-PLN-0010 Lower Lay TRA Rev 04</div>
+          <div class="doc-meta">8. 121-003-CN-PLN-0010_Lower Lay TRA Rev 04.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1uYTMloele81l26kBZJg_UKSgIEdSDxrC" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">8. 121-003-CN-PLN-0010 Lower Lay TRA</div>
+          <div class="doc-meta">8. 121-003-CN-PLN-0010_Lower Lay TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1dlP8YqC1mZ9lHvJAcjPnzp0wzaUYc5Ly" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER-402 NGL Loading Vapour mitigation 03AUG23</div>
+          <div class="doc-meta">ER-402 NGL Loading Vapour mitigation 03AUG23.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1v9fdPglhyDve6XO15xjvImrL5sRXiRuS" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KP-A-DI-001-1 AB NGL Piping 080823</div>
+          <div class="doc-meta">ER402-KP-A-DI-001-1_AB_NGL Piping_080823.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=11DUezPBWoI58_ed-EB4lezGh-aiq5mNV" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.01 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.01_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Te8U1UHbX_O1yy0s4OLuwCpIVweyiDm1" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.01 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.01_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1hSsYDBUS-j83IsnAXIaFuXLk3Me9ydUw" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.02 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.02_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1fMVpCvCQgN4uOOoi58AN656sDY5af8St" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.03 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.03_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1XMrsDpTUb9HkKiQ4CD8X4VhtoDu70t2r" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">Gates Criteria</div>
+          <div class="doc-meta">Gates Criteria.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1U_3JH5fwFOuYhOWoIMZEv9cATn-qfvDn" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-000 Installation of 3 piping spools 4  size NGL tankers loading area</div>
+          <div class="doc-meta">HSE-TRA-000_Installation of 3 piping spools 4_ size NGL tankers loading area.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1gkYVlHKPDAMh7RcYOScdV-xuYH0KzzQe" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-000 Installation of 3 piping spools 4  size NGL tankers loading area 020823</div>
+          <div class="doc-meta">HSE-TRA-000_Installation of 3 piping spools 4_ size NGL tankers loading area_020823.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1mp_MYwEoJivjH1EP-avmNBem92syGRvC" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-000 Installation of 3 piping spools 4” size NGL tankers loading area</div>
+          <div class="doc-meta">HSE-TRA-000_Installation of 3 piping spools 4” size NGL tankers loading area.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Gg3a2NcRU_ibI2MrLjqL_iV30PYtX7-C" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5</div>
+          <div class="doc-meta">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ug_ETA59GBjbf8M2EXDH7FV_453OXNWm" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5</div>
+          <div class="doc-meta">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1qDu30K8nekZeb3suO3yz5jiD4hYTTSli" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-102 Tie-in of Quadruple flowlines adjacent to OP5</div>
+          <div class="doc-meta">HSE-TRA-102 Tie-in of Quadruple flowlines adjacent to OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1GdzkzqEit6tjkLbb0Su6JX14NqSTD23n" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1NfhHHRSrzg7rGbBkucTXOHEtQiPfmfXo" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1nNIcT2-WQUsFTEH_EERK-r6zEXMzzGlW" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-103 Mechanical excavation of Quadruple flowlines KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-103 Mechanical excavation of Quadruple flowlines KM8-KM9 Rdx.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=12G_xuqGfeBgmZOTlZI3caGTw9eA0PJWP" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx</div>
+          <div class="doc-meta">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=15uGqFazvd8NSHPIS9Am0lIPJOW0OMaod" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx</div>
+          <div class="doc-meta">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ui_WSo-QV_TMgFiVeadEcfxOnYX7ZLpq" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM8-KM9 Rdx.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1P1OQshSGCP7qZGUXWYH79EBSSM5M8_36" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-81-SALP Mechanical Excavation OP5</div>
+          <div class="doc-meta">HSE-TRA-81-SALP Mechanical Excavation OP5.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=18ZD_1_2m7qNZhTGgi-eqyaolm0uTDF0t" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">FILE</div>
+        <div class="doc-info">
+          <div class="doc-title">Hazards of Nitrogen Asphyxiation edit</div>
+          <div class="doc-meta">Hazards of Nitrogen Asphyxiation edit.mp4</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Wtvwwt6wG-lERWQKiiFKORMqms-YcgsN" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon xlsx">XLSX</div>
+        <div class="doc-info">
+          <div class="doc-title">IFF SALP DNRF updated</div>
+          <div class="doc-meta">IFF_SALP_DNRF_updated.xlsm</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16rpzwcKOb79FdsFJSsuG68tRbzTeQ3oJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">Method Statement Piping Fabrication &amp; Installation NGL Loading Area</div>
+          <div class="doc-meta">Method Statement_Piping Fabrication &amp; Installation NGL Loading Area.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=11eEg-XpX4z8qANzJz9J08-C7EU80VvQ8" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
         <div class="doc-icon xlsx">XLSX</div>
         <div class="doc-info">
           <div class="doc-title">OPCO-EBL-230-HSE-GN-REG-001  HSE Management System Documents Register (MSDR) 2024</div>
@@ -4211,6 +5163,96 @@
         </div>
         <div class="doc-action">
           <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1YpB941k1mJDibMcRMKtllWodsDYy7juQ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">PPT. Nitrogen Awareness</div>
+          <div class="doc-meta">PPT. Nitrogen Awareness.pptx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1f9ZN7bZ4o19ylZQ8-2sum0Bxoh5fzwXD" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">Project Execution Plan Piping Fabrication &amp; Installation NGL Loading Area</div>
+          <div class="doc-meta">Project Execution Plan_Piping Fabrication &amp; Installation NGL Loading Area.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1VKzXC0O_8pL7bIGYhDoxwyWxO5J8GWQI" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">SALP- CMS- Installation of 3 piping spools 4” at tankers loading area - NGL</div>
+          <div class="doc-meta">SALP- CMS- Installation of 3 piping spools 4” at tankers loading area - NGL.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Rfhxe1aVe3x6SnxOwbGlbOgyMjHxmIBG" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA Hot work NGL</div>
+          <div class="doc-meta">TRA Hot work NGL.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1r-tkNOZUx1vIuAbQ1LKz-7TpNxwO8UXR" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA KM14 Activities inside NGL Loading area - Signed</div>
+          <div class="doc-meta">TRA KM14 Activities inside NGL Loading area - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=164aORAQGYypeiilQ_Vlx7_Y4lQYsKScJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA for Excavation Area 1&amp;3 - Signed</div>
+          <div class="doc-meta">TRA for Excavation Area 1&amp;3 - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1s-zBCmR69Xjkuc-II2uPB08HN9e9QoTM" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA- Oeration Cleaning and gauging of KM14 -Manifold km400 - Signed</div>
+          <div class="doc-meta">TRA- Oeration Cleaning and gauging of KM14 -Manifold km400 - Signed.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=150TE9Hq15uSnnlewfXqNnjv7xRj1IGnQ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA-HSE-105 Spool change out and automation system NGL loading - Signed</div>
+          <div class="doc-meta">TRA-HSE-105 Spool change out and automation system NGL loading - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1tKtFNXCTv16E-VGPNtKvtqZ0cFYrPUkk" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">FILE</div>
+        <div class="doc-info">
+          <div class="doc-title">Workpack 120823</div>
+          <div class="doc-meta">Workpack_120823.rar</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=13grVvMfOhRZJd7WqI5vv7hQSZku8YAz6" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -6574,6 +7616,79 @@
 <!-- QMS Manuals & Plans -->
 <!-- QMS Procedures merged into qms panel -->
 
+<!-- LIBRARY panels: PQR / WPS / WQT × Pipeline / Piping / In-Service -->
+<!-- GEN-START: library-pqr -->
+<section class="panel" id="library-pqr-pipeline">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">PQR &middot; Pipeline &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<section class="panel" id="library-pqr-piping">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">PQR &middot; Piping &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<section class="panel" id="library-pqr-inservice">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">PQR &middot; In-Service &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<!-- GEN-END: library-pqr -->
+
+<!-- GEN-START: library-wps -->
+<section class="panel" id="library-wps-pipeline">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">WPS &middot; Pipeline &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<section class="panel" id="library-wps-piping">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">WPS &middot; Piping &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<section class="panel" id="library-wps-inservice">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">WPS &middot; In-Service &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<!-- GEN-END: library-wps -->
+
+<!-- GEN-START: library-wqt -->
+<section class="panel" id="library-wqt-pipeline">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">WQT &middot; Pipeline &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<section class="panel" id="library-wqt-piping">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">WQT &middot; Piping &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<section class="panel" id="library-wqt-inservice">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">WQT &middot; In-Service &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>
+<!-- GEN-END: library-wqt -->
+
 <!-- SKG General -->
 <section class="panel" id="skg-general">
   <div class="section-header">
@@ -6962,6 +8077,8 @@
     const projBar   = document.getElementById('projects-bar');
     const groupBar  = document.getElementById('skg-groups');
     const subTabs   = document.getElementById('skg-subtabs');
+    const libBar    = document.getElementById('library-bar');
+    const libSubBar = document.getElementById('library-subgroups');
     if (deptBar)    deptBar.style.display    = '';
     if (qmsBar)     qmsBar.style.display     = 'none';
     if (hseBar)     hseBar.style.display     = 'none';
@@ -6970,6 +8087,8 @@
     if (projBar)    projBar.style.display    = 'none';
     if (groupBar)   groupBar.style.display   = 'none';
     if (subTabs)    subTabs.style.display    = 'none';
+    if (libBar)     libBar.style.display     = 'none';
+    if (libSubBar)  libSubBar.style.display  = 'none';
 
     // QCD otomatik secili gelsin (QMS -> QCD -> Manuals zinciri)
     selectQmsDept('qcd');
@@ -7286,14 +8405,97 @@
     const projBar  = document.getElementById('projects-bar');
     const groupBar = document.getElementById('skg-groups');
     const subTabs  = document.getElementById('skg-subtabs');
+    const libBar   = document.getElementById('library-bar');
+    const libSubBar = document.getElementById('library-subgroups');
     if (qmsBar)   qmsBar.style.display   = 'none';
     if (deptBar)  deptBar.style.display  = 'none';
     if (projBar)  projBar.style.display  = '';
     if (groupBar) groupBar.style.display = 'none';
     if (subTabs)  subTabs.style.display  = 'none';
+    if (libBar)   libBar.style.display   = 'none';
+    if (libSubBar) libSubBar.style.display = 'none';
 
     // SKG otomatik secili gelsin (QMS -> Manuals auto-select ile ayni davranis)
     selectProject('skg');
+  }
+
+  // ======================================
+  // LIBRARY navigation
+  // ======================================
+  // LIBRARY butonu: alt bar'da PQR/WPS/WQT goster + PQR'i otomatik sec
+  function showLibraryBar() {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tabs-inner > .tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+
+    const libBtn = document.getElementById('library-btn');
+    if (libBtn) libBtn.classList.add('active');
+
+    // Tum diger bar'lari kapat, library bar'i ac
+    const qmsBar    = document.getElementById('qms-groups');
+    const hseBar    = document.getElementById('qms-hse-groups');
+    const deptGrpBar= document.getElementById('qms-dept-groups');
+    const projDeptGrpBar = document.getElementById('project-dept-groups');
+    const deptBar   = document.getElementById('qms-departments');
+    const projBar   = document.getElementById('projects-bar');
+    const groupBar  = document.getElementById('skg-groups');
+    const subTabs   = document.getElementById('skg-subtabs');
+    const libBar    = document.getElementById('library-bar');
+    const libSubBar = document.getElementById('library-subgroups');
+    if (qmsBar)     qmsBar.style.display     = 'none';
+    if (hseBar)     hseBar.style.display     = 'none';
+    if (deptGrpBar) deptGrpBar.style.display = 'none';
+    if (projDeptGrpBar) projDeptGrpBar.style.display = 'none';
+    if (deptBar)    deptBar.style.display    = 'none';
+    if (projBar)    projBar.style.display    = 'none';
+    if (groupBar)   groupBar.style.display   = 'none';
+    if (subTabs)    subTabs.style.display    = 'none';
+    if (libBar)     libBar.style.display     = '';
+    if (libSubBar)  libSubBar.style.display  = '';
+
+    // PQR otomatik secili gelsin (Pipeline ile)
+    selectLibrarySection('pqr');
+  }
+
+  // LIBRARY ana bolum secimi: PQR / WPS / WQT
+  // Her bolumun altinda 3 alt sekme var (Pipeline / Piping / In-Service).
+  // Bu fonksiyon bolumu secip 3. seviye bar'i acar ve Pipeline'i otomatik secer.
+  let _currentLibrarySection = 'pqr';
+  function selectLibrarySection(section) {
+    const valid = ['pqr', 'wps', 'wqt'];
+    if (!valid.includes(section)) return;
+    _currentLibrarySection = section;
+
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+
+    const libBtn = document.getElementById('library-btn');
+    if (libBtn) libBtn.classList.add('active');
+    const activeBtn = document.getElementById('library-' + section + '-btn');
+    if (activeBtn) activeBtn.classList.add('active');
+
+    // 3. seviye bar'i ac
+    const subBar = document.getElementById('library-subgroups');
+    if (subBar) subBar.style.display = '';
+
+    // Pipeline otomatik secili gelsin
+    selectLibrarySubgroup('pipeline');
+  }
+
+  // LIBRARY 3. seviye secimi: Pipeline / Piping / In-Service
+  function selectLibrarySubgroup(sub) {
+    const valid = ['pipeline', 'piping', 'inservice'];
+    if (!valid.includes(sub)) return;
+
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    // Sadece library 3. seviye butonlarinin activesini temizle (LIBRARY ana secimi kalsin)
+    document.querySelectorAll('#library-subgroups .sub-tab-btn').forEach(b => b.classList.remove('active'));
+
+    const subBtn = document.getElementById('library-sub-' + sub + '-btn');
+    if (subBtn) subBtn.classList.add('active');
+
+    const panel = document.getElementById('library-' + _currentLibrarySection + '-' + sub);
+    if (panel) panel.classList.add('active');
   }
 
   // Proje secimi: SKG icin group bar'ini ac, digerleri icin bos durum paneli
@@ -7601,6 +8803,11 @@
       } else if (s.kind === 'project' && s.proj) {
         showProjectsBar();
         selectProject(s.proj);
+      } else if (s.kind === 'library' && s.section) {
+        // LIBRARY: PQR/WPS/WQT bolumu ve Pipeline/Piping/In-Service alt sekmesi
+        showLibraryBar();
+        selectLibrarySection(s.section);
+        if (s.sub) selectLibrarySubgroup(s.sub);
       }
     } catch (e) {
       console.warn('restoreNavState failed', e);
@@ -7699,6 +8906,36 @@
     // showProjectsBar: SKG otomatik secilir, icinde switchTab('skg-general') state yazar;
     // dolayisiyla burada ayrica state yazmiyoruz (Procedures > General pozisyonunu korumak icin).
     // (Eski davranis: saveNavState({ kind: 'project', proj: 'skg' }))
+
+    // showLibraryBar: PQR otomatik secilir, ardindan selectLibrarySubgroup('pipeline') cagirir.
+    // O zinciri kapsayan state'i selectLibrarySubgroup wrapper'i yazar; burada sadece fallback olarak
+    // tutalim ki yine LIBRARY tab'inda kalsin.
+    if (typeof showLibraryBar === 'function') {
+      const _slb = showLibraryBar;
+      window.showLibraryBar = function() {
+        const r = _slb.apply(this, arguments);
+        saveNavState({ kind: 'library', section: 'pqr', sub: 'pipeline' });
+        return r;
+      };
+    }
+    // selectLibrarySection: section degisince state guncelle (sub: pipeline auto-secilir)
+    if (typeof selectLibrarySection === 'function') {
+      const _sls = selectLibrarySection;
+      window.selectLibrarySection = function(section) {
+        const r = _sls.apply(this, arguments);
+        saveNavState({ kind: 'library', section: section, sub: 'pipeline' });
+        return r;
+      };
+    }
+    // selectLibrarySubgroup: alt sekme degisince state guncelle (mevcut section korunur)
+    if (typeof selectLibrarySubgroup === 'function') {
+      const _slsg = selectLibrarySubgroup;
+      window.selectLibrarySubgroup = function(sub) {
+        const r = _slsg.apply(this, arguments);
+        saveNavState({ kind: 'library', section: _currentLibrarySection, sub: sub });
+        return r;
+      };
+    }
   })();
 
   // ======================================
