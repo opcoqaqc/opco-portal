@@ -1646,6 +1646,384 @@
   body.dark .gs-no-results { color: #8b949e; }
   body.dark .gs-highlight { background: rgba(201, 169, 97, 0.3); color: #f0f6fc; }
 
+  /* ============================================== */
+  /* FILTER CHIPS (Faz 1) — her panele otomatik     */
+  /* ============================================== */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px 0;
+    padding: 10px 14px;
+    background: rgba(10, 37, 64, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .filter-bar .fb-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+  .filter-bar .chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .filter-bar .chip:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .filter-bar .chip.active {
+    background: var(--navy);
+    color: var(--accent);
+    border-color: var(--navy);
+    box-shadow: 0 2px 6px rgba(10,37,64,0.18);
+  }
+  .filter-bar .chip .chip-x {
+    font-size: 10px;
+    opacity: 0.7;
+  }
+  .filter-bar .fb-search {
+    flex: 1 1 180px;
+    min-width: 140px;
+    max-width: 280px;
+    margin-left: auto;
+    padding: 6px 10px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
+    outline: none;
+  }
+  .filter-bar .fb-search:focus { border-color: var(--accent); }
+  .filter-bar .fb-clear {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .filter-bar .fb-clear:hover { color: var(--navy); background: rgba(10,37,64,0.06); }
+  .filter-bar .fb-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 8px;
+    font-weight: 600;
+  }
+  .doc-item.filter-hidden { display: none !important; }
+  .subsection.filter-hidden-sub { display: none !important; }
+
+  body.dark .filter-bar { background: rgba(255,255,255,0.03); border-color: rgba(201,169,97,0.18); }
+  body.dark .filter-bar .chip { background: #161b22; border-color: #30363d; color: #c9d1d9; }
+  body.dark .filter-bar .chip:hover { border-color: var(--accent); }
+  body.dark .filter-bar .chip.active { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+  body.dark .filter-bar .fb-search { background: #161b22; border-color: #30363d; color: #c9d1d9; }
+  body.dark .filter-bar .fb-clear:hover { background: rgba(201,169,97,0.1); color: var(--accent); }
+
+  /* ============================================== */
+  /* INLINE PREVIEW (Faz 3) — sag panel              */
+  /* ============================================== */
+  .doc-item .doc-info { cursor: pointer; }
+  .doc-item .doc-info:hover .doc-title { color: var(--accent); }
+
+  #preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 37, 64, 0.45);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 9000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+  }
+  #preview-overlay.open { opacity: 1; pointer-events: auto; }
+
+  #preview-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 60vw;
+    max-width: 980px;
+    min-width: 420px;
+    background: var(--card);
+    box-shadow: -8px 0 32px rgba(10, 37, 64, 0.18);
+    z-index: 9001;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #preview-panel.open { transform: translateX(0); }
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10, 37, 64, 0.04);
+  }
+  .preview-header .pv-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    letter-spacing: 0.4px;
+  }
+  .preview-header .pv-icon.pdf  { background: #DC2626; }
+  .preview-header .pv-icon.docx { background: #2563EB; }
+  .preview-header .pv-icon.xlsx { background: #16A34A; }
+  .preview-header .pv-icon.other{ background: #6B7280; }
+
+  .preview-title-wrap { flex: 1; min-width: 0; }
+  .preview-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+  .preview-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .preview-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .pv-btn {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .pv-btn:hover { border-color: var(--accent); color: var(--navy); transform: translateY(-1px); }
+  .pv-btn.pv-btn-primary { background: var(--navy); color: var(--accent); border-color: var(--navy); }
+  .pv-btn.pv-btn-primary:hover { background: var(--navy-dark); color: var(--accent); }
+  .pv-btn.pv-btn-icon { padding: 7px 9px; }
+
+  .preview-body {
+    flex: 1;
+    background: #2a2a2a;
+    overflow: hidden;
+    position: relative;
+  }
+  .preview-body iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .preview-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .preview-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.55);
+    gap: 10px;
+    padding: 24px;
+    text-align: center;
+  }
+  .preview-empty .pv-empty-icon { font-size: 42px; opacity: 0.5; }
+
+  @media (max-width: 768px) {
+    #preview-panel {
+      width: 100vw;
+      max-width: 100vw;
+      min-width: 0;
+    }
+  }
+
+  body.dark #preview-overlay { background: rgba(0,0,0,0.55); }
+  body.dark #preview-panel { background: #161b22; box-shadow: -8px 0 32px rgba(0,0,0,0.4); }
+  body.dark .preview-header { background: rgba(255,255,255,0.03); border-color: rgba(201,169,97,0.18); }
+  body.dark .preview-title { color: #f0f6fc; }
+  body.dark .preview-meta { color: #8b949e; }
+  body.dark .pv-btn { background: #21262d; border-color: #30363d; color: #c9d1d9; }
+  body.dark .pv-btn:hover { border-color: var(--accent); color: var(--accent); }
+  body.dark .pv-btn.pv-btn-primary { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+  body.dark .pv-btn.pv-btn-primary:hover { background: #B89750; color: #0d1117; }
+  body.dark .preview-body { background: #0d1117; }
+
+  /* ============================================== */
+  /* USER NAME PROMPT MODAL (Faz 4)                 */
+  /* ============================================== */
+  #user-name-modal {
+    position: fixed; inset: 0;
+    background: rgba(10, 37, 64, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  #user-name-modal.open { display: flex; }
+  .unm-card {
+    background: var(--card);
+    padding: 30px 32px;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(10, 37, 64, 0.3);
+    width: min(420px, 92vw);
+    text-align: center;
+  }
+  .unm-card h2 { font-size: 18px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+  .unm-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+  .unm-card input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 14px;
+    outline: none;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .unm-card input:focus { border-color: var(--accent); }
+  .unm-card button {
+    width: 100%;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--navy);
+    color: var(--accent);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .unm-card button:hover { background: var(--navy-dark); }
+  body.dark .unm-card { background: #161b22; }
+  body.dark .unm-card h2 { color: #f0f6fc; }
+  body.dark .unm-card p { color: #8b949e; }
+  body.dark .unm-card input { background: #0d1117; border-color: #30363d; color: #c9d1d9; }
+  body.dark .unm-card button { background: var(--accent); color: #0d1117; }
+
+  /* ============================================== */
+  /* ADMIN PANEL (Faz 4)                            */
+  /* ============================================== */
+  #admin-panel {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 8500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #admin-panel.open { display: flex; }
+  .admin-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .admin-header h2 { font-size: 16px; font-weight: 600; color: var(--accent); flex: 1; }
+  .admin-header .ah-stat { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .admin-header button {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .admin-header button:hover { background: var(--accent); color: var(--navy); }
+  .admin-toolbar {
+    padding: 12px 24px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .admin-toolbar input {
+    flex: 1; min-width: 200px;
+    padding: 8px 12px; font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .admin-toolbar input:focus { border-color: var(--accent); }
+  .admin-toolbar select {
+    padding: 8px 10px; font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .admin-toolbar .ah-count { margin-left: auto; font-size: 12px; color: var(--text-muted); font-weight: 600; }
+  .admin-body { flex: 1; overflow: auto; padding: 16px 24px; }
+  .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); }
+  .admin-table th { background: rgba(10,37,64,0.06); text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; position: sticky; top: 0; }
+  .admin-table td { padding: 9px 12px; border-top: 1px solid var(--border); vertical-align: top; }
+  .admin-table tr:hover td { background: rgba(201,169,97,0.06); }
+  .admin-table .col-time { white-space: nowrap; font-family: 'Consolas', monospace; font-size: 11.5px; color: var(--text-muted); }
+  .admin-table .col-user { font-weight: 600; color: var(--navy); }
+  .admin-table .col-cat { font-size: 10.5px; padding: 2px 8px; border-radius: 100px; background: rgba(10,37,64,0.08); color: var(--navy); display: inline-block; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+  .admin-table .col-doc { font-weight: 500; }
+  .admin-loading { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+  .admin-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .admin-error { background: rgba(220, 38, 38, 0.08); color: #B91C1C; padding: 14px 18px; border-radius: 8px; border: 1px solid rgba(220,38,38,0.25); font-size: 13px; }
+
+  body.dark #admin-panel { background: #0d1117; }
+  body.dark .admin-toolbar { background: #161b22; border-color: #30363d; }
+  body.dark .admin-toolbar input, body.dark .admin-toolbar select { background: #0d1117; border-color: #30363d; color: #c9d1d9; }
+  body.dark .admin-table { background: #161b22; }
+  body.dark .admin-table th { background: rgba(255,255,255,0.04); color: #8b949e; }
+  body.dark .admin-table td { border-color: #30363d; color: #c9d1d9; }
+  body.dark .admin-table .col-user { color: var(--accent); }
+  body.dark .admin-table .col-cat { background: rgba(201,169,97,0.15); color: var(--accent); }
+
 </style>
 </head>
 <body class="locked dark">
@@ -1772,7 +2150,7 @@
 <nav class="tabs">
   <div class="tabs-inner">
     <button class="tab-btn active" data-tab="home">OVERVIEW</button>
-    <button class="tab-btn" id="qms-btn" onclick="showQmsBar()">QMS <span class="count" data-count="qms">376</span></button>
+    <button class="tab-btn" id="qms-btn" onclick="showQmsBar()">QMS <span class="count" data-count="qms">476</span></button>
     <button class="tab-btn" id="projects-btn" onclick="showProjectsBar()">
       PROJECTS <span class="count" data-count="projects">128</span>
     </button>
@@ -1785,13 +2163,13 @@
         <path d="M9 2h6a1 1 0 0 1 1 1v1h2a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2V3a1 1 0 0 1 1-1z"/>
         <path d="M9 12l2 2 4-4"/>
       </svg>
-      PQR
+      PQR <span class="count" data-count="library-pqr">10</span>
     </button>
     <button class="sub-tab-btn dept-btn library-tab" id="library-wps-btn" onclick="selectLibrarySection('wps')">
       <svg class="lib-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M14 3l-2 5h4l-6 13 2-9H8l4-9h2z"/>
       </svg>
-      WPS
+      WPS <span class="count" data-count="library-wps">15</span>
     </button>
     <button class="sub-tab-btn dept-btn library-tab" id="library-wqt-btn" onclick="selectLibrarySection('wqt')">
       <svg class="lib-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1799,14 +2177,14 @@
         <path d="M2 21c0-4 3.5-7 8-7 1.4 0 2.7.3 3.8.8"/>
         <path d="M16 18l2 2 4-4"/>
       </svg>
-      WQT
+      WQT <span class="count" data-count="library-wqt">3</span>
     </button>
   </div>
   <!-- LIBRARY 3. seviye: In-Service / Pipeline / Piping (PQR-WPS-WQT altinda) -->
   <div class="sub-tabs-inner sub-tabs-level2" id="library-subgroups" style="display:none;">
-    <button class="sub-tab-btn group-btn" id="library-sub-pipeline-btn" onclick="selectLibrarySubgroup('pipeline')">Pipeline</button>
-    <button class="sub-tab-btn group-btn" id="library-sub-piping-btn" onclick="selectLibrarySubgroup('piping')">Piping</button>
-    <button class="sub-tab-btn group-btn" id="library-sub-inservice-btn" onclick="selectLibrarySubgroup('inservice')">In-Service</button>
+    <button class="sub-tab-btn group-btn" id="library-sub-pipeline-btn" onclick="selectLibrarySubgroup('pipeline')">Pipeline <span class="count" data-count-dyn="pipeline">0</span></button>
+    <button class="sub-tab-btn group-btn" id="library-sub-piping-btn" onclick="selectLibrarySubgroup('piping')">Piping <span class="count" data-count-dyn="piping">0</span></button>
+    <button class="sub-tab-btn group-btn" id="library-sub-inservice-btn" onclick="selectLibrarySubgroup('inservice')">In-Service <span class="count" data-count-dyn="inservice">0</span></button>
   </div>
   <!-- QMS departman bar'i: QCD / HSE / ADM / HRD / WHS / PRD / PCD / FND / COM -->
   <div class="sub-tabs-inner" id="qms-departments" style="display:none;">
@@ -4133,8 +4511,918 @@
   </div>
 
   <div class="subsection" data-qms-group="hse-registers">
-    <div class="subsection-title">HSE REGISTERS <span style="opacity:0.6; font-weight:500; font-size:13px;">(12)</span></div>
+    <div class="subsection-title">HSE REGISTERS <span style="opacity:0.6; font-weight:500; font-size:13px;">(112)</span></div>
     <div class="doc-list">
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">1 Mechanical excavation of Quadruple flowlines  TRA - OP5</div>
+          <div class="doc-meta">1 Mechanical excavation of Quadruple flowlines  TRA - OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1pJEpOzQAoouslDnf3u5WRx2iltXhEtN9" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">1. 121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">1. 121-003-CN-PLN-0003_Surveying TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1g1HXZZMVUhKZgpG9ktCNAIlW-Wd6it70" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">1. 121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">1. 121-003-CN-PLN-0003_Surveying TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1DcCabghrntLrcb9qscggKjp3xqgfarkd" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">1. 121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">1. 121-003-CN-PLN-0003_Surveying TRA.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1QQMeM4Yu9FobOGZAks0B5VZDVXP_hoYA" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">10. 121-003-CN-PLN-0012 FOC and Cable Laying TRA</div>
+          <div class="doc-meta">10. 121-003-CN-PLN-0012_FOC and Cable Laying TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1DG-aWmtf4DTqwheAz6GBdlyW1zwEs_Pi" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">10. 121-003-CN-PLN-0012 FOC and Cable Laying TRA</div>
+          <div class="doc-meta">10. 121-003-CN-PLN-0012_FOC and Cable Laying TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1B874xNe7j-TliGSPsVYkLlVT6Io-jdSw" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">11. 121-003-CN-PLN-0013 Padding-Backfilling TRA</div>
+          <div class="doc-meta">11. 121-003-CN-PLN-0013_Padding-Backfilling TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1cNIgNQhFrWoT4ySEs7t-9foWfdb32EA_" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">11. 121-003-CN-PLN-0013 Padding-Backfilling TRA</div>
+          <div class="doc-meta">11. 121-003-CN-PLN-0013_Padding-Backfilling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1stF79CAHA_FfQacZ13G2MR8Z4GCfn0JV" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">12. 121-003-CN-PLN-0014 Skidding and De-Skidding TRA</div>
+          <div class="doc-meta">12. 121-003-CN-PLN-0014_Skidding and De-Skidding TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1wjTUziHp3uMBo88lWakVaaAvxAng9U1P" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">12. 121-003-CN-PLN-0014 Skidding and De-Skidding TRA</div>
+          <div class="doc-meta">12. 121-003-CN-PLN-0014_Skidding and De-Skidding TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1O_c7y49jBG3BYSgc9upTKudeS7MWdbOA" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0003 Surveying TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0003_Surveying TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1drrUtt2XU-lfk8iIHm1KoFw3mDs1iyDJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0004 Pipe Transportation, Storage and Handling TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0004_Pipe Transportation, Storage and Handling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Mg4tNxiqML5KTrF95QFLGt6w7sDhT9TH" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0005_Right of Way Preparation TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Zbt4a-XOe6YEb0ZyAJkcs4quhFfwK70W" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0006 Stringing TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0006_Stringing TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1_ZpYT3F3h_NrDMZP6LcUJh6ksgpJDCb8" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0007 Bending TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0007_Bending TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1DYtgLdnn6a-izLJjip9Yj8u10Esfi7EG" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0008 Welding, Cutting &amp; Grinding TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0008_Welding, Cutting &amp; Grinding TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=199gJEsasI8c-F7Ygm91mPFP4KJMBhPtc" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0009 Excavataion and Trenching TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0009_Excavataion and Trenching TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1YS3ai6KyBP7JtYMr2XuXtk0_T1aArY2B" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0010 Lower &amp; Lay TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0010_Lower &amp; Lay TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1oMdDQGbdPxfJ9Fglp4ubPt3VYC88MHWe" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0011 Tie-ins</div>
+          <div class="doc-meta">121-003-CN-PLN-0011_Tie-ins.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1dErS2klrQnQ7F3GfNT7CNqPlnZ2YoJDP" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0012 FOC and Cable Laying TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0012_FOC and Cable Laying TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1_h7DGDxiOWbhWdlJrDtELaNYOPt5Aqbo" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0013 Padding-Backfilling TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0013_Padding-Backfilling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1oYHrgwSP0wMlu6fiO1q8lT0g8PXcTgsE" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0014 Skidding and De-Skidding TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0014_Skidding and De-Skidding TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1PTsQ5jgyjbFY0VA039Hi6X0gEz-xIdM4" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0015 Field Joint Coating TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0015_Field Joint Coating TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1iuBxUFQfGmll_WiNvMRU7R2_kw8jcCNa" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017B E-Caliper Pigging and Hydrotesting on live plant - Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0017B E-Caliper Pigging and Hydrotesting on live plant - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1AXt4AE14A4y4HX6-M3ANb3XvBhkMsNtX" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Draft</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Draft.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1izLgBV-JYVpwEZ_0wRrtTZkX6WQrNEeQ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Revised (003)</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Revised (003).docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1nfIdFl7UIanRoZFtBc58Fs1K1gxwtoij" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Revised (003)</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Revised (003).pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1NJsG2O8pQl3PZbCGBeT27MiKZmSjNr4T" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017  KM14 Flowline Hydrotest and Pigging TRA Revised</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_ KM14 Flowline Hydrotest and Pigging TRA Revised.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1sLmkdXP-F6_WEY39JI7URz2xMrEuTnvx" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017 KM14 Flowline Location of materials and pigging set up cleaning</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_KM14 Flowline Location of materials and pigging set up cleaning.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1sLGbNQOb8o4Ue2U59IWfjROEQ1bcA3Kg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017 KM14 Flowline Location of materials and pigging set up cleaning</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_KM14 Flowline Location of materials and pigging set up cleaning.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1k0atN9IMHEFDkDPIhFkBIgxYozHDqt0a" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017 KM14 Flowline Location of materials and pigging set up cleaning</div>
+          <div class="doc-meta">121-003-CN-PLN-0017_KM14 Flowline Location of materials and pigging set up cleaning.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1jHtvlwZvspelq0F2b-nIlSAooeiUXY5i" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017a KM14 Cleaning and Gauging of KM14 Flowline-Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0017a KM14 Cleaning and Gauging of KM14 Flowline-Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1VMVIg7ZjWfBefSQMaUhTUErtb-ez_LGL" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017a  Cleaning and Gauging KM14 Flowline</div>
+          <div class="doc-meta">121-003-CN-PLN-0017a_ Cleaning and Gauging KM14 Flowline.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1wycClcPoVdZK5tClRnsOI7PtpGuX9xbH" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017a  Cleaning and Gauging KM14 Flowline</div>
+          <div class="doc-meta">121-003-CN-PLN-0017a_ Cleaning and Gauging KM14 Flowline.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=18vGK1WLTVa9yPg7gg1bmKWxTDkOC2Nx0" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant</div>
+          <div class="doc-meta">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=150Fvx_bTgc6U4MSUVbvH-tDfkpom9Thc" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant</div>
+          <div class="doc-meta">121-003-CN-PLN-0017b  E-Calliper Pigging and Hydrotesting on live plant.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1BP5w2dsTWlSwoOOaNhQpq_n8HA2YG4C9" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 NDT- Radiography of weld joints TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_NDT- Radiography of weld joints TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1IKWe_YjHt5EAajEkwEtHwKY30_IZlNSJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen Reviewed 1</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen Reviewed 1.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1mvK7s2z72kD5n9xecYY-MnSkiYiIdY07" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1kdUnC1aRT2CjE6AfMeU_gdzkEQdhgcBK" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1dK9Cal9kQbppatebxFK50l_s3WiMtu96" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14 (002) - Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14 (002) - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=18Avk6dzvIgpQwDx02o6o8UZwBVYr3jTH" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14 (002)</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14 (002).pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1w2O1vfEzBA7_p_zVUTAV5KXMAcGOlwii" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14 (002)1 - Signed</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14 (002)1 - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1didIkK0j-OUuYXwin_YnzRAa3MLN0U0U" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0018 Purging of Nitrogen SALP KM14</div>
+          <div class="doc-meta">121-003-CN-PLN-0018_Purging of Nitrogen_SALP KM14.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1uCEexLg5B_RJaK6Mr05LlYlqUqJz2DqF" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0019 Road Crossing - HDD TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0019_Road Crossing - HDD TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1V2OWPUaaWT-w94OqBuibY3DIKTgRsIV1" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0020 Cathodic Protection TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0020_Cathodic Protection TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1m5jADhoDBS8_W5JrzQDuY9prRQEpimjb" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">121-003-CN-PLN-0021 Road Crossing - Inlet Manifold Area - TRA</div>
+          <div class="doc-meta">121-003-CN-PLN-0021_Road Crossing - Inlet Manifold Area - TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16rFhK8Fb0wZFP3tYq2ZZa-_gOMpYwHPg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">13. 121-003-CN-PLN-0015 Field Joint Coating TRA</div>
+          <div class="doc-meta">13. 121-003-CN-PLN-0015_Field Joint Coating TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Pg-KF2BlO5tMl9fim7WTa29ZuBy4VtYZ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">13. 121-003-CN-PLN-0015 Field Joint Coating TRA</div>
+          <div class="doc-meta">13. 121-003-CN-PLN-0015_Field Joint Coating TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1buvthAfD7GBUabysESf_uvEzANvyvV3o" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">14. 121-003-CN-PLN-0016 Installation of Gooseneck spool and hydrotest in KM400 TRA</div>
+          <div class="doc-meta">14. 121-003-CN-PLN-0016_Installation of Gooseneck spool and hydrotest in KM400 TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1T6CO7b1CzOiUPnFOnXdb9TEjMsle-8vn" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">14. 121-003-CN-PLN-0016 Installation, preparation equipment of hydrotest inside KM-14 TRA</div>
+          <div class="doc-meta">14. 121-003-CN-PLN-0016_Installation, preparation equipment of hydrotest inside KM-14 TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ymhjWt8BhT4UOhnkZlWdVST296NX14J9" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">14. 121-003-CN-PLN-0016 Installation, preparation equipment of hydrotest inside KM-14 TRA</div>
+          <div class="doc-meta">14. 121-003-CN-PLN-0016_Installation, preparation equipment of hydrotest inside KM-14 TRA.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1XnaXREDurN16tIssfKHpZHvF3pHClSqE" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5</div>
+          <div class="doc-meta">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1l1zEkrbmQYGCTqY49OFcHrbRqX4DnVfg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5 Neil revised</div>
+          <div class="doc-meta">2 HSE-TRA-81-SALP Tie-in of Quadruple flowlines adjacent to OP5_Neil revised.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1n3Xbe-35rFqlElEKQOGC3fOTPJ8z1475" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2 XXX TRA - OP5</div>
+          <div class="doc-meta">2 XXX TRA - OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1UuRm5n1E_D0rmaWjGZyLM45_cbDYfUoN" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2. 121-003-CN-PLN-0004 Pipe Transportation Storage and Handling TRA</div>
+          <div class="doc-meta">2. 121-003-CN-PLN-0004_Pipe Transportation Storage and Handling TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ODzK7sUJtTEo5AvG3ZQCKyXKPxm94Tsw" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">2. 121-003-CN-PLN-0004 Pipe Transportation Storage and Handling TRA</div>
+          <div class="doc-meta">2. 121-003-CN-PLN-0004_Pipe Transportation Storage and Handling TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1W8-XpDjOANulwMhZmAzqgapm8ONVcPp6" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1RajFt1OEe8CXGxt_HwFKxID4xTQR_X3D" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16Tb30-FJzar7BcQS5ChhdKO-9n29egWg" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1LxWi4xG1TqAkQThvhG4WO8jWAkohKMlA" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">3. 121-003-CN-PLN-0005 Right of Way Preparation TRA</div>
+          <div class="doc-meta">3. 121-003-CN-PLN-0005_Right of Way Preparation TRA.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1SCLhaVyyQhd2HDgb16-MF0gZitJHWZdm" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">4. 121-003-CN-PLN-0006 Stringing TRA</div>
+          <div class="doc-meta">4. 121-003-CN-PLN-0006_Stringing TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=11keky_dIw4UOBhgWAKTVxJtJxJcF8UVu" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">4. 121-003-CN-PLN-0006 Stringing TRA</div>
+          <div class="doc-meta">4. 121-003-CN-PLN-0006_Stringing TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1D2PRtIvDxJSNJetq1XDRonqxZ7LkZjNn" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">7. 121-003-CN-PLN-0009 Excavataion and Trenching TRA - Rev 1</div>
+          <div class="doc-meta">7. 121-003-CN-PLN-0009_Excavataion and Trenching TRA - Rev 1.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1yfNrKCThueumyrV1YHJFfu45Svl8KKKW" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">7. 121-003-CN-PLN-0009 Excavataion and Trenching TRA - Rev 1</div>
+          <div class="doc-meta">7. 121-003-CN-PLN-0009_Excavataion and Trenching TRA - Rev 1.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ari6mdyOlVU3gIGqfeiNUgOnrXcX2Qw0" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">8. 121-003-CN-PLN-0010 Lower  Lay TRA</div>
+          <div class="doc-meta">8. 121-003-CN-PLN-0010_Lower  Lay TRA.doc</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ybq0G4FX4b8-ZECTXWbwLNcTfIBBojFd" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">8. 121-003-CN-PLN-0010 Lower Lay TRA Rev 04</div>
+          <div class="doc-meta">8. 121-003-CN-PLN-0010_Lower Lay TRA Rev 04.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1uYTMloele81l26kBZJg_UKSgIEdSDxrC" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">8. 121-003-CN-PLN-0010 Lower Lay TRA</div>
+          <div class="doc-meta">8. 121-003-CN-PLN-0010_Lower Lay TRA.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1dlP8YqC1mZ9lHvJAcjPnzp0wzaUYc5Ly" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER-402 NGL Loading Vapour mitigation 03AUG23</div>
+          <div class="doc-meta">ER-402 NGL Loading Vapour mitigation 03AUG23.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1v9fdPglhyDve6XO15xjvImrL5sRXiRuS" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KP-A-DI-001-1 AB NGL Piping 080823</div>
+          <div class="doc-meta">ER402-KP-A-DI-001-1_AB_NGL Piping_080823.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=11DUezPBWoI58_ed-EB4lezGh-aiq5mNV" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.01 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.01_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Te8U1UHbX_O1yy0s4OLuwCpIVweyiDm1" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.01 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.01_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1hSsYDBUS-j83IsnAXIaFuXLk3Me9ydUw" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.02 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.02_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1fMVpCvCQgN4uOOoi58AN656sDY5af8St" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">ER402-KX-A-DW-001-0 sht.03 GA NGL Loading Piping</div>
+          <div class="doc-meta">ER402-KX-A-DW-001-0 sht.03_GA_NGL Loading Piping.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1XMrsDpTUb9HkKiQ4CD8X4VhtoDu70t2r" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">Gates Criteria</div>
+          <div class="doc-meta">Gates Criteria.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1U_3JH5fwFOuYhOWoIMZEv9cATn-qfvDn" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-000 Installation of 3 piping spools 4  size NGL tankers loading area</div>
+          <div class="doc-meta">HSE-TRA-000_Installation of 3 piping spools 4_ size NGL tankers loading area.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1gkYVlHKPDAMh7RcYOScdV-xuYH0KzzQe" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-000 Installation of 3 piping spools 4  size NGL tankers loading area 020823</div>
+          <div class="doc-meta">HSE-TRA-000_Installation of 3 piping spools 4_ size NGL tankers loading area_020823.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1mp_MYwEoJivjH1EP-avmNBem92syGRvC" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-000 Installation of 3 piping spools 4” size NGL tankers loading area</div>
+          <div class="doc-meta">HSE-TRA-000_Installation of 3 piping spools 4” size NGL tankers loading area.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Gg3a2NcRU_ibI2MrLjqL_iV30PYtX7-C" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5</div>
+          <div class="doc-meta">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ug_ETA59GBjbf8M2EXDH7FV_453OXNWm" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5</div>
+          <div class="doc-meta">HSE-TRA-102 Tie-in of Quadruple Flowlines adjacent to OP5.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1qDu30K8nekZeb3suO3yz5jiD4hYTTSli" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-102 Tie-in of Quadruple flowlines adjacent to OP5</div>
+          <div class="doc-meta">HSE-TRA-102 Tie-in of Quadruple flowlines adjacent to OP5.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1GdzkzqEit6tjkLbb0Su6JX14NqSTD23n" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1NfhHHRSrzg7rGbBkucTXOHEtQiPfmfXo" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-103 Mechanical Excavation of Quadruple Flowlines KM8-KM9 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1nNIcT2-WQUsFTEH_EERK-r6zEXMzzGlW" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-103 Mechanical excavation of Quadruple flowlines KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-103 Mechanical excavation of Quadruple flowlines KM8-KM9 Rdx.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=12G_xuqGfeBgmZOTlZI3caGTw9eA0PJWP" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx</div>
+          <div class="doc-meta">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=15uGqFazvd8NSHPIS9Am0lIPJOW0OMaod" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx</div>
+          <div class="doc-meta">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM08-KM09 Rdx.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ui_WSo-QV_TMgFiVeadEcfxOnYX7ZLpq" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM8-KM9 Rdx</div>
+          <div class="doc-meta">HSE-TRA-104 Tie-in of Quadruple Flowlines adjacent to KM8-KM9 Rdx.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1P1OQshSGCP7qZGUXWYH79EBSSM5M8_36" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">HSE-TRA-81-SALP Mechanical Excavation OP5</div>
+          <div class="doc-meta">HSE-TRA-81-SALP Mechanical Excavation OP5.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=18ZD_1_2m7qNZhTGgi-eqyaolm0uTDF0t" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">FILE</div>
+        <div class="doc-info">
+          <div class="doc-title">Hazards of Nitrogen Asphyxiation edit</div>
+          <div class="doc-meta">Hazards of Nitrogen Asphyxiation edit.mp4</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Wtvwwt6wG-lERWQKiiFKORMqms-YcgsN" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon xlsx">XLSX</div>
+        <div class="doc-info">
+          <div class="doc-title">IFF SALP DNRF updated</div>
+          <div class="doc-meta">IFF_SALP_DNRF_updated.xlsm</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16rpzwcKOb79FdsFJSsuG68tRbzTeQ3oJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">Method Statement Piping Fabrication &amp; Installation NGL Loading Area</div>
+          <div class="doc-meta">Method Statement_Piping Fabrication &amp; Installation NGL Loading Area.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=11eEg-XpX4z8qANzJz9J08-C7EU80VvQ8" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
       <div class="doc-item">
         <div class="doc-icon xlsx">XLSX</div>
         <div class="doc-info">
@@ -4253,6 +5541,96 @@
         </div>
         <div class="doc-action">
           <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1YpB941k1mJDibMcRMKtllWodsDYy7juQ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">PPT. Nitrogen Awareness</div>
+          <div class="doc-meta">PPT. Nitrogen Awareness.pptx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1f9ZN7bZ4o19ylZQ8-2sum0Bxoh5fzwXD" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">Project Execution Plan Piping Fabrication &amp; Installation NGL Loading Area</div>
+          <div class="doc-meta">Project Execution Plan_Piping Fabrication &amp; Installation NGL Loading Area.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1VKzXC0O_8pL7bIGYhDoxwyWxO5J8GWQI" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">DOCX</div>
+        <div class="doc-info">
+          <div class="doc-title">SALP- CMS- Installation of 3 piping spools 4” at tankers loading area - NGL</div>
+          <div class="doc-meta">SALP- CMS- Installation of 3 piping spools 4” at tankers loading area - NGL.docx</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Rfhxe1aVe3x6SnxOwbGlbOgyMjHxmIBG" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA Hot work NGL</div>
+          <div class="doc-meta">TRA Hot work NGL.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1r-tkNOZUx1vIuAbQ1LKz-7TpNxwO8UXR" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA KM14 Activities inside NGL Loading area - Signed</div>
+          <div class="doc-meta">TRA KM14 Activities inside NGL Loading area - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=164aORAQGYypeiilQ_Vlx7_Y4lQYsKScJ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA for Excavation Area 1&amp;3 - Signed</div>
+          <div class="doc-meta">TRA for Excavation Area 1&amp;3 - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1s-zBCmR69Xjkuc-II2uPB08HN9e9QoTM" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA- Oeration Cleaning and gauging of KM14 -Manifold km400 - Signed</div>
+          <div class="doc-meta">TRA- Oeration Cleaning and gauging of KM14 -Manifold km400 - Signed.PDF</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=150TE9Hq15uSnnlewfXqNnjv7xRj1IGnQ" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon pdf">PDF</div>
+        <div class="doc-info">
+          <div class="doc-title">TRA-HSE-105 Spool change out and automation system NGL loading - Signed</div>
+          <div class="doc-meta">TRA-HSE-105 Spool change out and automation system NGL loading - Signed.pdf</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1tKtFNXCTv16E-VGPNtKvtqZ0cFYrPUkk" target="_blank" rel="noopener">Download</a>
+        </div>
+      </div>
+      <div class="doc-item">
+        <div class="doc-icon docx">FILE</div>
+        <div class="doc-info">
+          <div class="doc-title">Workpack 120823</div>
+          <div class="doc-meta">Workpack_120823.rar</div>
+        </div>
+        <div class="doc-action">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=13grVvMfOhRZJd7WqI5vv7hQSZku8YAz6" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -6628,7 +8006,7 @@
           <div class="doc-meta">E6010+E8010.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1RP2ZNwy1k1rpDpODXc0Z-iqYqIA2v6Dm" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-986861049794" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6638,7 +8016,7 @@
           <div class="doc-meta">SALP-PPCL-PQR-0001_E7010&amp;E8010.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1LRa6O4udILrBk14GYeFvq4nsKRLo_Wnz" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-510673366232" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6648,7 +8026,7 @@
           <div class="doc-meta">SALP-PPCL-PQR-0002_E6010&amp;E8010.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1a00n6AtE9WmF3cCS1ACrp1Ww8DQ_fMgW" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-572938774799" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6658,7 +8036,7 @@
           <div class="doc-meta">SALP-PPCL-PQR-0004_E7010&amp;E8010 with PWHT.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1aO10OXOO7AqfYIZ_EE28iFiN7Jc3dVyD" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-268493438017" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6668,7 +8046,7 @@
           <div class="doc-meta">SALP-PPCL-PQR-0005_E7010&amp;E7018.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ln__4_InRWg8AZRGmW3MS8W_gIJUQOBZ" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-673329548547" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -6684,7 +8062,7 @@
           <div class="doc-meta">316 GTAW+SMAW.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1qxeE7Tx8AnN5fk0iyELqiB4yDNlYEsnA" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-777335664186" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6694,7 +8072,7 @@
           <div class="doc-meta">316 GTAW.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=19yCkyHkwe_11OYNXuP2243WyW2OSrCbD" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-759760800472" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6704,7 +8082,7 @@
           <div class="doc-meta">A333 GR.3.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16i0bKI-nYAcdb3GA4h9mKTnb2312lCDc" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-383945716229" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6714,7 +8092,7 @@
           <div class="doc-meta">CS GTAW+SMAW.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16Cp5kS9nl1ZdnsTQVRW0GWfUBpM4FWCG" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-147291985172" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6724,7 +8102,7 @@
           <div class="doc-meta">CS GTAW.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1AANnohOsu2Xv6lYAAoo4f2zIxexpaJ1m" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-984140857812" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -6733,7 +8111,7 @@
 <section class="panel" id="library-pqr-inservice">
   <div class="section-header" style="text-align:center; padding: 80px 20px;">
     <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
-    <h2 style="font-size: 22px; margin: 0;">PQR &amp;middot; In-Service &middot; No documents yet</h2>
+    <h2 style="font-size: 22px; margin: 0;">PQR &middot; In-Service &middot; No documents yet</h2>
     <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
   </div>
 </section>
@@ -6750,7 +8128,7 @@
           <div class="doc-meta">SALP-DNO-WPS-001.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1wq8c0ludVh30lNtiBexc1FqbbEr2-aEb" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-40842588708" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6760,7 +8138,7 @@
           <div class="doc-meta">SALP-PPCL-WPS-0001.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1HszYP8W0MKrlwgOI1icnKqachylSGmLt" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-905919249671" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6770,7 +8148,7 @@
           <div class="doc-meta">SALP-PPCL-WPS-0004.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1lKm6FZfXOq5uWHuW82R2G1NGgDajroU9" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-714423064685" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6780,7 +8158,7 @@
           <div class="doc-meta">SALP-PPCL-WPS-0005.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1zhrNZUuJlYyFcgC72nptPEkwTunWqQvh" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-266997179391" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6790,7 +8168,7 @@
           <div class="doc-meta">SALPME-WPS-01.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1j_HQZFf7AYWgb9VlF_nT2yktNIh6qO2p" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-995538127937" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6800,7 +8178,7 @@
           <div class="doc-meta">SALPME-WPS-02.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=16e4SEftM7Mgfgk2uuPWlIBy99e8hCHH6" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-823237142796" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -6816,7 +8194,7 @@
           <div class="doc-meta">101-002-QA-PRD-0002_0_IFU_Welding Procedure Specification (WPS).pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Ig-Deudx4V01ox-8-nYHtGHqJEpMpgmZ" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-73882063691" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6826,7 +8204,7 @@
           <div class="doc-meta">161-037-QA-PRD-0002_0_IFU_Welding Procedure Specification (WPS).pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Uj0qJRsOVaMdHwt4WtzcUpA_fvgEqWFg" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-730943684669" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6836,7 +8214,7 @@
           <div class="doc-meta">GM552-55219-104-PI-SP-0004_0_AFC_Piping Welding Procedure Specification (WPS).pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ZAVDpnq2QNfJbuPgMpFNy9PsZ9GIBfWZ" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-886144021187" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6846,7 +8224,7 @@
           <div class="doc-meta">SALP-DNO-WPS-PGP-PI-003.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1DYUySk0WyydxTkiY-F-490Do1rSYaOgX" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-551382816314" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6856,7 +8234,7 @@
           <div class="doc-meta">SALP-DNO-WPS-PGP-PI-004.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1T-6bdhS7F84D3LQt2zgtpOjgNqWJkc1K" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-273612113884" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6866,7 +8244,7 @@
           <div class="doc-meta">SALP-DNO-WPS-PGP-PI-005.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1wFLi-uJZCq6SB41MQFNiQQehp9wPnHD7" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-740535404580" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6876,7 +8254,7 @@
           <div class="doc-meta">SALP-DNO-WPS-PGP-PI-006.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1gySiJ5zSKAbz5yapNq7hAtqWHRBjH1z7" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-623285382172" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6886,7 +8264,7 @@
           <div class="doc-meta">SALP-DNO-WPS-PGP-PI-007.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1vBaViOLKrSXwLV_qd2b6U4r6Zt7wydVn" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-365002379192" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6896,7 +8274,7 @@
           <div class="doc-meta">SALP-DNO-WPS-PGP-PI-008.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1VtYxfPeFPFkF-LX-PK9OXYOqRepfY0MT" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-924327060332" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -6905,7 +8283,7 @@
 <section class="panel" id="library-wps-inservice">
   <div class="section-header" style="text-align:center; padding: 80px 20px;">
     <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
-    <h2 style="font-size: 22px; margin: 0;">WPS &amp;middot; In-Service &middot; No documents yet</h2>
+    <h2 style="font-size: 22px; margin: 0;">WPS &middot; In-Service &middot; No documents yet</h2>
     <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
   </div>
 </section>
@@ -6915,7 +8293,7 @@
 <section class="panel" id="library-wqt-pipeline">
   <div class="section-header" style="text-align:center; padding: 80px 20px;">
     <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
-    <h2 style="font-size: 22px; margin: 0;">WQT &amp;middot; Pipeline &middot; No documents yet</h2>
+    <h2 style="font-size: 22px; margin: 0;">WQT &middot; Pipeline &middot; No documents yet</h2>
     <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
   </div>
 </section>
@@ -6929,7 +8307,7 @@
           <div class="doc-meta">Untitled1.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1hXD-oZgukJ94XL6jUO4DI5n9HxRdHo2J" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-542678347522" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -6945,7 +8323,7 @@
           <div class="doc-meta">KPC In-Service.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Lmcv2xuEVQmkDJJssOdafhrPKlar8bQu" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-92046442716" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
       <div class="doc-item">
@@ -6955,7 +8333,7 @@
           <div class="doc-meta">PPCL In-Service.pdf</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1mIeQTTEtRpH9N7l6Xs9LXSK6fx8gvP7a" target="_blank" rel="noopener">Download</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=fake-id-156922740076" target="_blank" rel="noopener">Download</a>
         </div>
       </div>
     </div>
@@ -7735,6 +9113,16 @@
   // Her bolumun altinda 3 alt sekme var (Pipeline / Piping / In-Service).
   // Bu fonksiyon bolumu secip 3. seviye bar'i acar ve Pipeline'i otomatik secer.
   let _currentLibrarySection = 'pqr';
+
+  // 3. seviye sub-bar sayaclarini aktif kategoriye gore guncelle
+  function _updateLibrarySubCounts(section) {
+    const data = (window.LIBRARY_COUNTS || {})[section] || {};
+    document.querySelectorAll('#library-subgroups [data-count-dyn]').forEach(span => {
+      const slug = span.getAttribute('data-count-dyn');
+      span.textContent = (slug in data) ? data[slug] : 0;
+    });
+  }
+
   function selectLibrarySection(section) {
     const valid = ['pqr', 'wps', 'wqt'];
     if (!valid.includes(section)) return;
@@ -7751,6 +9139,9 @@
     // 3. seviye bar'i ac
     const subBar = document.getElementById('library-subgroups');
     if (subBar) subBar.style.display = '';
+
+    // Pipeline/Piping/In-Service sayaclarini bu kategoriye gore set et
+    _updateLibrarySubCounts(section);
 
     // Pipeline otomatik secili gelsin
     selectLibrarySubgroup('pipeline');
@@ -8236,6 +9627,12 @@
       const QMS_PANELS = ['qms-qcd','qms-hse','qms-adm','qms-hrd','qms-whs','qms-prd','qms-pcd','qms-fnd','qms-com'];
       const SKG_PANELS = ['skg-general','skg-pipeline','skg-piping','skg-civil','skg-electrical','skg-instrument','skg-itp','skg-registers','skg-others'];
       const PROJ_EXTRA = ['project-htu','project-hpu','project-ppcl'];
+      // LIBRARY: PQR/WPS/WQT × Pipeline/Piping/In-Service = 9 panel
+      const LIBRARY_PANELS = [
+        'library-pqr-pipeline','library-pqr-piping','library-pqr-inservice',
+        'library-wps-pipeline','library-wps-piping','library-wps-inservice',
+        'library-wqt-pipeline','library-wqt-piping','library-wqt-inservice',
+      ];
 
       let qmsTotal = 0;
       QMS_PANELS.forEach(id => { qmsTotal += countDocs(id); });
@@ -8252,7 +9649,10 @@
       let projTotal = skgTotal;
       PROJ_EXTRA.forEach(id => { projTotal += countDocs(id); });
 
-      const grandTotal = qmsTotal + projTotal;
+      let libraryTotal = 0;
+      LIBRARY_PANELS.forEach(id => { libraryTotal += countDocs(id); });
+
+      const grandTotal = qmsTotal + projTotal + libraryTotal;
       // Kategori = dolu QMS departmanlari + dolu projeler (SKG icin skgTotal>0)
       const qmsCats = QMS_PANELS.filter(id => countDocs(id) > 0).length;
       const projCats = (skgTotal > 0 ? 1 : 0) + PROJ_EXTRA.filter(id => countDocs(id) > 0).length;
@@ -8266,7 +9666,7 @@
       const elProj = document.getElementById('hub-stat-projects');
       if (elProj) elProj.textContent = String(activeProjects);
 
-      // Header QMS / PROJECTS count'larini da DOM'a gore senkron tut
+      // Header QMS / PROJECTS / LIBRARY count'larini da DOM'a gore senkron tut
       const qmsBtn = document.getElementById('qms-btn');
       if (qmsBtn) {
         const span = qmsBtn.querySelector('.count');
@@ -8276,6 +9676,57 @@
       if (projBtn) {
         const span = projBtn.querySelector('.count');
         if (span) span.textContent = String(projTotal);
+      }
+      const libBtn = document.getElementById('library-btn');
+      if (libBtn) {
+        const span = libBtn.querySelector('.count');
+        if (span) span.textContent = String(libraryTotal);
+      }
+      // QMS departman sub-tab sayaclari (HSE/QCD/...) — panel toplamlari ile senkron
+      QMS_PANELS.forEach(panelId => {
+        // panelId: 'qms-hse' -> dept buton: 'qms-dept-hse'
+        const slug = panelId.replace(/^qms-/, '');
+        const btn = document.getElementById('qms-dept-' + slug);
+        if (!btn) return;
+        const span = btn.querySelector('.count');
+        if (span) span.textContent = String(countDocs(panelId));
+      });
+      // PROJECTS sub-tab sayaclari (SKG/HTU/HPU/PPCL) — panel toplamlari ile senkron
+      const projSpan = (id) => {
+        const btn = document.getElementById(id);
+        if (!btn) return null;
+        return btn.querySelector('.count');
+      };
+      const skgSpan = projSpan('project-skg-btn');
+      if (skgSpan) skgSpan.textContent = String(skgTotal);
+      PROJ_EXTRA.forEach(panelId => {
+        // panelId: 'project-htu' -> buton: 'project-htu-btn'
+        const span = projSpan(panelId + '-btn');
+        if (span) span.textContent = String(countDocs(panelId));
+      });
+      // LIBRARY 2. seviye buton sayaclari (PQR/WPS/WQT) — panel toplamlari ile senkron
+      ['pqr','wps','wqt'].forEach(cat => {
+        const btn = document.getElementById('library-' + cat + '-btn');
+        if (!btn) return;
+        const span = btn.querySelector('.count');
+        if (!span) return;
+        const total = ['pipeline','piping','inservice']
+          .reduce((acc, sub) => acc + countDocs('library-' + cat + '-' + sub), 0);
+        span.textContent = String(total);
+      });
+      // LIBRARY 3. seviye sayaclari icin window.LIBRARY_COUNTS objesini DOM'a gore yeniden uret
+      // (script Drive sayilarini yazdi ama nihai dogruluk panellerdeki doc-item)
+      window.LIBRARY_COUNTS = {};
+      ['pqr','wps','wqt'].forEach(cat => {
+        window.LIBRARY_COUNTS[cat] = {
+          pipeline:  countDocs('library-' + cat + '-pipeline'),
+          piping:    countDocs('library-' + cat + '-piping'),
+          inservice: countDocs('library-' + cat + '-inservice'),
+        };
+      });
+      // Aktif kategorinin 3. seviye sub-bar sayaclarini hemen guncelle (varsa)
+      if (typeof _updateLibrarySubCounts === 'function' && typeof _currentLibrarySection === 'string') {
+        _updateLibrarySubCounts(_currentLibrarySection);
       }
 
       // Legacy pinned cards (varsa guncelle — artik Overview'de yoklar)
@@ -8479,6 +9930,624 @@
     // Sayfayi yenile -> login ekrani tekrar gelir
     location.reload();
   }
+</script>
+<script id="library-counts-data">window.LIBRARY_COUNTS = {"pqr": {"pipeline": 5, "piping": 5, "inservice": 0}, "wps": {"pipeline": 6, "piping": 9, "inservice": 0}, "wqt": {"pipeline": 0, "piping": 1, "inservice": 2}};</script>
+
+<!-- User name prompt modal (Faz 4) -->
+<div id="user-name-modal">
+  <div class="unm-card">
+    <h2>Welcome</h2>
+    <p>Please enter your name for activity logging. You'll only be asked once.</p>
+    <input type="text" id="unm-input" placeholder="Your Full Name" autocomplete="off" maxlength="60">
+    <button id="unm-save">Continue</button>
+  </div>
+</div>
+
+<!-- Admin panel (Faz 4) -->
+<div id="admin-panel">
+  <div class="admin-header">
+    <h2>📊 ACCESS LOG — Admin Panel</h2>
+    <span class="ah-stat" id="admin-last-update"></span>
+    <button id="admin-refresh">↻ Refresh</button>
+    <button id="admin-close">✕ Close</button>
+  </div>
+  <div class="admin-toolbar">
+    <input type="search" id="admin-search" placeholder="Search user, document, category...">
+    <select id="admin-filter-cat">
+      <option value="">All categories</option>
+    </select>
+    <select id="admin-filter-user">
+      <option value="">All users</option>
+    </select>
+    <span class="ah-count" id="admin-count">0 records</span>
+  </div>
+  <div class="admin-body" id="admin-body">
+    <div class="admin-loading">Loading logs...</div>
+  </div>
+</div>
+
+<!-- Preview overlay + panel (Faz 3) -->
+<div id="preview-overlay"></div>
+<aside id="preview-panel" aria-hidden="true">
+  <div class="preview-header">
+    <div class="pv-icon other" id="pv-icon">DOC</div>
+    <div class="preview-title-wrap">
+      <div class="preview-title" id="pv-title">—</div>
+      <div class="preview-meta" id="pv-meta"></div>
+    </div>
+    <div class="preview-actions">
+      <a class="pv-btn" id="pv-open-tab" href="#" target="_blank" rel="noopener" title="Open in new tab">↗ Open</a>
+      <a class="pv-btn pv-btn-primary" id="pv-download" href="#" target="_blank" rel="noopener" title="Download">↓ Download</a>
+      <button class="pv-btn pv-btn-icon" id="pv-close" title="Close (Esc)">✕</button>
+    </div>
+  </div>
+  <div class="preview-body" id="pv-body">
+    <div class="preview-empty" id="pv-empty">
+      <div class="pv-empty-icon">📄</div>
+      <div>Select a document to preview</div>
+    </div>
+  </div>
+</aside>
+
+<script>
+/* =============================================================
+   INLINE PREVIEW (Faz 3) — sag panel + iframe
+   ============================================================= */
+(function(){
+  const panel    = document.getElementById('preview-panel');
+  const overlay  = document.getElementById('preview-overlay');
+  const body     = document.getElementById('pv-body');
+  const titleEl  = document.getElementById('pv-title');
+  const metaEl   = document.getElementById('pv-meta');
+  const iconEl   = document.getElementById('pv-icon');
+  const openTab  = document.getElementById('pv-open-tab');
+  const dlBtn    = document.getElementById('pv-download');
+  const closeBtn = document.getElementById('pv-close');
+
+  if (!panel) return;
+
+  function _driveIdFromUrl(url) {
+    if (!url) return null;
+    // /file/d/{id}/  veya  ?id={id}  veya  /uc?...id={id}
+    let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (m) return m[1];
+    m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (m) return m[1];
+    return null;
+  }
+
+  function _typeFromIcon(iconClass) {
+    if (!iconClass) return 'other';
+    if (iconClass.includes('pdf')) return 'pdf';
+    if (iconClass.includes('docx')) return 'docx';
+    if (iconClass.includes('xlsx') || iconClass.includes('xls')) return 'xlsx';
+    return 'other';
+  }
+
+  function open(item) {
+    const titleNode = item.querySelector('.doc-title');
+    const metaNode  = item.querySelector('.doc-meta');
+    const iconNode  = item.querySelector('.doc-icon');
+    const linkNode  = item.querySelector('a.btn[href]');
+
+    if (!linkNode) return;
+    const url = linkNode.getAttribute('href') || '';
+    const id  = _driveIdFromUrl(url);
+
+    // Header guncelle
+    titleEl.textContent = titleNode ? titleNode.textContent.trim() : 'Document';
+    metaEl.textContent  = metaNode  ? metaNode.textContent.trim()  : '';
+    const type = _typeFromIcon(iconNode ? iconNode.className : '');
+    iconEl.className = 'pv-icon ' + type;
+    iconEl.textContent = type.toUpperCase();
+
+    // Action button'lar
+    const openUrl = id ? ('https://drive.google.com/file/d/' + id + '/view') : url;
+    openTab.href = openUrl;
+    dlBtn.href = url;
+
+    // Iframe yukle
+    body.innerHTML = '';
+    if (id) {
+      const loading = document.createElement('div');
+      loading.className = 'preview-loading';
+      loading.textContent = 'Loading preview...';
+      body.appendChild(loading);
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://drive.google.com/file/d/' + id + '/preview';
+      iframe.allow = 'autoplay';
+      iframe.addEventListener('load', () => {
+        if (loading.parentNode) loading.parentNode.removeChild(loading);
+      });
+      body.appendChild(iframe);
+    } else {
+      const empty = document.createElement('div');
+      empty.className = 'preview-empty';
+      empty.innerHTML = '<div class="pv-empty-icon">⚠️</div>' +
+                        '<div>This document does not support preview.<br>Try opening in a new tab.</div>';
+      body.appendChild(empty);
+    }
+
+    overlay.classList.add('open');
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    // Access log gonder (silent, fire-and-forget)
+    if (window.OPCO_LOG && typeof window.OPCO_LOG.send === 'function') {
+      const cat = _detectCategory(item);
+      window.OPCO_LOG.send({
+        category: cat,
+        doc_title: titleEl.textContent,
+        doc_id: id || '',
+      });
+    }
+  }
+
+  function _detectCategory(item) {
+    let p = item.closest('section.panel');
+    if (!p) return 'unknown';
+    const id = p.id || '';
+    if (id.startsWith('qms-')) return 'QMS / ' + id.replace('qms-', '').toUpperCase();
+    if (id.startsWith('project-')) return 'PROJECTS / ' + id.replace('project-', '').toUpperCase();
+    if (id.startsWith('library-')) return 'LIBRARY / ' + id.replace('library-', '').toUpperCase();
+    if (id.startsWith('skg-')) return 'PROJECTS / SKG / ' + id.replace('skg-', '').toUpperCase();
+    return id.toUpperCase();
+  }
+
+  function close() {
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    // Iframe temizle (yuk hafifletmek icin)
+    setTimeout(() => {
+      body.innerHTML = '<div class="preview-empty" id="pv-empty">' +
+                       '<div class="pv-empty-icon">📄</div>' +
+                       '<div>Select a document to preview</div></div>';
+    }, 250);
+  }
+
+  overlay.addEventListener('click', close);
+  closeBtn.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel.classList.contains('open')) close();
+  });
+
+  // Doc-info'ya tikla -> preview ac (Download butonu kendi davranisini korur)
+  document.addEventListener('click', (e) => {
+    const info = e.target.closest('.doc-info');
+    if (!info) return;
+    const item = info.closest('.doc-item');
+    if (!item) return;
+    e.preventDefault();
+    open(item);
+  });
+
+  window.OPCO_PREVIEW = { open, close };
+})();
+</script>
+
+<script>
+/* =============================================================
+   FILTER CHIPS (Faz 1) — runtime injection + filtering
+   ============================================================= */
+(function(){
+  const TYPE_FILTERS = [
+    { key: 'all',  label: 'All' },
+    { key: 'pdf',  label: 'PDF' },
+    { key: 'docx', label: 'DOCX' },
+    { key: 'xlsx', label: 'XLSX' },
+  ];
+
+  // Panel state map: panelId -> { type, status, query }
+  const _state = new Map();
+
+  function _stateFor(panelId) {
+    if (!_state.has(panelId)) _state.set(panelId, { type: 'all', query: '' });
+    return _state.get(panelId);
+  }
+
+  function _detectType(item) {
+    const icon = item.querySelector('.doc-icon');
+    if (!icon) return null;
+    if (icon.classList.contains('pdf'))  return 'pdf';
+    if (icon.classList.contains('docx')) return 'docx';
+    if (icon.classList.contains('xlsx')) return 'xlsx';
+    if (icon.classList.contains('xls'))  return 'xlsx';
+    // Fallback: text icerigi
+    const t = (icon.textContent || '').trim().toLowerCase();
+    if (t === 'pdf') return 'pdf';
+    if (t === 'docx' || t === 'doc') return 'docx';
+    if (t === 'xlsx' || t === 'xls') return 'xlsx';
+    return null;
+  }
+
+  function _itemText(item) {
+    const title = (item.querySelector('.doc-title') || {}).textContent || '';
+    const meta  = (item.querySelector('.doc-meta')  || {}).textContent || '';
+    return (title + ' ' + meta).toLowerCase();
+  }
+
+  function _shouldShow(item, st) {
+    if (st.type !== 'all') {
+      if (_detectType(item) !== st.type) return false;
+    }
+    if (st.query) {
+      if (_itemText(item).indexOf(st.query) === -1) return false;
+    }
+    return true;
+  }
+
+  function _applyFilter(panel) {
+    const st = _stateFor(panel.id);
+    const items = panel.querySelectorAll('.doc-item');
+    let visible = 0;
+    items.forEach(it => {
+      if (_shouldShow(it, st)) {
+        it.classList.remove('filter-hidden');
+        visible++;
+      } else {
+        it.classList.add('filter-hidden');
+      }
+    });
+    // Bos kalan subsection'lari da gizle
+    panel.querySelectorAll('.subsection').forEach(sub => {
+      const anyVisible = sub.querySelector('.doc-item:not(.filter-hidden)');
+      if (anyVisible) sub.classList.remove('filter-hidden-sub');
+      else sub.classList.add('filter-hidden-sub');
+    });
+    // Count badge guncelle
+    const bar = panel.querySelector('.filter-bar');
+    if (bar) {
+      const cnt = bar.querySelector('.fb-count');
+      if (cnt) cnt.textContent = visible + ' / ' + items.length;
+    }
+    return visible;
+  }
+
+  function _buildBar(panel) {
+    if (panel.querySelector('.filter-bar')) return; // zaten var
+    const items = panel.querySelectorAll('.doc-item');
+    if (items.length < 3) return; // 3'ten az dokuman varsa filter bar gereksiz
+
+    const bar = document.createElement('div');
+    bar.className = 'filter-bar';
+
+    const lbl = document.createElement('span');
+    lbl.className = 'fb-label';
+    lbl.textContent = 'Filter:';
+    bar.appendChild(lbl);
+
+    // Type chip'leri
+    TYPE_FILTERS.forEach(f => {
+      const chip = document.createElement('button');
+      chip.className = 'chip' + (f.key === 'all' ? ' active' : '');
+      chip.dataset.fb = 'type';
+      chip.dataset.fbValue = f.key;
+      chip.textContent = f.label;
+      chip.addEventListener('click', () => {
+        const st = _stateFor(panel.id);
+        st.type = f.key;
+        bar.querySelectorAll('[data-fb="type"]').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        _applyFilter(panel);
+      });
+      bar.appendChild(chip);
+    });
+
+    // Search input
+    const search = document.createElement('input');
+    search.type = 'search';
+    search.className = 'fb-search';
+    search.placeholder = 'Search in this section...';
+    let _t;
+    search.addEventListener('input', () => {
+      clearTimeout(_t);
+      _t = setTimeout(() => {
+        const st = _stateFor(panel.id);
+        st.query = search.value.trim().toLowerCase();
+        _applyFilter(panel);
+      }, 120);
+    });
+    bar.appendChild(search);
+
+    // Clear button
+    const clear = document.createElement('button');
+    clear.className = 'fb-clear';
+    clear.textContent = 'Clear';
+    clear.addEventListener('click', () => {
+      const st = _stateFor(panel.id);
+      st.type = 'all'; st.query = '';
+      bar.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      const allChip = bar.querySelector('[data-fb="type"][data-fb-value="all"]');
+      if (allChip) allChip.classList.add('active');
+      search.value = '';
+      _applyFilter(panel);
+    });
+    bar.appendChild(clear);
+
+    // Count
+    const cnt = document.createElement('span');
+    cnt.className = 'fb-count';
+    cnt.textContent = items.length + ' / ' + items.length;
+    bar.appendChild(cnt);
+
+    // Panel basina yerlestir (eger ilk eleman zaten subsection ise onun ustune)
+    panel.insertBefore(bar, panel.firstChild);
+  }
+
+  function injectFilterBars() {
+    // OVERVIEW (#home) ve placeholder panellerine ekleme
+    const SKIP_PANELS = new Set([
+      'home',
+      'projects-placeholder',
+      'project-empty',
+      'project-skg',
+      'project-htu',
+      'project-hpu',
+      'project-ppcl',
+    ]);
+    document.querySelectorAll('section.panel').forEach(p => {
+      if (SKIP_PANELS.has(p.id)) return;
+      _buildBar(p);
+    });
+  }
+
+  function init() {
+    injectFilterBars();
+    // Tab degisikliginde state korunur (panel kapanip acilirken filter'lar kalir)
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Disariya export — debug icin
+  window.OPCO_FILTERS = { _state, applyFilter: _applyFilter };
+})();
+</script>
+
+<script>
+/* =============================================================
+   ACCESS LOG (Faz 4) — user prompt + log sender + admin panel
+   ============================================================= */
+(function(){
+  // === KONFIGURASYON ===
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbVqk_OJ6qxfIgxKbUXZ6CWNAf0IZI9Y18SqKp7N1NR7Sw7cAzmhXSgkFiM6DSAZ3l6w/exec';
+  const USER_KEY = 'opco_portal_user_name';
+  const ADMIN_HASH = '#admin';
+
+  // === USER NAME PROMPT ===
+  function _getUserName() {
+    try { return localStorage.getItem(USER_KEY) || null; } catch(e) { return null; }
+  }
+  function _setUserName(name) {
+    try { localStorage.setItem(USER_KEY, name); } catch(e) {}
+  }
+  function _showNamePrompt() {
+    const modal = document.getElementById('user-name-modal');
+    const input = document.getElementById('unm-input');
+    const save  = document.getElementById('unm-save');
+    if (!modal || !input || !save) return;
+    modal.classList.add('open');
+    setTimeout(() => input.focus(), 100);
+    function commit() {
+      const v = input.value.trim();
+      if (v.length < 2) { input.focus(); return; }
+      _setUserName(v);
+      modal.classList.remove('open');
+    }
+    save.addEventListener('click', commit, { once: true });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') commit();
+    });
+  }
+  // Login (sifre ekrani) gectikten sonra goster — body.locked olmadiginda
+  function _checkAndPromptName() {
+    if (document.body.classList.contains('locked')) {
+      // Login henuz yapilmadi, bekle
+      setTimeout(_checkAndPromptName, 800);
+      return;
+    }
+    if (!_getUserName()) _showNamePrompt();
+  }
+
+  // === LOG SENDER ===
+  // sendBeacon kullaniyoruz — silent, async, sayfa kapansa bile gider
+  function sendLog(payload) {
+    const user = _getUserName() || 'anonymous';
+    const data = {
+      user: user,
+      category: payload.category || '',
+      doc_title: payload.doc_title || '',
+      doc_id: payload.doc_id || '',
+      user_agent: navigator.userAgent.slice(0, 200),
+    };
+    try {
+      const blob = new Blob([JSON.stringify(data)], { type: 'text/plain;charset=utf-8' });
+      // sendBeacon CORS sorunsuz, async
+      const ok = navigator.sendBeacon(APPS_SCRIPT_URL, blob);
+      if (!ok) {
+        // Fallback: fetch (no-cors mode)
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify(data),
+        }).catch(() => {});
+      }
+    } catch(e) {
+      // Silent fail
+    }
+  }
+
+  // === ADMIN PANEL ===
+  let _adminRows = [];
+  function _renderAdminTable(filterText, filterCat, filterUser) {
+    const body = document.getElementById('admin-body');
+    const cnt  = document.getElementById('admin-count');
+    if (!body || !cnt) return;
+
+    const ft = (filterText || '').toLowerCase();
+    const filtered = _adminRows.filter(r => {
+      // r = [timestamp, user, category, doc_title, doc_id, user_agent]
+      if (filterCat && r[2] !== filterCat) return false;
+      if (filterUser && r[1] !== filterUser) return false;
+      if (ft) {
+        const hay = ((r[1]||'') + ' ' + (r[2]||'') + ' ' + (r[3]||'')).toLowerCase();
+        if (hay.indexOf(ft) === -1) return false;
+      }
+      return true;
+    });
+
+    cnt.textContent = filtered.length + ' / ' + _adminRows.length + ' records';
+
+    if (filtered.length === 0) {
+      body.innerHTML = '<div class="admin-empty">No records found.</div>';
+      return;
+    }
+
+    let html = '<table class="admin-table"><thead><tr>'
+             + '<th>Time</th><th>User</th><th>Category</th><th>Document</th>'
+             + '</tr></thead><tbody>';
+    filtered.forEach(r => {
+      const time = _fmtTime(r[0]);
+      html += '<tr>'
+            + '<td class="col-time">' + _esc(time) + '</td>'
+            + '<td class="col-user">' + _esc(r[1] || '') + '</td>'
+            + '<td><span class="col-cat">' + _esc(r[2] || '—') + '</span></td>'
+            + '<td class="col-doc">' + _esc(r[3] || '') + '</td>'
+            + '</tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  function _fmtTime(iso) {
+    if (!iso) return '';
+    try {
+      const d = new Date(iso);
+      const pad = n => String(n).padStart(2, '0');
+      return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+           + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    } catch(e) { return iso; }
+  }
+  function _esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function _populateFilters() {
+    const catSel = document.getElementById('admin-filter-cat');
+    const userSel = document.getElementById('admin-filter-user');
+    if (!catSel || !userSel) return;
+    const cats = new Set(), users = new Set();
+    _adminRows.forEach(r => { if (r[2]) cats.add(r[2]); if (r[1]) users.add(r[1]); });
+    catSel.innerHTML = '<option value="">All categories</option>'
+                     + [...cats].sort().map(c => '<option>' + _esc(c) + '</option>').join('');
+    userSel.innerHTML = '<option value="">All users</option>'
+                     + [...users].sort().map(u => '<option>' + _esc(u) + '</option>').join('');
+  }
+
+  async function _loadAdminLogs(adminKey) {
+    const body = document.getElementById('admin-body');
+    body.innerHTML = '<div class="admin-loading">Loading logs...</div>';
+    try {
+      const url = APPS_SCRIPT_URL + '?key=' + encodeURIComponent(adminKey) + '&limit=200';
+      const res = await fetch(url);
+      const json = await res.json();
+      if (!json.ok) {
+        body.innerHTML = '<div class="admin-error">Error: ' + _esc(json.error || 'Invalid ADMIN_KEY or permission issue.') + '</div>';
+        return;
+      }
+      _adminRows = json.rows || [];
+      _populateFilters();
+      _renderAdminTable('', '', '');
+      const lu = document.getElementById('admin-last-update');
+      if (lu) lu.textContent = 'Updated: ' + _fmtTime(new Date().toISOString());
+    } catch(e) {
+      body.innerHTML = '<div class="admin-error">Network error: ' + _esc(String(e)) + '</div>';
+    }
+  }
+
+  function _openAdminPanel() {
+    let key;
+    try { key = sessionStorage.getItem('opco_admin_key'); } catch(e) {}
+    if (!key) {
+      key = window.prompt('Enter ADMIN_KEY:');
+      if (!key) return;
+      try { sessionStorage.setItem('opco_admin_key', key); } catch(e) {}
+    }
+    const panel = document.getElementById('admin-panel');
+    if (!panel) return;
+    panel.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    _loadAdminLogs(key);
+
+    // Event listeners
+    const search   = document.getElementById('admin-search');
+    const catSel   = document.getElementById('admin-filter-cat');
+    const userSel  = document.getElementById('admin-filter-user');
+    const refresh  = document.getElementById('admin-refresh');
+    const closeBtn = document.getElementById('admin-close');
+
+    function rerender() {
+      _renderAdminTable(search.value, catSel.value, userSel.value);
+    }
+    if (search) {
+      let t;
+      search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(rerender, 150); });
+    }
+    if (catSel)  catSel.addEventListener('change', rerender);
+    if (userSel) userSel.addEventListener('change', rerender);
+    if (refresh) refresh.addEventListener('click', () => _loadAdminLogs(key));
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      panel.classList.remove('open');
+      document.body.style.overflow = '';
+      // URL hash temizle
+      if (location.hash === ADMIN_HASH) {
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    });
+  }
+
+  // === INIT ===
+  function init() {
+    _checkAndPromptName();
+    // Hash check
+    if (location.hash === ADMIN_HASH) {
+      // Login bekleyebilir
+      const tryOpen = () => {
+        if (document.body.classList.contains('locked')) {
+          setTimeout(tryOpen, 600);
+        } else {
+          _openAdminPanel();
+        }
+      };
+      tryOpen();
+    }
+    // Hash degisirse
+    window.addEventListener('hashchange', () => {
+      if (location.hash === ADMIN_HASH) _openAdminPanel();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Expose
+  window.OPCO_LOG = {
+    send: sendLog,
+    getUser: _getUserName,
+    setUser: _setUserName,
+    openAdmin: _openAdminPanel,
+  };
+})();
 </script>
 </body>
 </html>
