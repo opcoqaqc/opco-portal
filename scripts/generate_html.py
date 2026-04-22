@@ -343,6 +343,35 @@ def build_library_block(category_id, label, prefix, all_rows):
 <!-- GEN-END: {category_id} -->'''
 
 
+def update_tab_counts(html, all_rows):
+    """Ana tab butonlarindaki <span class="count" data-count="X">N</span>
+    icindeki sayiyi Drive'daki gercek dosya toplamiyla degistirir.
+    """
+    COUNT_PREFIXES = {
+        'qms':      'OPCO Portal Documents/QMS/',
+        'projects': 'OPCO Portal Documents/PROJECTS/',
+        'library':  'OPCO Portal Documents/LIBRARY/',
+    }
+
+    def count_files(prefix):
+        return len([r for r in all_rows
+                    if r['type'] == 'file' and r['path'].startswith(prefix)])
+
+    def repl(match):
+        key = match.group(1)
+        prefix = COUNT_PREFIXES.get(key)
+        if prefix is None:
+            return match.group(0)
+        n = count_files(prefix)
+        return f'<span class="count" data-count="{key}">{n}</span>'
+
+    return re.sub(
+        r'<span class="count" data-count="([a-z0-9_-]+)">[^<]*</span>',
+        repl,
+        html,
+    )
+
+
 def update_html(html, panel_id, new_block):
     start = f'<!-- GEN-START: {panel_id} -->'
     end = f'<!-- GEN-END: {panel_id} -->'
@@ -396,6 +425,10 @@ def main():
         count = len([r for r in rows if r['type'] == 'file' and r['path'].startswith(prefix + '/')])
         print(f"  {category_id} ({label}) - {count} file")
         html = update_html(html, category_id, build_library_block(category_id, label, prefix, rows))
+
+    print()
+    print("Tab count'lari guncelleniyor...")
+    html = update_tab_counts(html, rows)
 
     if html == original:
         print("\nDegisiklik yok.")
