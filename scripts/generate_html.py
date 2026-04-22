@@ -46,6 +46,27 @@ PROJECTS = [
     ('project-ppcl', 'PPCL', 'OPCO Portal Documents/PROJECTS/PPCL'),
 ]
 
+# LIBRARY: her kategori (PQR/WPS/WQT) altinda 3 alt-klasor var (Pipeline/Piping/In-Service).
+# Bir GEN-START blok 3 panel uretir.
+LIBRARY_SECTIONS = [
+    ('library-pqr', 'PQR', 'OPCO Portal Documents/LIBRARY/PQR'),
+    ('library-wps', 'WPS', 'OPCO Portal Documents/LIBRARY/WPS'),
+    ('library-wqt', 'WQT', 'OPCO Portal Documents/LIBRARY/WQT'),
+]
+
+# Drive klasor adi -> panel suffix
+LIBRARY_SUB_SLUG = {
+    'PIPELINE':   'pipeline',
+    'PIPING':     'piping',
+    'IN-SERVICE': 'inservice',
+}
+
+LIBRARY_SUB_LABEL = {
+    'pipeline':  'Pipeline',
+    'piping':    'Piping',
+    'inservice': 'In-Service',
+}
+
 
 def load_csv():
     if not os.path.exists(CSV_FILE):
@@ -253,6 +274,75 @@ def build_panel(panel_id, label, prefix, all_rows):
 <!-- GEN-END: {panel_id} -->'''
 
 
+def _library_empty_panel(panel_id, header_label):
+    """LIBRARY alt klasoru bos ise gosterilecek panel."""
+    return f'''<section class="panel" id="{panel_id}">
+  <div class="section-header" style="text-align:center; padding: 80px 20px;">
+    <div style="font-size: 56px; line-height: 1; margin-bottom: 14px; opacity: 0.55;">&#128230;</div>
+    <h2 style="font-size: 22px; margin: 0;">{esc(header_label)} &middot; No documents yet</h2>
+    <p style="max-width: 560px; margin: 12px auto 0;">Documents will appear here once they are added to the library.</p>
+  </div>
+</section>'''
+
+
+def _library_filled_panel(panel_id, files):
+    """Dosyalari olan LIBRARY alt klasoru icin panel uret.
+    Dosyalar tek bir doc-list icinde ada gore listelenir (alt-grup yok).
+    """
+    files = sorted(files, key=lambda r: r['name'])
+    items_html = '\n'.join(render_file_item(r) for r in files)
+    return f'''<section class="panel" id="{panel_id}">
+  <div class="subsection">
+    <div class="doc-list">
+{items_html}
+    </div>
+  </div>
+</section>'''
+
+
+def build_library_block(category_id, label, prefix, all_rows):
+    """Bir LIBRARY kategorisi icin tam blok uret.
+    Bir GEN-START/END blok icinde 3 panel (pipeline/piping/inservice) doner.
+    """
+    prefix_slash = prefix + '/'
+
+    direct_subfolders = [r for r in all_rows
+                         if r['type'] == 'folder'
+                         and r['path'].startswith(prefix_slash)
+                         and r['path'].count('/') == prefix.count('/') + 1]
+
+    folder_by_slug = {}
+    for folder in direct_subfolders:
+        slug = LIBRARY_SUB_SLUG.get(folder['name'].upper())
+        if slug:
+            folder_by_slug[slug] = folder
+
+    panels = []
+    for slug in ('pipeline', 'piping', 'inservice'):
+        panel_id = f'{category_id}-{slug}'
+        sub_label = LIBRARY_SUB_LABEL[slug]
+        header_label = f'{label} &middot; {sub_label}'
+
+        folder = folder_by_slug.get(slug)
+        if folder is None:
+            panels.append(_library_empty_panel(panel_id, header_label))
+            continue
+
+        folder_prefix = folder['path'] + '/'
+        folder_files = [r for r in all_rows
+                        if r['type'] == 'file' and r['path'].startswith(folder_prefix)]
+
+        if not folder_files:
+            panels.append(_library_empty_panel(panel_id, header_label))
+        else:
+            panels.append(_library_filled_panel(panel_id, folder_files))
+
+    panels_html = '\n'.join(panels)
+    return f'''<!-- GEN-START: {category_id} -->
+{panels_html}
+<!-- GEN-END: {category_id} -->'''
+
+
 def update_html(html, panel_id, new_block):
     start = f'<!-- GEN-START: {panel_id} -->'
     end = f'<!-- GEN-END: {panel_id} -->'
@@ -299,6 +389,13 @@ def main():
         count = len([r for r in rows if r['type'] == 'file' and r['path'].startswith(prefix + '/')])
         print(f"  {panel_id} ({label}) - {count} file")
         html = update_html(html, panel_id, build_panel(panel_id, label, prefix, rows))
+
+    print()
+    print("LIBRARY:")
+    for category_id, label, prefix in LIBRARY_SECTIONS:
+        count = len([r for r in rows if r['type'] == 'file' and r['path'].startswith(prefix + '/')])
+        print(f"  {category_id} ({label}) - {count} file")
+        html = update_html(html, category_id, build_library_block(category_id, label, prefix, rows))
 
     if html == original:
         print("\nDegisiklik yok.")
