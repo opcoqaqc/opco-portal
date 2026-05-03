@@ -102,6 +102,48 @@ fs.writeFileSync(process.argv[4], result.getObfuscatedCode());
             return f.read()
 
 
+def strip_legacy_doc_portal_login(html: str) -> str:
+    """
+    Document Portal'in kendi gomuluk login overlay'ini kaldir.
+    Bizim auth guard zaten opcoportal.com kapisinda devrede, ikinci login gereksiz.
+
+    - <div id="login-overlay">...</div> blogunu siler
+    - body class="locked ..." -> "locked" kismini cikartir (icerik kilidi acilir)
+    - checkPassword / unlock JS bloklarini bozmamak adina dokunmuyoruz; cunku
+      onlar artik DOM'da olmayan elementlere bakacak ve sessizce no-op olacaklar.
+    """
+    # 1) Remove the login overlay div (multi-line, contains form, button, etc.)
+    new_html = re.sub(
+        r'<div id="login-overlay">.*?</div>\s*</div>',
+        '',
+        html,
+        count=1,
+        flags=re.DOTALL,
+    )
+
+    # 2) Strip "locked" class from body
+    def _body_repl(m):
+        body_open = m.group(0)
+        # Replace class attribute: remove "locked" token, keep others
+        def _class_repl(cm):
+            classes = cm.group(1).split()
+            classes = [c for c in classes if c != "locked"]
+            if classes:
+                return 'class="' + ' '.join(classes) + '"'
+            return ''
+        return re.sub(r'class="([^"]*)"', _class_repl, body_open)
+
+    new_html = re.sub(r'<body[^>]*>', _body_repl, new_html, count=1)
+
+    # 3) Disable the early "auto-unlock if session exists" check that checks for
+    # opco_portal_user (legacy session). Without our edit, it would call
+    # unlock() which references the now-removed login-overlay element. To be
+    # safe, we replace any "document.body.classList.add('locked')" calls with
+    # no-ops by simply leaving the JS — body has no 'locked' class so .remove
+    # is harmless and .add wont matter (we already stripped overlay HTML).
+    return new_html
+
+
 def obfuscate_guard_block(guard_html: str) -> str:
     """Obfuscate every <script>...</script> body inside the guard block."""
     def _sub(m):
@@ -127,7 +169,12 @@ def main():
     with open(AUTH_GUARD_FILE, encoding="utf-8") as f:
         guard = f.read()
 
-    print(f"Input HTML:  {len(html)} bytes")
+    # Strip Document Portal's built-in login (we use our own at the portal level)
+    pre = len(html)
+    html = strip_legacy_doc_portal_login(html)
+    post = len(html)
+    print(f"Stripped legacy login overlay: {pre - post} bytes removed")
+    print(f"Input HTML:  {len(html)} bytes (after legacy strip)")
     print(f"Auth guard:  {len(guard)} bytes (pre-obfuscation)")
 
     # Obfuscate the guard's <script>
