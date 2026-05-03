@@ -1,0 +1,124 @@
+<!-- ===== OPCO PORTAL AUTH GUARD ===== -->
+<style>
+  /* Hide page until auth verified — prevents content flash */
+  html.__opco_unauth body { visibility: hidden !important; }
+  #__opco_auth_topbar {
+    position: fixed;
+    top: 12px; right: 12px;
+    z-index: 99999;
+    display: none;
+    gap: 8px;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  #__opco_auth_topbar.shown { display: flex; }
+  #__opco_auth_topbar a, #__opco_auth_topbar button {
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.85);
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #5f5e5a;
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+  #__opco_auth_topbar a:hover, #__opco_auth_topbar button:hover {
+    color: #2c2c2a;
+    border-color: rgba(0,0,0,0.25);
+  }
+  body.dark #__opco_auth_topbar a, body.dark #__opco_auth_topbar button {
+    background: rgba(42,42,40,0.85);
+    color: #9e9c96;
+    border-color: rgba(255,255,255,0.12);
+  }
+  body.dark #__opco_auth_topbar a:hover, body.dark #__opco_auth_topbar button:hover {
+    color: #e8e6e0;
+    border-color: rgba(255,255,255,0.25);
+  }
+  #__opco_auth_user {
+    font-size: 11px;
+    color: #9e9c96;
+    margin-right: 6px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+</style>
+
+<div id="__opco_auth_topbar">
+  <a id="__opco_portal_back" href="./" title="Back to portal">← Portal</a>
+  <button id="__opco_auth_logout" type="button" title="Sign out">
+    <span id="__opco_auth_user"></span>Sign out
+  </button>
+</div>
+
+<script>
+(function(){
+  // Hide content until verified
+  document.documentElement.classList.add("__opco_unauth");
+
+  var __OPCO_USERS = {
+    "o.cavdar": "dc08de9f5c97f8ac1f1b22b0e424fb9f2511cb910737da2b4df0b8e21618af7d",
+    "r.khald": "9ee4cf6d646918849f195b51c5a515cee6b0cb336d9564261ff403b575f3f3f7",
+    "a.hajhasan": "d18217901818217a5cdeabe0bdadb7cbd2d3b2541bd8aa2f79c1841283763d2f",
+    "m.alahmad": "3f3242a14999ec7d15a2f5fe1426b26103d1a2d8fbe6feb8e83b3c8077518adf",
+    "a.mando": "7296967f2469f120d0679b3e77b66d2db6d15ca77a8636ed2dcd4f9318afcb06",
+    "m.barazi": "bb0ebe6a1e0898e317a0c1efe99883109d889f4d8e1d0a73abcb7aa10a0eaf81",
+    "o.barazi": "f665e31c54aa2b161a3254d6021c2faeba9ad7323beea39c352c1d288fb4626c",
+    "a.barazi": "a6e770fe55f59dbb6a88506ad0fb517e38c5d95ffff56045ea951cf833e42f56",
+    "a.dlshad": "b255f24bd8c2aafc6d589f0bc687a3e1346c95d5dd1063b1421d28f3d34ad7ff",
+    "y.ramadhan": "9b3e57232dbb921c0f86a064027fee1728a11e72abe5413a4b922ad3706a5a14",
+    "a.taha": "b574e3dffeebecafb7466903221bb29bdb54378787491ee4f3d9730cd90b1af4",
+    "e.saday": "178d7dfa70f54b8dff4ccd8df194843e46ade2189768d523cfdf4d8c7e59b5f2"
+  };
+  var __OPCO_SESSION_KEY = "__opco_session_v1";
+
+  function readSession(){
+    try {
+      var raw = localStorage.getItem(__OPCO_SESSION_KEY);
+      if (!raw) return null;
+      var s = JSON.parse(raw);
+      if (!s || !s.u || !s.exp) return null;
+      if (Date.now() > s.exp) { localStorage.removeItem(__OPCO_SESSION_KEY); return null; }
+      if (!__OPCO_USERS[s.u]) { localStorage.removeItem(__OPCO_SESSION_KEY); return null; }
+      return s;
+    } catch(e) { return null; }
+  }
+
+  var sess = readSession();
+  if (!sess) {
+    // No session — bounce to portal
+    location.replace("./");
+    return;
+  }
+
+  // Authorized — reveal page once DOM ready
+  function reveal(){
+    document.documentElement.classList.remove("__opco_unauth");
+    var topbar = document.getElementById("__opco_auth_topbar");
+    var lo = document.getElementById("__opco_auth_logout");
+    var ul = document.getElementById("__opco_auth_user");
+    if (topbar) topbar.classList.add("shown");
+    if (ul) ul.textContent = sess.u + " \u00b7 ";
+    if (lo) lo.addEventListener("click", function(){
+      try { localStorage.removeItem(__OPCO_SESSION_KEY); } catch(e){}
+      location.replace("./");
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", reveal);
+  } else {
+    reveal();
+  }
+})();
+</script>
+<!-- ===== END AUTH GUARD ===== -->
