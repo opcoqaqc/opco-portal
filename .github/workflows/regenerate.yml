@@ -1,17 +1,21 @@
 name: Regenerate Portal from Drive
 
-# Her 15 dakikada bir Google Drive'i tara, index.html'i yeniden uret,
-# degisiklik varsa main branch'a commit et.
-# GitHub Pages main branch'tan serve ettigi icin push = deploy.
+# Her 15 dakikada bir Google Drive'i tara, documents.html'i yeniden uret,
+# Netlify'a deploy et (full site).
+# Repo'da static/ klasoru icindeki index.html ve toolkit.html korunur.
 
 on:
   schedule:
-    # cron: minute hour day month weekday  (UTC)
     - cron: '*/15 * * * *'
-  # Actions -> "Regenerate Portal from Drive" -> "Run workflow" ile manuel de tetiklenir
   workflow_dispatch:
+  # static/ klasorunde dosya degisirse de tetikle (manuel update)
+  push:
+    branches: [main]
+    paths:
+      - 'static/**'
+      - 'scripts/**'
+      - '.github/workflows/regenerate.yml'
 
-# Workflow'un repo'ya yazma izni gerek
 permissions:
   contents: write
 
@@ -28,7 +32,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Commit'leyebilmek icin default GITHUB_TOKEN ile checkout
           persist-credentials: true
           fetch-depth: 1
 
@@ -53,28 +56,64 @@ jobs:
         run: |
           python scripts/collect_drive_links.py
 
-      - name: Regenerate index.html
+      - name: Regenerate index.html (Drive-driven)
         env:
           HTML_FILE: index.html
           CSV_FILE: drive_links.csv
         run: |
           python scripts/generate_html.py
 
-      - name: Commit & push if changed
+      - name: Install javascript-obfuscator (Node)
+        run: |
+          npm install -g javascript-obfuscator
+
+      - name: Inject auth guard + favicon -> documents.html
+        env:
+          INPUT_HTML: index.html
+          OUTPUT_HTML: documents.html
+          AUTH_GUARD_FILE: scripts/auth_guard.html
+          FAVICON_FILE: scripts/favicon.txt
+        run: |
+          # Make globally-installed javascript-obfuscator available to Node subprocess
+          export NODE_PATH=$(npm root -g)
+          python scripts/inject_auth.py
+
+      - name: Assemble deploy package
+        run: |
+          set -e
+          mkdir -p deploy_pkg
+          # Static files (managed manually in repo): index.html, toolkit.html
+          cp -v static/index.html   deploy_pkg/index.html
+          cp -v static/toolkit.html deploy_pkg/toolkit.html
+          # Auto-generated file from Drive
+          cp -v documents.html      deploy_pkg/documents.html
+          echo "--- Deploy package ---"
+          ls -la deploy_pkg/
+
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          npm install -g netlify-cli@latest
+          netlify deploy \
+            --dir=deploy_pkg \
+            --site=$NETLIFY_SITE_ID \
+            --auth=$NETLIFY_AUTH_TOKEN \
+            --prod \
+            --message="auto: documents from Drive ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+
+      - name: Commit regenerated index.html (backup)
+        # GitHub Pages icin de guncel tut. Istemezsen sil.
         run: |
           set -e
           git config user.name  "opco-portal-bot"
           git config user.email "opco-portal-bot@users.noreply.github.com"
-
-          # Sadece index.html'i stage et. drive_links.csv isteyene bakacak cache,
-          # repo'da tutmamak daha temiz. Ihtiyac olursa bu satiri git add drive_links.csv olarak degistir.
           git add index.html
-
           if git diff --cached --quiet; then
-            echo "No changes — nothing to commit."
+            echo "No changes to index.html — skipping commit."
             exit 0
           fi
-
           TIMESTAMP="$(date -u '+%Y-%m-%d %H:%M UTC')"
           git commit -m "auto: regenerate portal ($TIMESTAMP)"
           git push
