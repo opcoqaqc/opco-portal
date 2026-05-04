@@ -2,62 +2,110 @@
 <style>
   /* Hide page until auth verified — prevents content flash */
   html.__opco_unauth body { visibility: hidden !important; }
+
+  /* Default: fixed overlay (fallback if .header-meta is not found) */
   #__opco_auth_topbar {
     position: fixed;
-    top: 12px; right: 12px;
+    top: 14px; right: 14px;
     z-index: 99999;
     display: none;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
+    padding: 5px 6px 5px 14px;
+    background: rgba(42,42,40,0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 12px;
+    color: #e8e6e0;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
-  #__opco_auth_topbar.shown { display: flex; }
-  #__opco_auth_topbar a, #__opco_auth_topbar button {
-    padding: 6px 10px;
-    background: rgba(255,255,255,0.85);
-    border: 1px solid rgba(0,0,0,0.12);
-    border-radius: 8px;
-    font-size: 11px;
+  #__opco_auth_topbar.shown { display: inline-flex; }
+
+  /* Inline mode: when relocated into .header-meta — flow with theme-toggle */
+  #__opco_auth_topbar.__opco_inline {
+    position: static !important;
+    top: auto !important; right: auto !important;
+    z-index: auto !important;
+    background: transparent !important;
+    border: 1px solid rgba(0,0,0,0.10) !important;
+    color: inherit !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  body.dark #__opco_auth_topbar.__opco_inline {
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+
+  /* Internal pieces */
+  #__opco_portal_back {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    color: inherit;
+    text-decoration: none;
     font-weight: 600;
-    color: #5f5e5a;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 11px;
+    border-radius: 999px;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  #__opco_portal_back:hover { background: rgba(0,0,0,0.06); }
+  body.dark #__opco_portal_back:hover { background: rgba(255,255,255,0.08); }
+
+  #__opco_auth_topbar .__opco_sep {
+    width: 1px; height: 16px;
+    background: currentColor;
+    opacity: 0.20;
+    flex-shrink: 0;
+  }
+
+  #__opco_auth_user {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    padding: 0 2px;
+  }
+
+  #__opco_auth_logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: inherit;
     cursor: pointer;
     font-family: inherit;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    text-decoration: none;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transition: color 0.15s, border-color 0.15s;
-    white-space: nowrap;
-    line-height: 1.2;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
   }
-  #__opco_auth_topbar a:hover, #__opco_auth_topbar button:hover {
-    color: #2c2c2a;
-    border-color: rgba(0,0,0,0.25);
+  #__opco_auth_logout svg { width: 14px; height: 14px; display: block; }
+  #__opco_auth_logout:hover {
+    background: rgba(230, 57, 70, 0.14);
+    color: #e63946;
   }
-  body.dark #__opco_auth_topbar a, body.dark #__opco_auth_topbar button {
-    background: rgba(42,42,40,0.85);
-    color: #9e9c96;
-    border-color: rgba(255,255,255,0.12);
-  }
-  body.dark #__opco_auth_topbar a:hover, body.dark #__opco_auth_topbar button:hover {
-    color: #e8e6e0;
-    border-color: rgba(255,255,255,0.25);
-  }
-  #__opco_auth_user {
-    font-size: 11px;
-    color: #9e9c96;
-    margin-right: 6px;
-    text-transform: none;
-    letter-spacing: 0;
-    font-weight: 400;
+  body.dark #__opco_auth_logout:hover {
+    background: rgba(255, 90, 100, 0.18);
+    color: #ff5a64;
   }
 </style>
 
 <div id="__opco_auth_topbar">
-  <a id="__opco_portal_back" href="./" title="Back to portal">← Portal</a>
-  <button id="__opco_auth_logout" type="button" title="Sign out">
-    <span id="__opco_auth_user"></span>Sign out
+  <a id="__opco_portal_back" href="./" title="Back to portal">&larr; Portal</a>
+  <span class="__opco_sep" aria-hidden="true"></span>
+  <span id="__opco_auth_user">user</span>
+  <button id="__opco_auth_logout" type="button" title="Sign out" aria-label="Sign out">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+      <polyline points="16 17 21 12 16 7"></polyline>
+      <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
   </button>
 </div>
 
@@ -107,10 +155,27 @@
     var topbar = document.getElementById("__opco_auth_topbar");
     var lo = document.getElementById("__opco_auth_logout");
     var ul = document.getElementById("__opco_auth_user");
+
+    // Try to relocate the topbar INTO the page's existing header so it
+    // participates in the flex layout instead of overlapping it.
+    var meta = document.querySelector(".header-meta");
+    if (topbar && meta) {
+      topbar.classList.add("__opco_inline");
+      meta.appendChild(topbar);
+    }
+
     if (topbar) topbar.classList.add("shown");
-    if (ul) ul.textContent = sess.u + " \u00b7 ";
+    if (ul) ul.textContent = sess.u;
     if (lo) lo.addEventListener("click", function(){
       try { localStorage.removeItem(__OPCO_SESSION_KEY); } catch(e){}
+      // Also clear legacy keys so the doc-portal's own session check is reset
+      try {
+        localStorage.removeItem("opco_portal_authenticated");
+        sessionStorage.removeItem("opco_portal_authenticated");
+        localStorage.removeItem("opco_portal_user");
+        sessionStorage.removeItem("opco_portal_user");
+        localStorage.removeItem("opco_portal_user_name");
+      } catch(e){}
       location.replace("./");
     });
   }

@@ -109,6 +109,9 @@ def strip_legacy_doc_portal_login(html: str) -> str:
 
     - <div id="login-overlay">...</div> blogunu siler
     - body class="locked ..." -> "locked" kismini cikartir (icerik kilidi acilir)
+    - <button id="logout-btn"> butonunu siler — auth guard kendi sign-out'unu
+      header'a injecte ediyor; native button bozuk (sadece eski legacy key'leri
+      siliyor, __opco_session_v1'i temizlemiyor) ve ust sag kosede cakisiyordu.
     - checkPassword / unlock JS bloklarini bozmamak adina dokunmuyoruz; cunku
       onlar artik DOM'da olmayan elementlere bakacak ve sessizce no-op olacaklar.
     """
@@ -135,7 +138,18 @@ def strip_legacy_doc_portal_login(html: str) -> str:
 
     new_html = re.sub(r'<body[^>]*>', _body_repl, new_html, count=1)
 
-    # 3) Disable the early "auto-unlock if session exists" check that checks for
+    # 3) Remove the native page-header logout button (id="logout-btn"). The
+    # auth guard relocates its own chip into .header-meta, so this button is
+    # both redundant and visually conflicting.
+    new_html = re.sub(
+        r'<button[^>]*\bid="logout-btn"[^>]*>.*?</button>',
+        '',
+        new_html,
+        count=1,
+        flags=re.DOTALL,
+    )
+
+    # 4) Disable the early "auto-unlock if session exists" check that checks for
     # opco_portal_user (legacy session). Without our edit, it would call
     # unlock() which references the now-removed login-overlay element. To be
     # safe, we replace any "document.body.classList.add('locked')" calls with
