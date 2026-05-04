@@ -52,12 +52,16 @@ PROJECTS = [
 SKG_BASE = 'OPCO Portal Documents/PROJECTS/SKG'
 # Token (uppercase, prefix stripped) -> SKG group key
 SKG_GROUP_TOKENS = {
-    'PROCEDURES':    'procedures',
-    'ITP':           'itp',
-    'REGISTERS':     'registers',
-    'PLANS':         'plans',
-    'SPECIFICATION': 'specifications',
-    'SPECIFICATIONS':'specifications',
+    'PROCEDURES':              'procedures',
+    'ITP':                     'itp',
+    'ITPS':                    'itp',
+    'INSPECTION & TEST PLANS': 'itp',
+    'INSPECTION AND TEST PLANS': 'itp',
+    'INSPECTION TEST PLANS':   'itp',
+    'REGISTERS':               'registers',
+    'PLANS':                   'plans',
+    'SPECIFICATION':           'specifications',
+    'SPECIFICATIONS':          'specifications',
 }
 # Discipline letter in the document code (OPCO-SKG-261-QCD-XX-PRO-...)
 # -> discipline panel suffix. Used only as a last-resort fallback for files
