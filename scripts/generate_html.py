@@ -76,23 +76,28 @@ SKG_DISCIPLINE_LETTERS = {
 # PROCEDURES/ -> discipline panel suffix. Drives the General/Pipeline/...
 # bucketing so files are placed by *folder*, not by parsing the filename.
 SKG_PROCEDURE_FOLDER_SLUGS = {
-    'GENERAL':                   'general',
-    'PIPELINE':                  'pipeline',
-    'PIPING':                    'piping',
-    'CIVIL':                     'civil',
-    'CIVIL EQUIPMENT':           'civil',
-    'CIVIL & EQUIPMENT':         'civil',
-    'CIVIL/EQUIPMENT':           'civil',
-    'EQUIPMENT':                 'civil',
-    'STRUCTURAL':                'civil',
-    'ELECTRICAL':                'electrical',
-    'INSTRUMENT':                'instrument',
-    'INSTRUMENTATION':           'instrument',
-    'INSTRUMENT TELECOM':        'instrument',
-    'INSTRUMENT & TELECOM':      'instrument',
-    'INSTRUMENTATION TELECOM':   'instrument',
-    'INSTRUMENTATION & TELECOM': 'instrument',
-    'TELECOM':                   'instrument',
+    'GENERAL':                                    'general',
+    'PIPELINE':                                   'pipeline',
+    'PIPING':                                     'piping',
+    'CIVIL':                                      'civil',
+    'CIVIL EQUIPMENT':                            'civil',
+    'CIVIL & EQUIPMENT':                          'civil',
+    'CIVIL/EQUIPMENT':                            'civil',
+    'EQUIPMENT':                                  'civil',
+    'EQUIPMENT INSTALLATION':                     'civil',
+    'STRUCTURAL':                                 'civil',
+    'CIVIL-STRUCTURAL-EQUIPMENT INSTALLATION':    'civil',
+    'CIVIL STRUCTURAL EQUIPMENT INSTALLATION':    'civil',
+    'CIVIL/STRUCTURAL/EQUIPMENT INSTALLATION':    'civil',
+    'CIVIL & STRUCTURAL & EQUIPMENT INSTALLATION':'civil',
+    'ELECTRICAL':                                 'electrical',
+    'INSTRUMENT':                                 'instrument',
+    'INSTRUMENTATION':                            'instrument',
+    'INSTRUMENT TELECOM':                         'instrument',
+    'INSTRUMENT & TELECOM':                       'instrument',
+    'INSTRUMENTATION TELECOM':                    'instrument',
+    'INSTRUMENTATION & TELECOM':                  'instrument',
+    'TELECOM':                                    'instrument',
 }
 # Header copy for each SKG panel.
 SKG_PANEL_INFO = {
@@ -502,6 +507,10 @@ def build_skg_blocks(all_rows):
                     and r['path'].startswith(proc_prefix)
                     and r['path'].count('/') == proc_depth):
                 token = re.sub(r'^\d+[-.\s]+', '', r['name']).strip().upper()
+                # Drive folders are named like "0-GENERAL PROCEDURES",
+                # "1-PIPELINE PROCEDURES" — strip the trailing word so the
+                # slug map can key on the discipline alone.
+                token = re.sub(r'\s+PROCEDURES?\s*$', '', token).strip()
                 slug = SKG_PROCEDURE_FOLDER_SLUGS.get(token)
                 if slug:
                     discipline_subfolder_paths[r['path'] + '/'] = slug
