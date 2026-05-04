@@ -170,13 +170,13 @@
 
   .portal_cards {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 280px));
-    gap: 20px;
-    max-width: 600px;
+    grid-template-columns: repeat(2, minmax(0, 260px));
+    gap: 18px;
+    max-width: 560px;
     width: 100%;
   }
-  @media (max-width: 600px) {
-    .portal_cards { grid-template-columns: 1fr; }
+  @media (max-width: 480px) {
+    .portal_cards { grid-template-columns: 1fr; max-width: 360px; }
   }
   .portal_card {
     background: #ffffff;
@@ -356,6 +356,27 @@
       </div>
       <div class="portal_card_title">Toolkit</div>
       <div class="portal_card_desc">Calculators &amp; references</div>
+    </a>
+    <a href="welders.html" class="portal_card">
+      <div class="portal_card_icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <div class="portal_card_title">Welder Qualification</div>
+      <div class="portal_card_desc">Certifications &amp; logs</div>
+    </a>
+    <a href="projects.html" class="portal_card">
+      <div class="portal_card_icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+      </div>
+      <div class="portal_card_title">Ongoing Projects</div>
+      <div class="portal_card_desc">Live progress &amp; repair rates</div>
     </a>
   </div>
 </div>

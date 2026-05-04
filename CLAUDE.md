@@ -4,10 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A static-site **document portal** for OPCO's Quality Management System. The deployed site has three pages:
+A static-site **document portal** for OPCO's Quality Management System. The deployed site has these pages:
 
 - `index.html` — the **portal landing / login** page (manually maintained in `static/index.html`)
-- `toolkit.html` — auxiliary tool page (manually maintained in `static/toolkit.html`)
+- `toolkit.html` — calculators page (manually maintained in `static/toolkit.html`). Loads `toolkit.bundle.js` (the giant minified JS, extracted out of the HTML so subpages can share it).
+- `welders.html` — Welder Qualification, derived from `toolkit.html` by `scripts/build_subpages.py` (or by the inline regen logic): same DOM but tab nav hidden, `welders` tab pre-activated.
+- `projects.html` — Ongoing Projects dashboard, derived the same way (`projects` tab pre-activated). Source of truth for both subpages is `static/toolkit.html`; if you change toolkit, regenerate the subpages.
 - `documents.html` — **auto-generated** every 15 min from Google Drive contents
 
 There is no backend. Auth is fully client-side: a password-hash table lives in `scripts/auth_guard.html` and is checked in the user's browser. Sessions are stored in `localStorage` under `__opco_session_v1`.

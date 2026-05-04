@@ -78,15 +78,22 @@ jobs:
           export NODE_PATH=$(npm root -g)
           python scripts/inject_auth.py
 
+      - name: Regenerate toolkit subpages
+        run: |
+          python scripts/build_subpages.py
+
       - name: Assemble deploy package
         run: |
           set -e
           mkdir -p deploy_pkg
-          # Static files (managed manually in repo): index.html, toolkit.html
-          cp -v static/index.html   deploy_pkg/index.html
-          cp -v static/toolkit.html deploy_pkg/toolkit.html
+          # Static files (managed manually in repo)
+          cp -v static/index.html        deploy_pkg/index.html
+          cp -v static/toolkit.html      deploy_pkg/toolkit.html
+          cp -v static/toolkit.bundle.js deploy_pkg/toolkit.bundle.js
+          cp -v static/projects.html     deploy_pkg/projects.html
+          cp -v static/welders.html      deploy_pkg/welders.html
           # Auto-generated file from Drive
-          cp -v documents.html      deploy_pkg/documents.html
+          cp -v documents.html           deploy_pkg/documents.html
           echo "--- Deploy package ---"
           ls -la deploy_pkg/
 
