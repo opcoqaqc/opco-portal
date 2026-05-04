@@ -197,12 +197,97 @@ def extract_doc_code(name):
     return m.group(1) if m else ''
 
 
-def render_file_item(row):
-    icon_class, icon_label = mime_to_icon(row.get('mime', ''), row['name'])
-    title = pretty_filename(row['name'])
-    code = extract_doc_code(row['name'])
-    meta = code if code else row['name']
-    url = drive_download_url(row['id'])
+_FORMAT_LABEL = {
+    'pdf':  'PDF',
+    'docx': 'Word',
+    'xlsx': 'Excel',
+}
+_FORMAT_PRIORITY = {'pdf': 0, 'docx': 1, 'xlsx': 2, 'other': 3}
+
+
+def _file_format(name):
+    """Return ('pdf'|'docx'|'xlsx'|'other', icon_class). Mirrors mime_to_icon
+    but keyed off filename only (we already have the name when grouping)."""
+    n = name.lower()
+    if n.endswith('.pdf'):
+        return 'pdf'
+    if n.endswith(('.xlsx', '.xls')):
+        return 'xlsx'
+    if n.endswith(('.docx', '.doc')):
+        return 'docx'
+    return 'other'
+
+
+def _basename_key(name):
+    return re.sub(r'\.[A-Za-z0-9]+$', '', name).strip().lower()
+
+
+def count_distinct_documents(files):
+    """Count files as documents, treating multiple format versions of the
+    same document (e.g. .pdf + .docx in the same folder) as one. Used so the
+    sidebar/tab counters match the number of grouped rows actually rendered."""
+    seen = set()
+    for r in files:
+        if r.get('type', 'file') != 'file':
+            continue
+        parent = r['path'].rsplit('/', 1)[0] if '/' in r['path'] else ''
+        seen.add((parent, _basename_key(r['name'])))
+    return len(seen)
+
+
+def group_files_by_basename(files):
+    """Group files sharing the same name (extension stripped) so PDF + Word
+    versions of the same document render as one row with multiple format
+    buttons. Preserves the order of the input list (group position = first
+    appearance of any member). Within each group, files are sorted by
+    format priority (PDF first, then Word, then Excel)."""
+    grouped = {}
+    order = []
+    for r in files:
+        key = _basename_key(r['name'])
+        if key not in grouped:
+            grouped[key] = []
+            order.append(key)
+        grouped[key].append(r)
+    out = []
+    for key in order:
+        members = sorted(
+            grouped[key],
+            key=lambda r: _FORMAT_PRIORITY.get(_file_format(r['name']), 99),
+        )
+        out.append(members)
+    return out
+
+
+def render_file_group(group):
+    """Render one row for a list of files that share a base name. If there is
+    only one file, the action is a single 'Download' button (existing
+    behaviour). With multiple, each gets a format-labeled button (PDF / Word
+    / Excel). The icon uses the highest-priority format in the group (PDF >
+    Word > Excel)."""
+    primary = group[0]
+    icon_class, icon_label = mime_to_icon(primary.get('mime', ''), primary['name'])
+    title = pretty_filename(primary['name'])
+    code = extract_doc_code(primary['name'])
+    meta = code if code else primary['name']
+
+    if len(group) == 1:
+        buttons_html = (
+            f'<a class="btn btn-primary" href="{drive_download_url(primary["id"])}" '
+            f'target="_blank" rel="noopener">Download</a>'
+        )
+    else:
+        parts = []
+        for r in group:
+            fmt = _file_format(r['name'])
+            label = _FORMAT_LABEL.get(fmt, 'Download')
+            parts.append(
+                f'<a class="btn btn-primary" '
+                f'href="{drive_download_url(r["id"])}" '
+                f'target="_blank" rel="noopener">{label}</a>'
+            )
+        buttons_html = '\n          '.join(parts)
+
     return f'''      <div class="doc-item">
         <div class="doc-icon {icon_class}">{icon_label}</div>
         <div class="doc-info">
@@ -210,19 +295,26 @@ def render_file_item(row):
           <div class="doc-meta">{esc(meta)}</div>
         </div>
         <div class="doc-action">
-          <a class="btn btn-primary" href="{url}" target="_blank" rel="noopener">Download</a>
+          {buttons_html}
         </div>
       </div>'''
+
+
+def render_file_item(row):
+    """Backwards-compatible single-file renderer; equivalent to rendering a
+    one-item group. Kept so any direct callers still work."""
+    return render_file_group([row])
 
 
 def build_group(group_title, files, data_qms_group=None):
     if not files:
         return ''
     files = sorted(files, key=lambda r: r['name'])
-    items_html = '\n'.join(render_file_item(r) for r in files)
+    groups = group_files_by_basename(files)
+    items_html = '\n'.join(render_file_group(g) for g in groups)
     data_attr = f' data-qms-group="{esc(data_qms_group)}"' if data_qms_group else ''
     return f'''  <div class="subsection"{data_attr}>
-    <div class="subsection-title">{esc(group_title)} <span style="opacity:0.6; font-weight:500; font-size:13px;">({len(files)})</span></div>
+    <div class="subsection-title">{esc(group_title)} <span style="opacity:0.6; font-weight:500; font-size:13px;">({len(groups)})</span></div>
     <div class="doc-list">
 {items_html}
     </div>
@@ -381,7 +473,7 @@ def _library_filled_panel(panel_id, files):
     Dosyalar tek bir doc-list icinde ada gore listelenir (alt-grup yok).
     """
     files = sorted(files, key=lambda r: r['name'])
-    items_html = '\n'.join(render_file_item(r) for r in files)
+    items_html = '\n'.join(render_file_group(g) for g in group_files_by_basename(files))
     return f'''<section class="panel" id="{panel_id}">
   <div class="subsection">
     <div class="doc-list">
@@ -453,7 +545,8 @@ def _skg_panel_block(panel_id, files):
   </div>'''
     else:
         files = sorted(files, key=lambda r: r['name'])
-        items = '\n'.join(render_file_item(r) for r in files)
+        items = '\n'.join(render_file_group(g)
+                          for g in group_files_by_basename(files))
         body = f'''  <div class="doc-list">
 {items}
   </div>'''
@@ -497,7 +590,7 @@ def build_skg_blocks(all_rows):
 
     procedures_folder = folder_by_token.get('procedures')
     procedures_files = files_under(procedures_folder)
-    counts['procedures'] = len(procedures_files)
+    counts['procedures'] = count_distinct_documents(procedures_files)
 
     # Map each immediate subfolder of PROCEDURES/ to a discipline panel slug
     # (path -> slug). Anything outside these subfolders is bucketed by the
@@ -535,7 +628,7 @@ def build_skg_blocks(all_rows):
 
     for group_key, panel_id in SKG_OTHER_PANELS:
         files = files_under(folder_by_token.get(group_key))
-        counts[group_key] = len(files)
+        counts[group_key] = count_distinct_documents(files)
         blocks[panel_id] = _skg_panel_block(panel_id, files)
 
     blocks['__counts__'] = counts
@@ -555,8 +648,9 @@ def update_tab_counts(html, all_rows, skg_counts=None):
     skg_counts = skg_counts or {}
 
     def count_files(prefix):
-        return len([r for r in all_rows
-                    if r['type'] == 'file' and r['path'].startswith(prefix)])
+        files = [r for r in all_rows
+                 if r['type'] == 'file' and r['path'].startswith(prefix)]
+        return count_distinct_documents(files)
 
     def repl(match):
         key = match.group(1)
