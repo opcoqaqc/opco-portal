@@ -4125,4 +4125,17 @@
     renderProjectOSBL();
   }
 
+  // Subpages (welders.html, projects.html) start with a non-default tab marked
+  // .active, so the click handler that triggers init never fires. Run init for
+  // whichever tab is active at load time.
+  var activeOnLoad = document.querySelector('.tab.active');
+  if (activeOnLoad) {
+    var initName = activeOnLoad.getAttribute('data-tab');
+    if (initName === 'welders') initWelders();
+    if (initName === 'projects') initProjects();
+    if (initName === 'heatinput') initHeatInput();
+    if (initName === 'ceph') initCePh();
+    if (initName === 'torque') initTorque();
+  }
+
 })();
