@@ -94,21 +94,21 @@ jobs:
           cp -v static/welders.html      deploy_pkg/welders.html
           # Auto-generated file from Drive
           cp -v documents.html           deploy_pkg/documents.html
+          # Custom domain for GitHub Pages
+          echo "opcoportal.com" > deploy_pkg/CNAME
           echo "--- Deploy package ---"
           ls -la deploy_pkg/
 
-      - name: Deploy to Netlify
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        run: |
-          npm install -g netlify-cli@latest
-          netlify deploy \
-            --dir=deploy_pkg \
-            --site=$NETLIFY_SITE_ID \
-            --auth=$NETLIFY_AUTH_TOKEN \
-            --prod \
-            --message="auto: documents from Drive ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy_pkg
+          publish_branch: gh-pages
+          user_name: opco-portal-bot
+          user_email: opco-portal-bot@users.noreply.github.com
+          commit_message: "auto: deploy portal from ${{ github.sha }}"
+          cname: opcoportal.com
 
       - name: Commit regenerated index.html (backup)
         # GitHub Pages icin de guncel tut. Istemezsen sil.
