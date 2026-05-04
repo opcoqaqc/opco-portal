@@ -60,7 +60,8 @@ SKG_GROUP_TOKENS = {
     'SPECIFICATIONS':'specifications',
 }
 # Discipline letter in the document code (OPCO-SKG-261-QCD-XX-PRO-...)
-# -> discipline panel suffix.
+# -> discipline panel suffix. Used only as a last-resort fallback for files
+# stored directly under PROCEDURES/ (i.e. not in any discipline subfolder).
 SKG_DISCIPLINE_LETTERS = {
     'GN': 'general',
     'PL': 'pipeline',
@@ -70,6 +71,28 @@ SKG_DISCIPLINE_LETTERS = {
     'EQ': 'civil',
     'EL': 'electrical',
     'IN': 'instrument',
+}
+# Drive subfolder name (numeric prefix stripped, uppercased) under
+# PROCEDURES/ -> discipline panel suffix. Drives the General/Pipeline/...
+# bucketing so files are placed by *folder*, not by parsing the filename.
+SKG_PROCEDURE_FOLDER_SLUGS = {
+    'GENERAL':                   'general',
+    'PIPELINE':                  'pipeline',
+    'PIPING':                    'piping',
+    'CIVIL':                     'civil',
+    'CIVIL EQUIPMENT':           'civil',
+    'CIVIL & EQUIPMENT':         'civil',
+    'CIVIL/EQUIPMENT':           'civil',
+    'EQUIPMENT':                 'civil',
+    'STRUCTURAL':                'civil',
+    'ELECTRICAL':                'electrical',
+    'INSTRUMENT':                'instrument',
+    'INSTRUMENTATION':           'instrument',
+    'INSTRUMENT TELECOM':        'instrument',
+    'INSTRUMENT & TELECOM':      'instrument',
+    'INSTRUMENTATION TELECOM':   'instrument',
+    'INSTRUMENTATION & TELECOM': 'instrument',
+    'TELECOM':                   'instrument',
 }
 # Header copy for each SKG panel.
 SKG_PANEL_INFO = {
@@ -463,12 +486,36 @@ def build_skg_blocks(all_rows):
 
     counts = {}
 
-    procedures_files = files_under(folder_by_token.get('procedures'))
+    procedures_folder = folder_by_token.get('procedures')
+    procedures_files = files_under(procedures_folder)
     counts['procedures'] = len(procedures_files)
+
+    # Map each immediate subfolder of PROCEDURES/ to a discipline panel slug
+    # (path -> slug). Anything outside these subfolders is bucketed by the
+    # filename regex, falling back to 'general' for unrecognised codes.
+    discipline_subfolder_paths = {}
+    if procedures_folder is not None:
+        proc_prefix = procedures_folder['path'] + '/'
+        proc_depth = procedures_folder['path'].count('/') + 1
+        for r in all_rows:
+            if (r['type'] == 'folder'
+                    and r['path'].startswith(proc_prefix)
+                    and r['path'].count('/') == proc_depth):
+                token = re.sub(r'^\d+[-.\s]+', '', r['name']).strip().upper()
+                slug = SKG_PROCEDURE_FOLDER_SLUGS.get(token)
+                if slug:
+                    discipline_subfolder_paths[r['path'] + '/'] = slug
+
     by_discipline = defaultdict(list)
     for f in procedures_files:
-        disc = _skg_discipline_for(f['name']) or 'general'
-        by_discipline[disc].append(f)
+        slug = None
+        for sub_prefix, sub_slug in discipline_subfolder_paths.items():
+            if f['path'].startswith(sub_prefix):
+                slug = sub_slug
+                break
+        if slug is None:
+            slug = _skg_discipline_for(f['name']) or 'general'
+        by_discipline[slug].append(f)
     for panel_id in SKG_DISCIPLINE_PANELS:
         slug = panel_id.replace('skg-', '')
         blocks[panel_id] = _skg_panel_block(panel_id, by_discipline.get(slug, []))
