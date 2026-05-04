@@ -43,14 +43,13 @@ def final_rt_verdict(rt, rs):
         return "ACC"
     if rt == "REJ":
         return "REJ"
-    if rt == "RS":
-        # Reshoot requested — verdict depends on the after-repair result.
+    if rt in ("RS", "RT"):
+        # Reshoot or RT-pending: verdict depends on the after-repair result.
         if rs == "ACC":
             return "ACC"
         if rs == "REJ":
             return "REJ"
-        return None  # not yet reshot
-    # 'RT' (waiting for RT to happen) and any other / empty value: pending.
+        return None  # not yet reshot / not yet final
     return None
 
 
