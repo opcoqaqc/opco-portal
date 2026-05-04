@@ -2574,12 +2574,13 @@
   </div>
   <!-- Project dept/group bar: projects-bar'in ALTINDA render edilir (HTU/HPU icin) -->
   <div class="sub-tabs-inner sub-tabs-level2" id="project-dept-groups" style="display:none;"></div>
-  <!-- SKG grup bar'i: Procedures / ITPs / Registers / Plans -->
+  <!-- SKG grup bar'i: Procedures / ITPs / Registers / Plans / Specifications -->
   <div class="sub-tabs-inner sub-tabs-level2" id="skg-groups" style="display:none;">
-    <button class="sub-tab-btn group-btn" id="skg-group-procedures" onclick="selectSkgGroup('procedures')">Procedures <span class="count">49</span></button>
-    <button class="sub-tab-btn group-btn" id="skg-group-itp" onclick="selectSkgGroup('itp')">ITPs <span class="count">7</span></button>
-    <button class="sub-tab-btn group-btn" id="skg-group-registers" onclick="selectSkgGroup('registers')">Registers <span class="count">4</span></button>
-    <button class="sub-tab-btn group-btn" id="skg-group-plans" onclick="selectSkgGroup('plans')">Plans <span class="count">1</span></button>
+    <button class="sub-tab-btn group-btn" id="skg-group-procedures" onclick="selectSkgGroup('procedures')">Procedures <span class="count" data-count="skg-procedures">49</span></button>
+    <button class="sub-tab-btn group-btn" id="skg-group-itp" onclick="selectSkgGroup('itp')">ITPs <span class="count" data-count="skg-itp">7</span></button>
+    <button class="sub-tab-btn group-btn" id="skg-group-registers" onclick="selectSkgGroup('registers')">Registers <span class="count" data-count="skg-registers">4</span></button>
+    <button class="sub-tab-btn group-btn" id="skg-group-plans" onclick="selectSkgGroup('plans')">Plans <span class="count" data-count="skg-plans">1</span></button>
+    <button class="sub-tab-btn group-btn" id="skg-group-specifications" onclick="selectSkgGroup('specifications')">Specifications <span class="count" data-count="skg-specifications">0</span></button>
   </div>
   <!-- SKG Procedures disiplin alt bar'i (3. seviye) -->
   <div class="sub-tabs-inner sub-tabs-level3" id="skg-subtabs" style="display:none;">
@@ -7700,7 +7701,7 @@
 </section>
 <!-- GEN-END: library-wqt -->
 
-<!-- SKG General -->
+<!-- GEN-START: skg-general -->
 <section class="panel" id="skg-general">
   <div class="section-header">
     <h2>SKG-261 — General Procedures</h2>
@@ -7808,8 +7809,9 @@
     </div>
   </div>
 </section>
+<!-- GEN-END: skg-general -->
 
-<!-- SKG Pipeline -->
+<!-- GEN-START: skg-pipeline -->
 <section class="panel" id="skg-pipeline">
   <div class="section-header">
     <h2>SKG-261 — Pipeline Procedures</h2>
@@ -7836,8 +7838,9 @@
     <div class="doc-item"><div class="doc-icon docx">DOCX</div><div class="doc-info"><div class="doc-title">PL-PRO-017 · Pin Brazing Installation Procedure</div><div class="doc-meta">OPCO-SKG-261-QCD-PL-PRO-017</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1WxvSeuQRfGPieWwzko3awh1MKWPUTo_F">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-pipeline -->
 
-<!-- SKG Piping -->
+<!-- GEN-START: skg-piping -->
 <section class="panel" id="skg-piping">
   <div class="section-header">
     <h2>SKG-261 — Piping Procedures</h2>
@@ -7854,8 +7857,9 @@
     <div class="doc-item"><div class="doc-icon docx">DOCX</div><div class="doc-info"><div class="doc-title">PI-PRO-007 · Piping Painting and Coating</div><div class="doc-meta">OPCO-SKG-261-QCD-PI-PRO-007</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1py_sJeVoe3hYEwaYDC4Fj8g3WfOWHBoS">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-piping -->
 
-<!-- SKG Civil & Equipment -->
+<!-- GEN-START: skg-civil -->
 <section class="panel" id="skg-civil">
   <div class="section-header">
     <h2>SKG-261 — Civil, Structural &amp; Equipment Installation</h2>
@@ -7870,8 +7874,9 @@
     <div class="doc-item"><div class="doc-icon docx">DOCX</div><div class="doc-info"><div class="doc-title">CS-PRO-004 · Anchor Bolt Installation and Grouting</div><div class="doc-meta">OPCO-SKG-261-QCD-CS-PRO-004</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1zbl6OG1zS57nevY027xjCCRHkSHc0B7R">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-civil -->
 
-<!-- SKG Electrical -->
+<!-- GEN-START: skg-electrical -->
 <section class="panel" id="skg-electrical">
   <div class="section-header">
     <h2>SKG-261 — Electrical Procedures</h2>
@@ -7887,8 +7892,9 @@
     <div class="doc-item"><div class="doc-icon docx">DOCX</div><div class="doc-info"><div class="doc-title">EL-PRO-006 · Functional Testing and Loop Checks</div><div class="doc-meta">OPCO-SKG-261-QCD-EL-PRO-006</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1N7_XwmcFlD_2oNbazpC5fnj8Vv6cV-GT">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-electrical -->
 
-<!-- SKG Instrument -->
+<!-- GEN-START: skg-instrument -->
 <section class="panel" id="skg-instrument">
   <div class="section-header">
     <h2>SKG-261 — Instrumentation &amp; Telecom Procedures</h2>
@@ -7904,8 +7910,9 @@
     <div class="doc-item"><div class="doc-icon docx">DOCX</div><div class="doc-info"><div class="doc-title">IN-PRO-006 · Telecom System Installation and Testing</div><div class="doc-meta">OPCO-SKG-261-QCD-IN-PRO-006</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1GgGT9rv0WOXLe30eWhbPvwfsQ1WmyPo2">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-instrument -->
 
-<!-- SKG ITPs -->
+<!-- GEN-START: skg-itp -->
 <section class="panel" id="skg-itp">
   <div class="section-header">
     <h2>SKG-261 — Inspection &amp; Test Plans</h2>
@@ -7922,8 +7929,9 @@
     <div class="doc-item"><div class="doc-icon xlsx">XLSX</div><div class="doc-info"><div class="doc-title">CP-ITP-001 · Camp Construction Works</div><div class="doc-meta">OPCO-SKG-261-QCD-CP-ITP-001</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=12bn3o0TcwWWbLkb3ugmiFdh9rqgxk5gG">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-itp -->
 
-<!-- SKG Registers -->
+<!-- GEN-START: skg-registers -->
 <section class="panel" id="skg-registers">
   <div class="section-header">
     <h2>SKG-261 — Registers</h2>
@@ -7937,8 +7945,9 @@
     <div class="doc-item"><div class="doc-icon xlsx">XLSX</div><div class="doc-info"><div class="doc-title">REG-004 · Welding Consumable Register</div><div class="doc-meta">OPCO-SKG-261-QCD-GN-REG-004</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1ScejcJXiChV5g75L04NUxaZ_b1DBTmVc">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-registers -->
 
-<!-- SKG Others -->
+<!-- GEN-START: skg-others -->
 <section class="panel" id="skg-others">
   <div class="section-header">
     <h2>SKG-261 — Plans</h2>
@@ -7949,6 +7958,20 @@
     <div class="doc-item"><div class="doc-icon docx">DOCX</div><div class="doc-info"><div class="doc-title">PLN-001 · Construction Quality Plan</div><div class="doc-meta">OPCO-SKG-261-QCD-00-PLN-001</div></div><div class="doc-action"><a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1NBeD6HP5A9ZFb4dV26zuN04iclGWpG-N">Download</a></div></div>
   </div>
 </section>
+<!-- GEN-END: skg-others -->
+
+<!-- GEN-START: skg-specifications -->
+<section class="panel" id="skg-specifications">
+  <div class="section-header">
+    <h2>SKG-261 — Specifications</h2>
+    <p>Technical and project specifications.</p>
+  </div>
+  <div class="section-header" style="text-align:center; padding: 60px 20px;">
+    <div style="font-size: 48px; line-height: 1; margin-bottom: 12px; opacity: 0.55;">&#128230;</div>
+    <p>No documents yet.</p>
+  </div>
+</section>
+<!-- GEN-END: skg-specifications -->
 
 </main>
 
@@ -7962,7 +7985,7 @@
   // Tab switching (multi-tier navigation)
   // ======================================
   const SKG_DISCIPLINE_TABS = ['skg-general','skg-pipeline','skg-piping','skg-civil','skg-electrical','skg-instrument'];
-  const SKG_GROUP_TABS = ['skg-itp','skg-registers','skg-others']; // ITPs, Registers, Plans
+  const SKG_GROUP_TABS = ['skg-itp','skg-registers','skg-others','skg-specifications']; // ITPs, Registers, Plans, Specifications
   const SKG_TABS = SKG_DISCIPLINE_TABS.concat(SKG_GROUP_TABS);
 
   function isSkgTab(tabId) { return SKG_TABS.indexOf(tabId) !== -1; }
@@ -7972,7 +7995,8 @@
   const TAB_TO_GROUP = {
     'skg-itp': 'itp',
     'skg-registers': 'registers',
-    'skg-others': 'plans'
+    'skg-others': 'plans',
+    'skg-specifications': 'specifications'
   };
 
   function switchTab(tabId) {
@@ -8594,7 +8618,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Procedures / ITPs / Registers / Plans secimi
+  // Procedures / ITPs / Registers / Plans / Specifications secimi
   function selectSkgGroup(group) {
     if (group === 'procedures') {
       // Disiplin bar'ini ac, ilk disiplin (General) panelini goster
@@ -8605,6 +8629,8 @@
       switchTab('skg-registers');
     } else if (group === 'plans') {
       switchTab('skg-others');
+    } else if (group === 'specifications') {
+      switchTab('skg-specifications');
     }
   }
 
@@ -8639,7 +8665,8 @@
     'skg-instrument': 'SKG · Instrument & Telecom',
     'skg-itp': 'SKG · ITPs',
     'skg-registers': 'SKG · Registers',
-    'skg-others': 'SKG · Plans'
+    'skg-others': 'SKG · Plans',
+    'skg-specifications': 'SKG · Specifications'
   };
 
   let _searchIndex = null;
@@ -8984,7 +9011,7 @@
   function updateOverviewStats() {
     try {
       const QMS_PANELS = ['qms-qcd','qms-hse','qms-adm','qms-hrd','qms-whs','qms-prd','qms-pcd','qms-fnd','qms-com'];
-      const SKG_PANELS = ['skg-general','skg-pipeline','skg-piping','skg-civil','skg-electrical','skg-instrument','skg-itp','skg-registers','skg-others'];
+      const SKG_PANELS = ['skg-general','skg-pipeline','skg-piping','skg-civil','skg-electrical','skg-instrument','skg-itp','skg-registers','skg-others','skg-specifications'];
       const PROJ_EXTRA = ['project-htu','project-hpu','project-ppcl'];
       // LIBRARY: PQR/WPS/WQT × Pipeline/Piping/In-Service = 9 panel
       const LIBRARY_PANELS = [
@@ -9002,7 +9029,7 @@
         const c = countDocs(id);
         skgTotal += c;
         // ITPs / Registers disiplin disindaki ana disiplinler
-        if (c > 0 && id !== 'skg-itp' && id !== 'skg-registers' && id !== 'skg-others') skgDisc++;
+        if (c > 0 && id !== 'skg-itp' && id !== 'skg-registers' && id !== 'skg-others' && id !== 'skg-specifications') skgDisc++;
       });
 
       let projTotal = skgTotal;
@@ -9195,9 +9222,10 @@
       // SKG Procedures = tum disiplin panellerinin toplami
       const skgProceduresPanels = ['skg-general','skg-pipeline','skg-piping','skg-civil','skg-electrical','skg-instrument'];
       setCount('skg-group-procedures', sumPanels(skgProceduresPanels));
-      setCount('skg-group-itp',        sumPanels(['skg-itp']));
-      setCount('skg-group-registers',  sumPanels(['skg-registers']));
-      setCount('skg-group-plans',      sumPanels(['skg-others']));
+      setCount('skg-group-itp',            sumPanels(['skg-itp']));
+      setCount('skg-group-registers',      sumPanels(['skg-registers']));
+      setCount('skg-group-plans',          sumPanels(['skg-others']));
+      setCount('skg-group-specifications', sumPanels(['skg-specifications']));
 
       // --- SKG disiplin 3. seviye bar (General / Pipeline / ...) ---
       document.querySelectorAll('#skg-subtabs .sub-tab-btn').forEach(btn => {
@@ -9210,7 +9238,7 @@
 
       // --- Projects sub-bar: SKG/HTU/HPU/PPCL butonlarindaki toplam ---
       // SKG toplam = tum SKG panellerinin doc sayisi
-      const skgAllPanels = [...skgProceduresPanels, 'skg-itp', 'skg-registers', 'skg-others'];
+      const skgAllPanels = [...skgProceduresPanels, 'skg-itp', 'skg-registers', 'skg-others', 'skg-specifications'];
       setCount('project-skg-btn',  sumPanels(skgAllPanels));
       setCount('project-htu-btn',  sumPanels(['project-htu']));
       setCount('project-hpu-btn',  sumPanels(['project-hpu']));

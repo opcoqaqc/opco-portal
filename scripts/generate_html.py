@@ -46,6 +46,65 @@ PROJECTS = [
     ('project-ppcl', 'PPCL', 'OPCO Portal Documents/PROJECTS/PPCL'),
 ]
 
+# SKG-261 has its own multi-tier panel structure.
+# Top-level Drive folders under PROJECTS/SKG/ are recognised by the token
+# remaining after stripping a numeric prefix like "1-", "2-", etc.
+SKG_BASE = 'OPCO Portal Documents/PROJECTS/SKG'
+# Token (uppercase, prefix stripped) -> SKG group key
+SKG_GROUP_TOKENS = {
+    'PROCEDURES':    'procedures',
+    'ITP':           'itp',
+    'REGISTERS':     'registers',
+    'PLANS':         'plans',
+    'SPECIFICATION': 'specifications',
+    'SPECIFICATIONS':'specifications',
+}
+# Discipline letter in the document code (OPCO-SKG-261-QCD-XX-PRO-...)
+# -> discipline panel suffix.
+SKG_DISCIPLINE_LETTERS = {
+    'GN': 'general',
+    'PL': 'pipeline',
+    'PI': 'piping',
+    'CS': 'civil',
+    'CP': 'civil',
+    'EQ': 'civil',
+    'EL': 'electrical',
+    'IN': 'instrument',
+}
+# Header copy for each SKG panel.
+SKG_PANEL_INFO = {
+    'skg-general':        ('SKG-261 — General Procedures',
+                           'General field procedures applicable to all disciplines.'),
+    'skg-pipeline':       ('SKG-261 — Pipeline Procedures',
+                           'Procedures specific to pipeline construction and welding.'),
+    'skg-piping':         ('SKG-261 — Piping Procedures',
+                           'Procedures specific to piping construction and welding.'),
+    'skg-civil':          ('SKG-261 — Civil, Structural & Equipment Installation',
+                           'Civil, structural, and equipment installation procedures.'),
+    'skg-electrical':     ('SKG-261 — Electrical Procedures',
+                           'Electrical works procedures.'),
+    'skg-instrument':     ('SKG-261 — Instrumentation & Telecom Procedures',
+                           'Instrumentation & telecom procedures.'),
+    'skg-itp':            ('SKG-261 — Inspection & Test Plans',
+                           'Inspection and test plans for the SKG-261 project.'),
+    'skg-registers':      ('SKG-261 — Registers',
+                           'Registers and trackers for the SKG-261 project.'),
+    'skg-others':         ('SKG-261 — Plans',
+                           'Construction Quality Plan for the SKG-261 project.'),
+    'skg-specifications': ('SKG-261 — Specifications',
+                           'Technical and project specifications.'),
+}
+SKG_DISCIPLINE_PANELS = [
+    'skg-general', 'skg-pipeline', 'skg-piping',
+    'skg-civil', 'skg-electrical', 'skg-instrument',
+]
+SKG_OTHER_PANELS = [
+    ('itp',            'skg-itp'),
+    ('registers',      'skg-registers'),
+    ('plans',          'skg-others'),
+    ('specifications', 'skg-specifications'),
+]
+
 # LIBRARY: her kategori (PQR/WPS/WQT) altinda 3 alt-klasor var (Pipeline/Piping/In-Service).
 # Bir GEN-START blok 3 panel uretir.
 LIBRARY_SECTIONS = [
@@ -343,15 +402,97 @@ def build_library_block(category_id, label, prefix, all_rows):
 <!-- GEN-END: {category_id} -->'''
 
 
-def update_tab_counts(html, all_rows):
+def _skg_discipline_for(filename):
+    """Return SKG discipline panel suffix (e.g. 'general') for a doc filename
+    by parsing the discipline letter group in the OPCO doc code, or None."""
+    m = re.search(r'-(GN|PL|PI|CS|CP|EQ|EL|IN)-(?:PRO|ITP|REG|PLN|SPC|TSC)-',
+                  filename, re.IGNORECASE)
+    if not m:
+        return None
+    return SKG_DISCIPLINE_LETTERS.get(m.group(1).upper())
+
+
+def _skg_panel_block(panel_id, files):
+    header_label, description = SKG_PANEL_INFO[panel_id]
+    if not files:
+        body = '''  <div class="section-header" style="text-align:center; padding: 60px 20px;">
+    <div style="font-size: 48px; line-height: 1; margin-bottom: 12px; opacity: 0.55;">&#128230;</div>
+    <p>No documents yet.</p>
+  </div>'''
+    else:
+        files = sorted(files, key=lambda r: r['name'])
+        items = '\n'.join(render_file_item(r) for r in files)
+        body = f'''  <div class="doc-list">
+{items}
+  </div>'''
+    desc_html = f'    <p>{esc(description)}</p>\n' if description else ''
+    return f'''<!-- GEN-START: {panel_id} -->
+<section class="panel" id="{panel_id}">
+  <div class="section-header">
+    <h2>{esc(header_label)}</h2>
+{desc_html}  </div>
+{body}
+</section>
+<!-- GEN-END: {panel_id} -->'''
+
+
+def build_skg_blocks(all_rows):
+    """Build all SKG panel blocks. Returns dict: panel_id -> rendered block, plus
+    per-group file counts under key '__counts__'."""
+    blocks = {}
+
+    skg_root_slash = SKG_BASE + '/'
+    direct_subfolders = [r for r in all_rows
+                         if r['type'] == 'folder'
+                         and r['path'].startswith(skg_root_slash)
+                         and r['path'].count('/') == SKG_BASE.count('/') + 1]
+
+    folder_by_token = {}
+    for f in direct_subfolders:
+        token = re.sub(r'^\d+[-.\s]+', '', f['name']).strip().upper()
+        group_key = SKG_GROUP_TOKENS.get(token)
+        if group_key:
+            folder_by_token[group_key] = f
+
+    def files_under(folder_row):
+        if folder_row is None:
+            return []
+        prefix = folder_row['path'] + '/'
+        return [r for r in all_rows
+                if r['type'] == 'file' and r['path'].startswith(prefix)]
+
+    counts = {}
+
+    procedures_files = files_under(folder_by_token.get('procedures'))
+    counts['procedures'] = len(procedures_files)
+    by_discipline = defaultdict(list)
+    for f in procedures_files:
+        disc = _skg_discipline_for(f['name']) or 'general'
+        by_discipline[disc].append(f)
+    for panel_id in SKG_DISCIPLINE_PANELS:
+        slug = panel_id.replace('skg-', '')
+        blocks[panel_id] = _skg_panel_block(panel_id, by_discipline.get(slug, []))
+
+    for group_key, panel_id in SKG_OTHER_PANELS:
+        files = files_under(folder_by_token.get(group_key))
+        counts[group_key] = len(files)
+        blocks[panel_id] = _skg_panel_block(panel_id, files)
+
+    blocks['__counts__'] = counts
+    return blocks
+
+
+def update_tab_counts(html, all_rows, skg_counts=None):
     """Ana tab butonlarindaki <span class="count" data-count="X">N</span>
     icindeki sayiyi Drive'daki gercek dosya toplamiyla degistirir.
+    SKG group bar count'lari icin skg_counts dict (group_key -> int) verilir.
     """
     COUNT_PREFIXES = {
         'qms':      'OPCO Portal Documents/QMS/',
         'projects': 'OPCO Portal Documents/PROJECTS/',
         'library':  'OPCO Portal Documents/LIBRARY/',
     }
+    skg_counts = skg_counts or {}
 
     def count_files(prefix):
         return len([r for r in all_rows
@@ -359,6 +500,12 @@ def update_tab_counts(html, all_rows):
 
     def repl(match):
         key = match.group(1)
+        if key.startswith('skg-'):
+            group_key = key[len('skg-'):]
+            n = skg_counts.get(group_key)
+            if n is None:
+                return match.group(0)
+            return f'<span class="count" data-count="{key}">{n}</span>'
         prefix = COUNT_PREFIXES.get(key)
         if prefix is None:
             return match.group(0)
@@ -427,8 +574,18 @@ def main():
         html = update_html(html, category_id, build_library_block(category_id, label, prefix, rows))
 
     print()
+    print("SKG-261:")
+    skg_blocks = build_skg_blocks(rows)
+    skg_counts = skg_blocks.pop('__counts__', {})
+    for panel_id, block in skg_blocks.items():
+        print(f"  {panel_id}")
+        html = update_html(html, panel_id, block)
+    for group_key, n in skg_counts.items():
+        print(f"  group {group_key}: {n} file")
+
+    print()
     print("Tab count'lari guncelleniyor...")
-    html = update_tab_counts(html, rows)
+    html = update_tab_counts(html, rows, skg_counts=skg_counts)
 
     if html == original:
         print("\nDegisiklik yok.")
