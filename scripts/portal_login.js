@@ -65,12 +65,21 @@
     return s;
   }
 
+  function applyDarkTheme() {
+    // Dark mode is the default for the portal landing.
+    if (document.body) document.body.classList.add('dark');
+    var ov = $('__opco_auth_overlay');
+    if (ov) ov.classList.add('dark');
+  }
+
   function showOverlay() {
+    applyDarkTheme();
     var ov = $('__opco_auth_overlay');
     if (ov) ov.style.display = 'flex';
-    var topbar = $('__opco_auth_topbar');
-    if (topbar) topbar.classList.remove('shown');
-    document.documentElement.classList.add('__opco_unauth');
+    var screen = $('portal_screen');
+    if (screen) screen.classList.remove('shown');
+    var logout = $('__opco_auth_logout');
+    if (logout) logout.style.display = 'none';
     document.body && document.body.classList.add('__opco_no_scroll');
     setTimeout(function () {
       var u = $('__opco_auth_username');
@@ -79,9 +88,9 @@
   }
 
   function hideOverlay(username) {
+    applyDarkTheme();
     var ov = $('__opco_auth_overlay');
     if (ov) ov.style.display = 'none';
-    document.documentElement.classList.remove('__opco_unauth');
     document.body && document.body.classList.remove('__opco_no_scroll');
     var label = $('__opco_auth_user_label') || $('__opco_auth_user');
     if (label) label.textContent = username;
@@ -89,8 +98,8 @@
     if (portalName) portalName.textContent = username;
     var logout = $('__opco_auth_logout');
     if (logout) logout.style.display = 'inline-flex';
-    var topbar = $('__opco_auth_topbar');
-    if (topbar) topbar.classList.add('shown');
+    var screen = $('portal_screen');
+    if (screen) screen.classList.add('shown');
   }
 
   function showError(msg) {
