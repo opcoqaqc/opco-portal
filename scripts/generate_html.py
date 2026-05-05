@@ -205,6 +205,73 @@ _FORMAT_LABEL = {
 _FORMAT_PRIORITY = {'pdf': 0, 'docx': 1, 'xlsx': 2, 'other': 3}
 
 
+# SVG glyph used inside the neutral-gray multi-format badge. Keyed by the
+# 2-4 letter doc-type prefix that appears in OPCO codes (e.g. ...-PRO-001).
+# Style: 24x24 viewBox, fill=none stroke=currentColor (parent CSS sets white).
+# Keep stroke-width at 1.7 so glyphs read clearly at the 28px render size.
+_TYPE_GLYPHS = {
+    # Procedures — clipboard with checkmark
+    'PRO': '<rect x="5" y="4" width="14" height="17" rx="1.5"/><path d="M9 4v-1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M8.5 11.5l2 2 4-4.5"/><path d="M9 16.5h6"/>',
+    # Forms — page with input field
+    'FRM': '<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 8h8"/><rect x="8" y="10.5" width="8" height="3" rx="0.5"/><path d="M8 17.5h5"/>',
+    # Log Sheets — gridded table
+    'LGS': '<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 9.5h16M4 14h16M10 5v14"/>',
+    # Inspection & Test Plans — magnifier on document
+    'ITP': '<rect x="4" y="3" width="11" height="17" rx="1.5"/><circle cx="15.5" cy="15.5" r="4"/><path d="M18.5 18.5L21 21"/>',
+    # Registers — bulleted list
+    'REG': '<rect x="4" y="3" width="16" height="18" rx="1.5"/><circle cx="7.5" cy="8" r="0.7" fill="currentColor"/><circle cx="7.5" cy="12" r="0.7" fill="currentColor"/><circle cx="7.5" cy="16" r="0.7" fill="currentColor"/><path d="M10 8h7M10 12h7M10 16h5"/>',
+    # Manuals — open book
+    'MAN': '<path d="M12 6v15"/><path d="M12 6c-1.5-2-4-2.5-7-2v14c3-0.5 5.5 0 7 2"/><path d="M12 6c1.5-2 4-2.5 7-2v14c-3-0.5-5.5 0-7 2"/>',
+    # Plans / Schedules grid — blueprint
+    'PLN': '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.5h18M3 15h18M9 4v16M15 4v16"/>',
+    # Charts — bar chart
+    'CHR': '<path d="M3 20h18"/><path d="M6 20v-7" stroke-width="2.4"/><path d="M11 20v-12" stroke-width="2.4"/><path d="M16 20v-5" stroke-width="2.4"/><path d="M21 20v-9" stroke-width="2.4"/>',
+    # Reports — chart on a document
+    'RPT': '<rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8.5 17V13M12.5 17V9.5M16.5 17V11.5"/>',
+    # Letters — envelope
+    'LTR': '<rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3.5 7l8.5 6 8.5-6"/>',
+    # Certificates — ribbon medal
+    'CER': '<circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7"/>',
+    # Agreements / Contracts — page with signature line
+    'AGR': '<rect x="4" y="3" width="13" height="18" rx="1.5"/><path d="M7 8h7M7 12h7"/><path d="M7 16.5c2-1 4-1 6 0"/><path d="M16 17l3-3 3 3-3 3z"/>',
+    # Policies — shield
+    'PLY': '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+    # Schedules — calendar
+    'SCH': '<rect x="4" y="6" width="16" height="14" rx="1.5"/><path d="M4 10.5h16"/><path d="M9 4v4M15 4v4"/>',
+    # Budgets — coin with currency
+    'BGT': '<circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M9 9.5h5a2 2 0 0 1 0 4h-4a2 2 0 0 0 0 4h6"/>',
+    # Business Cases — briefcase
+    'BSC': '<rect x="3" y="7" width="18" height="13" rx="1.5"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/>',
+    # Delivery / Receipt Notes — truck
+    'DNT': '<rect x="2.5" y="7" width="10.5" height="9" rx="1"/><path d="M13 10h4l4 3v3h-8z"/><circle cx="6" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/>',
+    # Progress reports (daily/weekly/monthly) — line trend
+    'DPR': '<path d="M3 17l5-5 4 3 6-8"/><circle cx="3" cy="17" r="0.8" fill="currentColor"/><circle cx="8" cy="12" r="0.8" fill="currentColor"/><circle cx="12" cy="15" r="0.8" fill="currentColor"/><circle cx="18" cy="7" r="0.8" fill="currentColor"/><path d="M3 21h18"/>',
+}
+# Several prefixes share semantically-identical glyphs — alias them.
+_TYPE_GLYPHS['CON']  = _TYPE_GLYPHS['AGR']
+_TYPE_GLYPHS['CONT'] = _TYPE_GLYPHS['AGR']
+_TYPE_GLYPHS['RNT']  = _TYPE_GLYPHS['DNT']
+_TYPE_GLYPHS['POR']  = _TYPE_GLYPHS['DNT']
+_TYPE_GLYPHS['WPR']  = _TYPE_GLYPHS['DPR']
+_TYPE_GLYPHS['MPR']  = _TYPE_GLYPHS['DPR']
+_TYPE_GLYPHS['LST']  = _TYPE_GLYPHS['REG']
+_TYPE_GLYPHS['PUN']  = _TYPE_GLYPHS['REG']
+# Generic document fallback
+_TYPE_GLYPH_DEFAULT = '<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+
+
+def _type_glyph_svg(name):
+    """Return an inline SVG string for the doc-type prefix in `name`. Falls
+    back to a generic document outline if the prefix is unknown."""
+    pfx = _get_doc_type_prefix(name)
+    inner = _TYPE_GLYPHS.get(pfx, _TYPE_GLYPH_DEFAULT)
+    return (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" '
+        f'aria-hidden="true">{inner}</svg>'
+    )
+
+
 def _file_format(name):
     """Return ('pdf'|'docx'|'xlsx'|'other', icon_class). Mirrors mime_to_icon
     but keyed off filename only (we already have the name when grouping)."""
@@ -261,22 +328,25 @@ def group_files_by_basename(files):
 
 def render_file_group(group):
     """Render one row for a list of files that share a base name. If there is
-    only one file, the action is a single 'Download' button (existing
-    behaviour). With multiple, each gets a format-labeled button (PDF / Word
-    / Excel). The icon uses the highest-priority format in the group (PDF >
-    Word > Excel)."""
+    only one file, the action is a single 'Download' button and the icon
+    reflects that single format (PDF/DOCX/XLSX). With multiple files, each
+    gets a format-labeled button and the icon switches to a neutral
+    multi-format badge that stacks every available format vertically — so
+    'PDF + Word' is no longer hidden behind a misleading red 'PDF' tile."""
     primary = group[0]
-    icon_class, icon_label = mime_to_icon(primary.get('mime', ''), primary['name'])
     title = pretty_filename(primary['name'])
     code = extract_doc_code(primary['name'])
     meta = code if code else primary['name']
 
     if len(group) == 1:
+        icon_class, icon_label = mime_to_icon(primary.get('mime', ''), primary['name'])
+        icon_html = f'<div class="doc-icon {icon_class}">{icon_label}</div>'
         buttons_html = (
             f'<a class="btn btn-primary" href="{drive_download_url(primary["id"])}" '
             f'target="_blank" rel="noopener">Download</a>'
         )
     else:
+        icon_html = f'<div class="doc-icon multi">{_type_glyph_svg(primary["name"])}</div>'
         parts = []
         for r in group:
             fmt = _file_format(r['name'])
@@ -289,7 +359,7 @@ def render_file_group(group):
         buttons_html = '\n          '.join(parts)
 
     return f'''      <div class="doc-item">
-        <div class="doc-icon {icon_class}">{icon_label}</div>
+        {icon_html}
         <div class="doc-info">
           <div class="doc-title">{esc(title)}</div>
           <div class="doc-meta">{esc(meta)}</div>
