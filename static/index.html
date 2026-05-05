@@ -17,6 +17,16 @@
   }
   body.dark { background: #1a1a1a; color: #e8e6e0; }
 
+  /* Navy/gold accent strip pinned to the very top, matches the four
+     destination pages (documents / toolkit / projects / welders). */
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0A2540 0%, #C9A961 50%, #0A2540 100%);
+    z-index: 1001;
+    pointer-events: none;
+  }
+
   /* ============ LOGIN OVERLAY ============ */
   #__opco_auth_overlay {
     position: fixed; inset: 0; z-index: 99999;
