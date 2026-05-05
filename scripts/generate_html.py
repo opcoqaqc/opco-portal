@@ -617,9 +617,6 @@ def _skg_panel_block(panel_id, files):
     desc_html = f'    <p>{esc(description)}</p>\n' if description else ''
     return f'''<!-- GEN-START: {panel_id} -->
 <section class="panel" id="{panel_id}">
-  <div class="section-header">
-    <h2>{esc(header_label)}</h2>
-{desc_html}  </div>
 {body}
 </section>
 <!-- GEN-END: {panel_id} -->'''

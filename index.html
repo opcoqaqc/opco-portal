@@ -2329,6 +2329,9 @@
 
   /* Per-panel format filter (All/PDF/DOCX/XLSX) hidden — band now signals the page */
   .filter-bar { display: none !important; }
+  /* Per-panel section-header hidden; band already names the workspace.
+     :not([style]) keeps centred empty-state messages visible. */
+  .section-header:not([style]) { display: none !important; }
 
   /* ===== Unified OPCO page band ===== */
   #__opco_auth_topbar { display: none !important; }
