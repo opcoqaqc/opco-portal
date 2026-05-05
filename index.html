@@ -2326,6 +2326,10 @@
   }
 
 
+
+  /* Per-panel format filter (All/PDF/DOCX/XLSX) hidden — band now signals the page */
+  .filter-bar { display: none !important; }
+
   /* ===== Unified OPCO page band ===== */
   #__opco_auth_topbar { display: none !important; }
   .opco-band {
@@ -2380,11 +2384,6 @@
     font-size: 11.5px; color: #6c7589; padding: 0 6px 0 4px;
     text-transform: none; letter-spacing: 0.02em;
   }
-  
-  /* Search row sits below the band */
-  .opco-page-search-row { padding: 18px 28px 6px; max-width: 1400px; margin: 0 auto; }
-  @media (max-width: 700px) { .opco-page-search-row { padding: 14px 14px 4px; } }
-
   @media (max-width: 700px) {
     .opco-band { padding: 10px 14px; gap: 10px; }
     .opco-band-name { font-size: 11.5px; letter-spacing: 0.12em; }
@@ -2520,18 +2519,7 @@
   </div>
 </div>
 
-<div class="opco-page-search-row">
-  <div class="global-search">
-    <div class="global-search-inner">
-      <svg class="gs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <input type="text" id="global-search-input" placeholder="Search all documents..." autocomplete="off">
-      <button class="gs-clear" id="gs-clear" onclick="clearGlobalSearch()" style="display:none;" aria-label="Clear search">&times;</button>
-    </div>
-    <div class="gs-results" id="gs-results"></div>
-  </div>
+
 </div>
 
 
