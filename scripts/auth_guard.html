@@ -63,7 +63,11 @@
     flex-shrink: 0;
   }
 
-  #__opco_auth_user {
+  /* Scope these to the topbar context only — the .opco-band on
+     documents.html ALSO uses id="__opco_auth_user" / id="__opco_auth_logout",
+     and we don't want our 28px circular logout style to override the
+     band's 34px square .opco-band-iconbtn there. */
+  #__opco_auth_topbar #__opco_auth_user {
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.01em;
@@ -71,7 +75,7 @@
     padding: 0 2px;
   }
 
-  #__opco_auth_logout {
+  #__opco_auth_topbar #__opco_auth_logout {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -85,12 +89,12 @@
     padding: 0;
     transition: background 0.15s, color 0.15s;
   }
-  #__opco_auth_logout svg { width: 14px; height: 14px; display: block; }
-  #__opco_auth_logout:hover {
+  #__opco_auth_topbar #__opco_auth_logout svg { width: 14px; height: 14px; display: block; }
+  #__opco_auth_topbar #__opco_auth_logout:hover {
     background: rgba(230, 57, 70, 0.14);
     color: #e63946;
   }
-  body.dark #__opco_auth_logout:hover {
+  body.dark #__opco_auth_topbar #__opco_auth_logout:hover {
     background: rgba(255, 90, 100, 0.18);
     color: #ff5a64;
   }
@@ -172,7 +176,10 @@
     }
 
     if (topbar) topbar.classList.add("shown");
-    users.forEach(function(ul){ ul.textContent = sess.u; });
+    // Match toolkit/projects/welders convention: "<username> · " (middle
+    // dot + trailing space) so the username sits to the left of the icon
+    // buttons with a visible separator.
+    users.forEach(function(ul){ ul.textContent = sess.u + " · "; });
     logouts.forEach(function(lo){
       lo.addEventListener("click", function(){
         try { localStorage.removeItem(__OPCO_SESSION_KEY); } catch(e){}

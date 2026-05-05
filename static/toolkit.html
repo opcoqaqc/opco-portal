@@ -925,8 +925,31 @@
     border-left-color: #C9A961;
   }
   body.dark .opco-side-item.active { background: rgba(201,169,97,0.15); color: #C9A961; }
+  /* Per-item meta line (e.g. "(last updated: 4 May 26)" on the project
+     dashboard items). Mirrors what the in-panel subtab strip used to show. */
+  .opco-side-meta {
+    margin-left: 6px;
+    font-size: 10.5px;
+    color: rgba(91,107,130,0.75);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  body.dark .opco-side-meta { color: rgba(176,184,196,0.55); }
   .opco-content { flex: 1; min-width: 0; }
   .opco-content > .container { margin: 24px auto; }
+  /* The sidebar replaces the in-panel subtab strip on the projects /
+     welders subpages (their dedicated panels). Toolkit's other panels
+     (Consumable's Single/MTO/SchTable, etc.) keep their own subtabs. */
+  body[data-ctx="projects"] #tab-projects > .subtabs,
+  body[data-ctx="welders"]  #tab-welders  > .subtabs {
+    display: none !important;
+  }
   @media (max-width: 900px) {
     .opco-shell { flex-direction: column; }
     .opco-sidebar { width: 100%; position: static; max-height: none; padding: 8px 0; border-right: 0; border-bottom: 1px solid #E1E7EF; }
@@ -1028,8 +1051,14 @@
   </div>
   <div class="opco-side-section" data-ctx="projects">
     <div class="opco-side-title">Project Dashboards</div>
-    <a class="opco-side-item active" data-target-subtab="proj-htu">HTU</a>
-    <a class="opco-side-item" data-target-subtab="proj-osbl">OSBL</a>
+    <a class="opco-side-item active" data-target-subtab="proj-htu">
+      <span>HTU</span>
+      <span class="opco-side-meta" data-mirror-from="proj-htu-tab-date"></span>
+    </a>
+    <a class="opco-side-item" data-target-subtab="proj-osbl">
+      <span>OSBL</span>
+      <span class="opco-side-meta" data-mirror-from="proj-osbl-tab-date"></span>
+    </a>
   </div>
   <div class="opco-side-section" data-ctx="welders">
     <div class="opco-side-title">Welder qualification</div>
@@ -1926,10 +1955,46 @@
     });
     syncActive();
   }
+
+  // Mirror "(last updated: N May 26)" text from the in-panel subtab spans
+  // (#proj-htu-tab-date / #proj-osbl-tab-date — populated by the bundle's
+  // PROJECT_HTU / PROJECT_OSBL render code) into the matching sidebar
+  // items, so the date stays visible after we hide the subtab strip.
+  function mirrorMeta() {
+    document.querySelectorAll('[data-mirror-from]').forEach(function(el) {
+      var src = document.getElementById(el.getAttribute('data-mirror-from'));
+      if (!src) return;
+      // Strip outer parens if present so the sidebar version reads more
+      // compactly: "(last updated: 4 May 26)" -> "last updated: 4 May 26"
+      var t = (src.textContent || '').trim().replace(/^\(/, '').replace(/\)$/, '');
+      if (el.textContent !== t) el.textContent = t;
+    });
+  }
+
+  function setupMetaMirrors() {
+    document.querySelectorAll('[data-mirror-from]').forEach(function(el) {
+      var src = document.getElementById(el.getAttribute('data-mirror-from'));
+      if (src) new MutationObserver(mirrorMeta).observe(src, {
+        childList: true, subtree: true, characterData: true,
+      });
+    });
+    // Initial copy in case the bundle already populated the source.
+    mirrorMeta();
+    // Bundle may run shortly after DOMContentLoaded; re-check a couple of
+    // times before giving up so first-render dates always make it across.
+    setTimeout(mirrorMeta,  150);
+    setTimeout(mirrorMeta,  600);
+    setTimeout(mirrorMeta, 1500);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', wireSidebar);
+    document.addEventListener('DOMContentLoaded', function() {
+      wireSidebar();
+      setupMetaMirrors();
+    });
   } else {
     wireSidebar();
+    setupMetaMirrors();
   }
 })();
 </script>
