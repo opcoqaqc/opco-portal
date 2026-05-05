@@ -153,8 +153,15 @@
   function reveal(){
     document.documentElement.classList.remove("__opco_unauth");
     var topbar = document.getElementById("__opco_auth_topbar");
-    var lo = document.getElementById("__opco_auth_logout");
-    var ul = document.getElementById("__opco_auth_user");
+
+    // The page may carry MULTIPLE elements with id="__opco_auth_user" /
+    // id="__opco_auth_logout" (the topbar that we inject AND a separate
+    // copy in the .opco-band on documents.html). Duplicate IDs are
+    // technically invalid but browsers honor them; querySelectorAll('#x')
+    // matches them all, getElementById would only catch the first. Walk
+    // every match so both the topbar and the band stay in sync.
+    var users   = document.querySelectorAll("#__opco_auth_user");
+    var logouts = document.querySelectorAll("#__opco_auth_logout");
 
     // Try to relocate the topbar INTO the page's existing header so it
     // participates in the flex layout instead of overlapping it.
@@ -165,18 +172,20 @@
     }
 
     if (topbar) topbar.classList.add("shown");
-    if (ul) ul.textContent = sess.u;
-    if (lo) lo.addEventListener("click", function(){
-      try { localStorage.removeItem(__OPCO_SESSION_KEY); } catch(e){}
-      // Also clear legacy keys so the doc-portal's own session check is reset
-      try {
-        localStorage.removeItem("opco_portal_authenticated");
-        sessionStorage.removeItem("opco_portal_authenticated");
-        localStorage.removeItem("opco_portal_user");
-        sessionStorage.removeItem("opco_portal_user");
-        localStorage.removeItem("opco_portal_user_name");
-      } catch(e){}
-      location.replace("./");
+    users.forEach(function(ul){ ul.textContent = sess.u; });
+    logouts.forEach(function(lo){
+      lo.addEventListener("click", function(){
+        try { localStorage.removeItem(__OPCO_SESSION_KEY); } catch(e){}
+        // Also clear legacy keys so the doc-portal's own session check is reset
+        try {
+          localStorage.removeItem("opco_portal_authenticated");
+          sessionStorage.removeItem("opco_portal_authenticated");
+          localStorage.removeItem("opco_portal_user");
+          sessionStorage.removeItem("opco_portal_user");
+          localStorage.removeItem("opco_portal_user_name");
+        } catch(e){}
+        location.replace("./");
+      });
     });
   }
   if (document.readyState === "loading") {
