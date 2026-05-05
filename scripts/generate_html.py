@@ -327,36 +327,30 @@ def group_files_by_basename(files):
 
 
 def render_file_group(group):
-    """Render one row for a list of files that share a base name. If there is
-    only one file, the action is a single 'Download' button and the icon
-    reflects that single format (PDF/DOCX/XLSX). With multiple files, each
-    gets a format-labeled button and the icon switches to a neutral
-    multi-format badge that stacks every available format vertically — so
-    'PDF + Word' is no longer hidden behind a misleading red 'PDF' tile."""
+    """Render one row for a list of files that share a base name. The left
+    tile is always a neutral grey badge with an SVG glyph picked from the
+    OPCO doc-type prefix (PRO/FRM/LGS/ITP/...) — format colour is no longer
+    encoded there. Format information is on the right-hand button(s): one
+    button per file labelled with that file's format ('PDF' / 'Word' /
+    'Excel'), so a single-format group has one labelled button and a
+    multi-format group has several."""
     primary = group[0]
     title = pretty_filename(primary['name'])
     code = extract_doc_code(primary['name'])
     meta = code if code else primary['name']
 
-    if len(group) == 1:
-        icon_class, icon_label = mime_to_icon(primary.get('mime', ''), primary['name'])
-        icon_html = f'<div class="doc-icon {icon_class}">{icon_label}</div>'
-        buttons_html = (
-            f'<a class="btn btn-primary" href="{drive_download_url(primary["id"])}" '
-            f'target="_blank" rel="noopener">Download</a>'
+    icon_html = f'<div class="doc-icon multi">{_type_glyph_svg(primary["name"])}</div>'
+
+    parts = []
+    for r in group:
+        fmt = _file_format(r['name'])
+        label = _FORMAT_LABEL.get(fmt, 'Download')
+        parts.append(
+            f'<a class="btn btn-primary" '
+            f'href="{drive_download_url(r["id"])}" '
+            f'target="_blank" rel="noopener">{label}</a>'
         )
-    else:
-        icon_html = f'<div class="doc-icon multi">{_type_glyph_svg(primary["name"])}</div>'
-        parts = []
-        for r in group:
-            fmt = _file_format(r['name'])
-            label = _FORMAT_LABEL.get(fmt, 'Download')
-            parts.append(
-                f'<a class="btn btn-primary" '
-                f'href="{drive_download_url(r["id"])}" '
-                f'target="_blank" rel="noopener">{label}</a>'
-            )
-        buttons_html = '\n          '.join(parts)
+    buttons_html = '\n          '.join(parts)
 
     return f'''      <div class="doc-item">
         {icon_html}
