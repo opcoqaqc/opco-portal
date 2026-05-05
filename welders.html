@@ -925,6 +925,38 @@
     border-left-color: #C9A961;
   }
   body.dark .opco-side-item.active { background: rgba(201,169,97,0.15); color: #C9A961; }
+  /* Sidebar logo badges — small colored gradient square + white SVG icon,
+     matches the .sb-ico convention used by the QMS sidebar. */
+  .opco-side-icon {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+  }
+  .opco-side-icon svg {
+    width: 13px; height: 13px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* Calculators (toolkit) */
+  .opco-side-icon.calc-consumable { background: linear-gradient(135deg, #1D7044, #2da66d); }
+  .opco-side-icon.calc-performance{ background: linear-gradient(135deg, #2B5797, #4a7ec1); }
+  .opco-side-icon.calc-torque     { background: linear-gradient(135deg, #D97A2A, #f29547); }
+  .opco-side-icon.calc-preheat    { background: linear-gradient(135deg, #B22234, #d94a5b); }
+  .opco-side-icon.calc-heatinput  { background: linear-gradient(135deg, #C9A961, #b89750); }
+  /* Project dashboards */
+  .opco-side-icon.proj-htu  { background: linear-gradient(135deg, #2B5797, #4a7ec1); }
+  .opco-side-icon.proj-osbl { background: linear-gradient(135deg, #0A6E78, #128a96); }
+  /* Welder qualification */
+  .opco-side-icon.weld-pipeline  { background: linear-gradient(135deg, #6B4FA8, #8a6dc8); }
+  .opco-side-icon.weld-inservice { background: linear-gradient(135deg, #C9A961, #b89750); }
+  .opco-side-icon.weld-piping    { background: linear-gradient(135deg, #0A6E78, #128a96); }
   /* Per-item meta line (e.g. "(last updated: 4 May 26)" on the project
      dashboard items). Mirrors what the in-panel subtab strip used to show. */
   .opco-side-meta {
@@ -1044,28 +1076,54 @@
 <aside class="opco-sidebar" id="opco-sidebar">
   <div class="opco-side-section" data-ctx="toolkit">
     <div class="opco-side-title">Calculators</div>
-    <a class="opco-side-item active" data-target-tab="consumable">Consumable</a>
-    <a class="opco-side-item" data-target-tab="welder">Performance</a>
-    <a class="opco-side-item" data-target-tab="torque">Torque</a>
-    <a class="opco-side-item" data-target-tab="ceph">Preheat &amp; PWHT</a>
-    <a class="opco-side-item" data-target-tab="heatinput">Heat input</a>
+    <a class="opco-side-item active" data-target-tab="consumable">
+      <span class="opco-side-icon calc-consumable" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg></span>
+      <span>Consumable</span>
+    </a>
+    <a class="opco-side-item" data-target-tab="welder">
+      <span class="opco-side-icon calc-performance" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 18 0"/><path d="M12 13l4-4"/></svg></span>
+      <span>Performance</span>
+    </a>
+    <a class="opco-side-item" data-target-tab="torque">
+      <span class="opco-side-icon calc-torque" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+      <span>Torque</span>
+    </a>
+    <a class="opco-side-item" data-target-tab="ceph">
+      <span class="opco-side-icon calc-preheat" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></svg></span>
+      <span>Preheat &amp; PWHT</span>
+    </a>
+    <a class="opco-side-item" data-target-tab="heatinput">
+      <span class="opco-side-icon calc-heatinput" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>
+      <span>Heat input</span>
+    </a>
   </div>
   <div class="opco-side-section" data-ctx="projects">
     <div class="opco-side-title">Project Dashboards</div>
     <a class="opco-side-item active" data-target-subtab="proj-htu">
+      <span class="opco-side-icon proj-htu" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span>
       <span>HTU</span>
       <span class="opco-side-meta" data-mirror-from="proj-htu-tab-date"></span>
     </a>
     <a class="opco-side-item" data-target-subtab="proj-osbl">
+      <span class="opco-side-icon proj-osbl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l5-3v16"/><path d="M19 21V13l-5-3"/></svg></span>
       <span>OSBL</span>
       <span class="opco-side-meta" data-mirror-from="proj-osbl-tab-date"></span>
     </a>
   </div>
   <div class="opco-side-section" data-ctx="welders">
     <div class="opco-side-title">Welder qualification</div>
-    <a class="opco-side-item" data-target-subtab="pipeline-w">Pipeline</a>
-    <a class="opco-side-item" data-target-subtab="inservice-w">In-Service</a>
-    <a class="opco-side-item active" data-target-subtab="piping-w">Piping</a>
+    <a class="opco-side-item" data-target-subtab="pipeline-w">
+      <span class="opco-side-icon weld-pipeline" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12h6"/><rect x="8" y="9" width="8" height="6" rx="1"/><path d="M16 12h6"/></svg></span>
+      <span>Pipeline</span>
+    </a>
+    <a class="opco-side-item" data-target-subtab="inservice-w">
+      <span class="opco-side-icon weld-inservice" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></span>
+      <span>In-Service</span>
+    </a>
+    <a class="opco-side-item active" data-target-subtab="piping-w">
+      <span class="opco-side-icon weld-piping" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/><circle cx="12" cy="12" r="2.5"/></svg></span>
+      <span>Piping</span>
+    </a>
   </div>
 </aside>
 <div class="opco-content">
