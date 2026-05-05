@@ -19,36 +19,36 @@ import sys
 
 SRC = os.environ.get("SRC", "static/toolkit.html")
 SUBPAGES = [
-    # (data-tab slug, browser <title>, page-band display name, page-band accent, output path)
-    ("projects", "Project Dashboard",     "PROJECT DASHBOARD",     "#5DCAA5", "static/projects.html"),
-    ("welders",  "Welder Qualification",  "WELDER QUALIFICATION",  "#E47480", "static/welders.html"),
+    # (data-tab slug, browser <title>, mini-tile data-key for the active tab,
+    #  output path)
+    ("projects", "Project Dashboard",     "dashboard", "static/projects.html"),
+    ("welders",  "Welder Qualification",  "welders",   "static/welders.html"),
 ]
 
 
 def make_subpage(src: str, target_tab: str, page_title: str,
-                 band_name: str, band_accent: str) -> str:
+                 active_mini_key: str) -> str:
     out = src
 
     # 1) <title>
     out = re.sub(r"<title>[^<]*</title>", f"<title>{page_title}</title>", out, count=1)
 
-    # 2) Unified page-band: swap the toolkit defaults ("TOOLKIT" + #EF9F27) for
-    #    this subpage's name + accent colour. Toolkit.html sets these once on
-    #    the band root; we just rewrite both occurrences for the derived page.
+    # 2) Move the .active class on the mini-tile row from "toolkit" (the
+    #    source default in toolkit.html) to this subpage's tile.
     out, n1 = re.subn(
-        r'(id="opco-page-band"[^>]*--page-accent:\s*)#EF9F27',
-        rf'\1{band_accent}',
+        r'<a (href="[^"]+") class="opco-mini-tile active" data-key="toolkit"',
+        r'<a \1 class="opco-mini-tile" data-key="toolkit"',
         out, count=1,
     )
     if n1 != 1:
-        raise SystemExit(f"ERR: page-band accent variable not found in {SRC}")
+        raise SystemExit(f"ERR: toolkit mini-tile active not found in {SRC}")
     out, n2 = re.subn(
-        r'(<span class="opco-band-name" id="opco-band-name">)TOOLKIT(</span>)',
-        rf'\1{band_name}\2',
+        rf'<a (href="[^"]+") class="opco-mini-tile" data-key="{active_mini_key}"',
+        rf'<a \1 class="opco-mini-tile active" data-key="{active_mini_key}"',
         out, count=1,
     )
     if n2 != 1:
-        raise SystemExit(f"ERR: page-band name span not found in {SRC}")
+        raise SystemExit(f"ERR: target mini-tile '{active_mini_key}' not found in {SRC}")
 
     # 3) Hide tab nav (subpage shows only one tool)
     inject = '<style id="__opco_subpage">.tabs{display:none !important}</style>'
@@ -88,8 +88,8 @@ def main() -> int:
     with open(SRC, encoding="utf-8") as f:
         src = f.read()
 
-    for slug, title, band_name, band_accent, dest in SUBPAGES:
-        html = make_subpage(src, slug, title, band_name, band_accent)
+    for slug, title, active_key, dest in SUBPAGES:
+        html = make_subpage(src, slug, title, active_key)
         with open(dest, "w", encoding="utf-8") as f:
             f.write(html)
         print(f"wrote {dest} ({len(html)} bytes)")

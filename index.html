@@ -2394,6 +2394,36 @@
     .opco-band-divider { display: none; }
   }
 
+
+  /* ===== Mini-tiles row in the band ===== */
+  @view-transition { navigation: auto; }
+  .opco-mini-tiles { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .opco-mini-tile {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em;
+    color: #8b95a7;
+    text-decoration: none;
+    transition: background .15s, color .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .opco-mini-tile:hover { background: rgba(255,255,255,0.06); color: #f0e4c9; border-color: rgba(255,255,255,0.12); }
+  .opco-mini-tile-icon { width: 14px; height: 14px; color: var(--accent); display: inline-flex; }
+  .opco-mini-tile-icon svg { width: 100%; height: 100%; }
+  .opco-mini-tile.active {
+    background: color-mix(in oklch, var(--accent) 14%, transparent);
+    color: var(--accent);
+    border-color: color-mix(in oklch, var(--accent) 35%, transparent);
+  }
+  .opco-mini-tile.active .opco-mini-tile-icon { color: var(--accent); }
+  @media (max-width: 900px) {
+    .opco-mini-tile-text { display: none; }
+    .opco-mini-tile { padding: 7px 9px; }
+  }
+
 </style>
 </head>
 <body class="locked dark sidebar-mode">
@@ -2510,9 +2540,13 @@
 <div class="opco-band" id="opco-page-band" style="--page-accent: #8b95a7;">
   <a href="./" class="opco-band-back" title="Back to portal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Portal</a>
   <div class="opco-band-divider"></div>
-  <div class="opco-band-title">
-    <span class="opco-band-dot" aria-hidden="true"></span>
-    <span class="opco-band-name" id="opco-band-name">DOCUMENTS</span>
+  <div class="opco-mini-tiles">
+    <a href="documents.html#view=qms" class="opco-mini-tile active" data-key="qms" style="--accent:#C49A55; view-transition-name: card-qms;"><span class="opco-mini-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span><span class="opco-mini-tile-text">QMS</span></a>
+    <a href="documents.html#view=projects" class="opco-mini-tile" data-key="projects" style="--accent:#5DA3E0; view-transition-name: card-projects;"><span class="opco-mini-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="11" y2="9"/></svg></span><span class="opco-mini-tile-text">Project QC</span></a>
+    <a href="projects.html" class="opco-mini-tile" data-key="dashboard" style="--accent:#5DCAA5; view-transition-name: card-dashboard;"><span class="opco-mini-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="opco-mini-tile-text">Dashboard</span></a>
+    <a href="toolkit.html" class="opco-mini-tile" data-key="toolkit" style="--accent:#EF9F27; view-transition-name: card-toolkit;"><span class="opco-mini-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span class="opco-mini-tile-text">Toolkit</span></a>
+    <a href="welders.html" class="opco-mini-tile" data-key="welders" style="--accent:#E47480; view-transition-name: card-welders;"><span class="opco-mini-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="opco-mini-tile-text">Welders</span></a>
+    <a href="documents.html#view=library" class="opco-mini-tile" data-key="library" style="--accent:#A77CCB; view-transition-name: card-library;"><span class="opco-mini-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span class="opco-mini-tile-text">Library</span></a>
   </div>
   <div class="opco-band-spacer"></div>
   <span class="opco-band-user" id="__opco_auth_user"></span>
@@ -11011,16 +11045,6 @@
     return m ? m[1].toLowerCase() : null;
   }
 
-  var ACCENT_BY_VIEW = {
-    qms:      '#C49A55',
-    library:  '#A77CCB',
-    projects: '#5DA3E0',
-  };
-  var BAND_NAME_BY_VIEW = {
-    qms:      'QUALITY MANAGEMENT SYSTEM',
-    library:  'LIBRARY',
-    projects: 'PROJECT QC DOCUMENTS',
-  };
   function applyView(view) {
     var fn = window[FN_BY_VIEW[view]];
     if (typeof fn === 'function') fn();
@@ -11029,11 +11053,10 @@
     document.body.classList.add('view-locked', 'view-' + view);
     var t = TITLE_BY_VIEW[view];
     if (t) document.title = t + ' — OPCO Portal';
-    // Update unified band: accent dot + page name
-    var band = document.getElementById('opco-page-band');
-    if (band && ACCENT_BY_VIEW[view]) band.style.setProperty('--page-accent', ACCENT_BY_VIEW[view]);
-    var bandName = document.getElementById('opco-band-name');
-    if (bandName && BAND_NAME_BY_VIEW[view]) bandName.textContent = BAND_NAME_BY_VIEW[view];
+    // Mark the matching mini-tile in the band as active.
+    document.querySelectorAll('.opco-mini-tile').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-key') === view);
+    });
   }
 
   function unlock() {
@@ -11042,6 +11065,9 @@
     );
     var topbar = document.querySelector('.tabs-inner');
     if (topbar) topbar.style.display = '';
+    document.querySelectorAll('.opco-mini-tile').forEach(function (el) {
+      el.classList.remove('active');
+    });
   }
 
   function start() {
