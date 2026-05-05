@@ -50,6 +50,18 @@ def make_subpage(src: str, target_tab: str, page_title: str,
     if n2 != 1:
         raise SystemExit(f"ERR: target mini-tile '{active_mini_key}' not found in {SRC}")
 
+    # 2a) Swap body's data-ctx attribute so the sidebar shows the right
+    #     section (Projects / Welders / Toolkit). Mapping mirrors
+    #     active_mini_key for the two subpage tabs.
+    side_ctx = "projects" if target_tab == "projects" else "welders"
+    out, n_ctx = re.subn(
+        r'<body([^>]*)\sdata-ctx="toolkit"',
+        rf'<body\1 data-ctx="{side_ctx}"',
+        out, count=1,
+    )
+    if n_ctx != 1:
+        raise SystemExit(f"ERR: body data-ctx attribute not found in {SRC}")
+
     # 3) Hide tab nav (subpage shows only one tool)
     inject = '<style id="__opco_subpage">.tabs{display:none !important}</style>'
     out = out.replace("</head>", inject + "\n</head>", 1)
