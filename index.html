@@ -10979,5 +10979,62 @@
   }
 })();
 </script>
+
+<!-- ===== View-lock: landing cards send users straight into one section ===== -->
+<!-- documents.html#view=qms|projects|library activates that top tab and hides
+     the others, so a user arriving from the QMS / Library / Project QC card
+     sees only the section they picked. No hash = legacy multi-tab view. -->
+<script>
+(function () {
+  var FN_BY_VIEW = {
+    qms:      'showQmsBar',
+    library:  'showLibraryBar',
+    projects: 'showProjectsBar',
+  };
+  var TITLE_BY_VIEW = {
+    qms:      'Quality Management System Documents',
+    library:  'Library',
+    projects: 'Project QC Documents',
+  };
+
+  function parseView() {
+    var h = (window.location.hash || '').replace(/^#/, '');
+    if (!h) return null;
+    var m = h.match(/(?:^|&)view=(qms|library|projects)(?:&|$)/i);
+    return m ? m[1].toLowerCase() : null;
+  }
+
+  function applyView(view) {
+    var fn = window[FN_BY_VIEW[view]];
+    if (typeof fn === 'function') fn();
+    var topbar = document.querySelector('.tabs-inner');
+    if (topbar) topbar.style.display = 'none';
+    document.body.classList.add('view-locked', 'view-' + view);
+    var t = TITLE_BY_VIEW[view];
+    if (t) document.title = t + ' — OPCO Portal';
+  }
+
+  function unlock() {
+    document.body.classList.remove(
+      'view-locked', 'view-qms', 'view-library', 'view-projects'
+    );
+    var topbar = document.querySelector('.tabs-inner');
+    if (topbar) topbar.style.display = '';
+  }
+
+  function start() {
+    unlock();
+    var view = parseView();
+    if (view) applyView(view);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+  window.addEventListener('hashchange', start);
+})();
+</script>
 </body>
 </html>
