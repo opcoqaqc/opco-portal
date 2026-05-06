@@ -1268,7 +1268,7 @@
         var stamp = tr.getAttribute('data-stamp');
         if (welderSelectedStamp === stamp) {
           welderSelectedStamp = null;
-          document.getElementById('welder-detail-panel').style.display = 'none';
+          var __p1 = document.getElementById('welder-detail-panel'); if (__p1) __p1.innerHTML = '';
           var prev = tbody.querySelector('tr.active');
           if (prev) prev.classList.remove('active');
         } else {
@@ -1340,7 +1340,7 @@
     var closeBtn = document.getElementById('welder-detail-close');
     if (closeBtn) closeBtn.addEventListener('click', function() {
       welderSelectedStamp = null;
-      panel.style.display = 'none';
+      panel.innerHTML = '';
       var tbody = document.getElementById('welder-q-tbody');
       var prev = tbody && tbody.querySelector('tr.active');
       if (prev) prev.classList.remove('active');
@@ -1521,7 +1521,7 @@
         var stamp = tr.getAttribute('data-stamp');
         if (welderIsSelectedStamp === stamp) {
           welderIsSelectedStamp = null;
-          document.getElementById('welder-is-detail-panel').style.display = 'none';
+          var __p2 = document.getElementById('welder-is-detail-panel'); if (__p2) __p2.innerHTML = '';
           var prev = tbody.querySelector('tr.active');
           if (prev) prev.classList.remove('active');
         } else {
@@ -1606,7 +1606,7 @@
     var closeBtn = document.getElementById('welder-is-detail-close');
     if (closeBtn) closeBtn.addEventListener('click', function() {
       welderIsSelectedStamp = null;
-      panel.style.display = 'none';
+      panel.innerHTML = '';
       var tbody = document.getElementById('welder-is-q-tbody');
       var prev = tbody && tbody.querySelector('tr.active');
       if (prev) prev.classList.remove('active');
@@ -2085,7 +2085,7 @@
         var stamp = tr.getAttribute('data-stamp');
         if (welderPpSelectedStamp === stamp) {
           welderPpSelectedStamp = null;
-          document.getElementById('welder-pp-detail-panel').style.display = 'none';
+          var __p3 = document.getElementById('welder-pp-detail-panel'); if (__p3) __p3.innerHTML = '';
           var prev = tbody.querySelector('tr.active');
           if (prev) prev.classList.remove('active');
         } else {
@@ -2196,7 +2196,7 @@
     var closeBtn = document.getElementById('welder-pp-detail-close');
     if (closeBtn) closeBtn.addEventListener('click', function() {
       welderPpSelectedStamp = null;
-      panel.style.display = 'none';
+      panel.innerHTML = '';
       var tbody = document.getElementById('welder-pp-q-tbody');
       var prev = tbody && tbody.querySelector('tr.active');
       if (prev) prev.classList.remove('active');

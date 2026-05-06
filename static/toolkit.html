@@ -701,6 +701,109 @@
   .welder-qual-card-title { font-size: 13px; font-weight: 600; color: #2c2c2a; }
   .welder-qual-card-cert  { font-size: 11px; color: #185fa5; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 
+  /* ===== Master/detail layout for welder subtabs =====
+     Top: toolbar (search + count). Below: welder list (left, 380px) +
+     certificate panel (right, fills remaining space, sticky). Replaces
+     the old "table on top, detail beneath" layout that forced scrolling
+     all the way down to read a welder's certificates. */
+  /* Only the ACTIVE welder subtab gets the grid layout; others stay
+     display:none from .subtab-panel default. */
+  #subtab-pipeline-w.active,
+  #subtab-inservice-w.active,
+  #subtab-piping-w.active {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    grid-template-areas: "toolbar toolbar" "master detail";
+    gap: 14px 18px;
+  }
+  #subtab-pipeline-w.active > .welder-toolbar,
+  #subtab-inservice-w.active > .welder-toolbar,
+  #subtab-piping-w.active  > .welder-toolbar { grid-area: toolbar; }
+  #subtab-pipeline-w.active > .welder-table-wrap,
+  #subtab-inservice-w.active > .welder-table-wrap,
+  #subtab-piping-w.active  > .welder-table-wrap {
+    grid-area: master;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    border-radius: 11px;
+  }
+  #subtab-pipeline-w.active > .welder-detail-panel,
+  #subtab-inservice-w.active > .welder-detail-panel,
+  #subtab-piping-w.active  > .welder-detail-panel {
+    grid-area: detail;
+    margin-top: 0 !important;
+    display: block;
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  /* Empty-state message when no welder is selected (panel.innerHTML is '') */
+  #subtab-pipeline-w.active  > .welder-detail-panel:empty::before,
+  #subtab-inservice-w.active > .welder-detail-panel:empty::before,
+  #subtab-piping-w.active    > .welder-detail-panel:empty::before {
+    content: 'Select a welder to view their certificate';
+    display: block;
+    text-align: center;
+    color: #8b949e;
+    font-size: 13px;
+    padding: 60px 20px;
+  }
+
+  /* Convert the welder table into compact card-rows for the master pane.
+     Hides the header + the position/OD/thickness columns (those move into
+     the detail panel which has the full picture). */
+  .welder-q-table thead { display: none; }
+  .welder-q-table,
+  .welder-q-table tbody,
+  .welder-q-table tr { display: block; }
+  .welder-q-table tr {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    border-bottom: 0.5px solid rgba(0,0,0,0.05);
+  }
+  body.dark .welder-q-table tr { border-bottom-color: rgba(255,255,255,0.05); }
+  .welder-q-table tr:hover { background: rgba(10,37,64,0.04); }
+  body.dark .welder-q-table tr:hover { background: rgba(201,169,97,0.06); }
+  .welder-q-table tr.active {
+    background: rgba(201,169,97,0.12);
+    border-left-color: #C9A961;
+  }
+  body.dark .welder-q-table tr.active { background: rgba(201,169,97,0.15); }
+  .welder-q-table tr.active td { background: transparent !important; }
+  .welder-q-table td { display: block; padding: 0; border: 0; background: transparent; }
+  /* Only stamp (col 1), name (col 2), process (col 3) are shown in the
+     compact row. The other 3 cells live only in the detail pane. */
+  .welder-q-table td:nth-child(4),
+  .welder-q-table td:nth-child(5),
+  .welder-q-table td:nth-child(6) { display: none; }
+  .welder-q-table td.welder-stamp-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .welder-q-table td.welder-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Process column: fixed-width stack so every welder's pills start at
+     the same x position, regardless of how many pills they carry. */
+  .welder-q-table td:nth-child(3) {
+    width: 108px;
+    flex-shrink: 0;
+  }
+
   /* Detail panel */
   .welder-detail-panel { margin-top: 16px; background: #fafaf7; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 16px 20px; }
   .welder-detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -1365,7 +1468,7 @@
           <tbody id="welder-q-tbody"></tbody>
         </table>
       </div>
-      <div class="welder-detail-panel" id="welder-detail-panel" style="display: none;"></div>
+      <div class="welder-detail-panel" id="welder-detail-panel"></div>
     </div>
 
     <div class="subtab-panel" id="subtab-inservice-w">
@@ -1387,7 +1490,7 @@
           <tbody id="welder-is-q-tbody"></tbody>
         </table>
       </div>
-      <div class="welder-detail-panel" id="welder-is-detail-panel" style="display: none;"></div>
+      <div class="welder-detail-panel" id="welder-is-detail-panel"></div>
     </div>
 
     <div class="subtab-panel active" id="subtab-piping-w">
@@ -1410,7 +1513,7 @@
           <tbody id="welder-pp-q-tbody"></tbody>
         </table>
       </div>
-      <div class="welder-detail-panel" id="welder-pp-detail-panel" style="display: none;"></div>
+      <div class="welder-detail-panel" id="welder-pp-detail-panel"></div>
     </div>
   </div>
 
