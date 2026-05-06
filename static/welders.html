@@ -701,6 +701,48 @@
   .welder-qual-card-title { font-size: 13px; font-weight: 600; color: #2c2c2a; }
   .welder-qual-card-cert  { font-size: 11px; color: #185fa5; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 
+  /* ===== Welders / Projects: break out of the 760px .container =====
+     The calculator pages (Consumable, Performance, etc.) read fine at
+     760px wide, but the welders + projects pages have a master/detail
+     split that needs much more horizontal room. Let the .container fill
+     the available width on those data-ctx contexts. */
+  body[data-ctx="welders"]  .opco-content > .container,
+  body[data-ctx="projects"] .opco-content > .container {
+    max-width: none;
+    margin: 18px 24px;
+    padding: 22px 26px;
+  }
+
+  /* Gold scrollbars on the welders panes (matches the sidebar). */
+  .welder-table-wrap, .welder-detail-panel {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201,169,97,0.30) transparent;
+  }
+  .welder-table-wrap::-webkit-scrollbar,
+  .welder-detail-panel::-webkit-scrollbar { width: 8px; height: 8px; }
+  .welder-table-wrap::-webkit-scrollbar-track,
+  .welder-detail-panel::-webkit-scrollbar-track { background: transparent; }
+  .welder-table-wrap::-webkit-scrollbar-thumb,
+  .welder-detail-panel::-webkit-scrollbar-thumb {
+    background: rgba(201,169,97,0.28);
+    border-radius: 100px;
+  }
+  .welder-table-wrap::-webkit-scrollbar-thumb:hover,
+  .welder-detail-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(201,169,97,0.55);
+  }
+  body.dark .welder-table-wrap, body.dark .welder-detail-panel {
+    scrollbar-color: rgba(201,169,97,0.22) transparent;
+  }
+  body.dark .welder-table-wrap::-webkit-scrollbar-thumb,
+  body.dark .welder-detail-panel::-webkit-scrollbar-thumb {
+    background: rgba(201,169,97,0.22);
+  }
+  body.dark .welder-table-wrap::-webkit-scrollbar-thumb:hover,
+  body.dark .welder-detail-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(201,169,97,0.45);
+  }
+
   /* ===== Master/detail layout for welder subtabs =====
      Top: toolbar (search + count). Below: welder list (left, 380px) +
      certificate panel (right, fills remaining space, sticky). Replaces
