@@ -2160,6 +2160,80 @@
     padding: 2px 0 6px;
   }
   .sb-children.open { display: block; }
+
+  /* ===== Project cards (Notion-style) — wraps each .sb-item + .sb-children
+     in #sb-projects-list. The existing .expanded / .open classes on the
+     inner .sb-item / .sb-children still drive expand/collapse. ===== */
+  .sb-project-card {
+    margin: 6px 14px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color .15s, background .15s;
+  }
+  body.dark .sb-project-card { border-color: rgba(255,255,255,0.08); }
+  /* Active card (its inner .sb-item is .expanded) gets a gold accent */
+  .sb-project-card:has(.sb-item.expanded) {
+    border-color: rgba(201,169,97,0.4);
+    background: rgba(201,169,97,0.04);
+  }
+  body.dark .sb-project-card:has(.sb-item.expanded) {
+    border-color: rgba(201,169,97,0.45);
+    background: rgba(201,169,97,0.06);
+  }
+  /* The card header reuses .sb-item but stripped of its own border-left
+     active accent (the card itself shows active state). */
+  .sb-project-card > .sb-item {
+    border-left: none;
+    padding: 10px 12px;
+    background: transparent;
+  }
+  .sb-project-card > .sb-item:hover { background: rgba(255,255,255,0.03); }
+  body.dark .sb-project-card > .sb-item:hover { background: rgba(201,169,97,0.05); }
+  .sb-project-card > .sb-item.active,
+  .sb-project-card > .sb-item.expanded { background: transparent; border-left: none; }
+  /* Two-line meta (project name + 1-line description) */
+  .sb-project-card-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+  }
+  .sb-project-card-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+  body.dark .sb-project-card-name { color: #e6edf3; }
+  .sb-project-card:has(.sb-item.expanded) .sb-project-card-name {
+    color: var(--accent);
+  }
+  .sb-project-card-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.25;
+  }
+  body.dark .sb-project-card-desc { color: #8b949e; }
+  /* Tree tucks INSIDE the card with a faint divider above */
+  .sb-project-card > .sb-children {
+    border-top: 1px solid rgba(10,37,64,0.06);
+    margin: 0 8px;
+    padding: 4px 0 8px;
+  }
+  body.dark .sb-project-card > .sb-children { border-top-color: rgba(201,169,97,0.12); }
+  /* Tighter sub-rows inside cards — reclaim the indent eaten by the card padding */
+  .sb-project-card .sb-sub  { padding-left: 24px; }
+  .sb-project-card .sb-sub3 { padding-left: 38px; }
   .sb-sub {
     padding: 6px 16px 6px 42px;
     font-size: 12.5px;
@@ -10445,10 +10519,10 @@
 
   // ------------- BUILD PROJECTS SIDEBAR ------------------
   var PROJECTS = [
-    {id:'skg', label:'SKG'},
-    {id:'htu', label:'HTU'},
-    {id:'hpu', label:'HPU'},
-    {id:'ppcl', label:'PPCL'},
+    {id:'skg',  label:'SKG',  desc:'Storage tanks & piping'},
+    {id:'htu',  label:'HTU',  desc:'Hydrocarbon treatment unit'},
+    {id:'hpu',  label:'HPU',  desc:'Heat / power utilities'},
+    {id:'ppcl', label:'PPCL', desc:''},
   ];
 
   var SKG_GROUPS = [
@@ -10474,9 +10548,20 @@
       var cnt = getCount(projBtn);
       var logoEl = projBtn ? projBtn.querySelector('.project-logo') : null;
       var logoSrc = logoEl ? logoEl.src : '';
+      // Project card wrapper — contains the header (.sb-item) + the
+      // tree (.sb-children). The existing JS toggles .expanded on the
+      // header and .open on the children container; we just restyle.
+      html += '<div class="sb-project-card" data-project="' + p.id + '">';
+      var icon = logoSrc
+        ? '<img class="sb-logo" src="' + logoSrc + '" alt="">'
+        : '<span class="sb-ico ' + p.id + '">' + esc(p.id.toUpperCase()) + '</span>';
+      var meta = '<div class="sb-project-card-meta">'
+                 + '<div class="sb-project-card-name">' + esc(p.label) + '</div>'
+                 + (p.desc ? '<div class="sb-project-card-desc">' + esc(p.desc) + '</div>' : '')
+                 + '</div>';
       html += '<div class="sb-item" data-project="' + p.id + '">'
-            + (logoSrc ? '<img class="sb-logo" src="' + logoSrc + '" alt="">' : '<span class="sb-ico ' + p.id + '">' + esc(p.id.toUpperCase()) + '</span>')
-            + '<span class="sb-label">' + esc(p.label) + '</span>'
+            + icon
+            + meta
             + (cnt ? '<span class="sb-cnt">' + esc(cnt) + '</span>' : '')
             + '</div>';
       // Children: SKG has full tree; HTU/HPU groups built dynamically
@@ -10509,6 +10594,7 @@
         // For HTU/HPU/PPCL we add a child container that gets populated when project selected
         html += '<div class="sb-children" data-parent="' + p.id + '" data-dynamic="1"></div>';
       }
+      html += '</div>'; // close .sb-project-card
     });
     list.innerHTML = html;
   }
