@@ -10475,9 +10475,14 @@
       var deptBtn = $('qms-dept-' + d.id);
       var cnt = getCount(deptBtn);
       var ico = qmsIcoSvg(d.id) || esc(d.id.toUpperCase()); // SVG when defined, fall back to letter code
+      // Wrap each department in the same .sb-project-card shell we use on
+      // PROJECT QC. .sb-item.expanded inside drives the active state.
+      html += '<div class="sb-project-card" data-qms-dept="' + d.id + '">';
       html += '<div class="sb-item" data-qms-dept="' + d.id + '">'
             + '<span class="sb-ico ' + d.id + '">' + ico + '</span>'
-            + '<span class="sb-label">' + esc(d.label) + '</span>'
+            + '<div class="sb-project-card-meta">'
+              + '<div class="sb-project-card-name">' + esc(d.label) + '</div>'
+            + '</div>'
             + (cnt ? '<span class="sb-cnt">' + esc(cnt) + '</span>' : '')
             + '</div>';
       // Children based on dept
@@ -10503,6 +10508,7 @@
         // For other depts — populated dynamically when dept is clicked
         html += '<div class="sb-children" data-parent="' + d.id + '" data-dynamic="1"></div>';
       }
+      html += '</div>'; // close .sb-project-card
     });
     list.innerHTML = html;
   }
