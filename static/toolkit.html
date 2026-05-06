@@ -749,30 +749,28 @@
      the old "table on top, detail beneath" layout that forced scrolling
      all the way down to read a welder's certificates. */
   /* Only the ACTIVE welder subtab gets the grid layout; others stay
-     display:none from .subtab-panel default. */
+     display:none from .subtab-panel default. The search toolbar is
+     hidden — only 21 welders, scrolling is enough. */
   #subtab-pipeline-w.active,
   #subtab-inservice-w.active,
   #subtab-piping-w.active {
     display: grid;
     grid-template-columns: 380px 1fr;
-    grid-template-areas: "toolbar toolbar" "master detail";
     gap: 14px 18px;
   }
   #subtab-pipeline-w.active > .welder-toolbar,
   #subtab-inservice-w.active > .welder-toolbar,
-  #subtab-piping-w.active  > .welder-toolbar { grid-area: toolbar; }
+  #subtab-piping-w.active  > .welder-toolbar { display: none; }
   #subtab-pipeline-w.active > .welder-table-wrap,
   #subtab-inservice-w.active > .welder-table-wrap,
   #subtab-piping-w.active  > .welder-table-wrap {
-    grid-area: master;
-    max-height: calc(100vh - 220px);
+    max-height: calc(100vh - 180px);
     overflow-y: auto;
     border-radius: 11px;
   }
   #subtab-pipeline-w.active > .welder-detail-panel,
   #subtab-inservice-w.active > .welder-detail-panel,
   #subtab-piping-w.active  > .welder-detail-panel {
-    grid-area: detail;
     margin-top: 0 !important;
     display: block;
     position: sticky;
