@@ -406,9 +406,14 @@
 
     // The auth-guard re-asserts body.dark on every page load when it
     // reveals the portal screen. Watch for that and reapply the user's
-    // chosen theme so light mode actually sticks.
+    // chosen theme so light mode actually sticks. Belt-and-suspenders:
+    // also re-apply on a few timeouts (in case the auth-guard's add()
+    // sneaks in via a setTimeout we don't observe synchronously).
     new MutationObserver(function(){ applyTheme(readTheme()); })
       .observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    [0, 50, 150, 400, 1000].forEach(function(d){
+      setTimeout(function(){ applyTheme(readTheme()); }, d);
+    });
 
     function bindTheme() {
       var t = document.getElementById('theme-toggle');
