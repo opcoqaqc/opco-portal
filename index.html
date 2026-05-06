@@ -10549,6 +10549,18 @@
     {id:'wps', label:'WPS'},
     {id:'wqt', label:'WQT'},
   ];
+
+  // Per-category SVG paths for the .sb-ico badges. Same artwork the
+  // .library-tab buttons use, so the tab + sidebar logos read as one set.
+  var LIBRARY_ICONS = {
+    pqr: '<path d="M9 2h6a1 1 0 0 1 1 1v1h2a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2V3a1 1 0 0 1 1-1z"/><path d="M9 12l2 2 4-4"/>',
+    wps: '<path d="M14 3l-2 5h4l-6 13 2-9H8l4-9h2z"/>',
+    wqt: '<circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 3.5-7 8-7 1.4 0 2.7.3 3.8.8"/><path d="M16 18l2 2 4-4"/>',
+  };
+  function libIcoSvg(id){
+    var p = LIBRARY_ICONS[id];
+    return p ? '<svg viewBox="0 0 24 24" aria-hidden="true">' + p + '</svg>' : '';
+  }
   var LIBRARY_SUBS = [
     {id:'pipeline', label:'Pipeline'},
     {id:'piping', label:'Piping'},
@@ -10562,9 +10574,13 @@
     LIBRARY_CATS.forEach(function(c) {
       var btn = $('library-' + c.id + '-btn');
       var cnt = getCount(btn);
-      var icoText = c.id.toUpperCase();
+      // Skip empty categories so the sidebar mirrors the tab-bar's
+      // hide-empty behaviour (consistent with the auto-hide rule we
+      // ship for .sub-tab-btn).
+      if (!cnt || cnt === '0') return;
+      var ico = libIcoSvg(c.id) || esc(c.id.toUpperCase()); // SVG, fall back to letter code
       html += '<div class="sb-item" data-library="' + c.id + '">'
-            + '<span class="sb-ico ' + c.id + '">' + esc(icoText) + '</span>'
+            + '<span class="sb-ico ' + c.id + '">' + ico + '</span>'
             + '<span class="sb-label">' + esc(c.label) + '</span>'
             + (cnt ? '<span class="sb-cnt">' + esc(cnt) + '</span>' : '')
             + '</div>';
