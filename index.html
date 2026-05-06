@@ -387,20 +387,39 @@
     }
 
     // Theme toggle (matches toolkit.html behaviour)
-    var saved = null;
-    try { saved = localStorage.getItem('theme'); } catch (e) {}
-    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var initialDark = (saved === 'dark') || (saved === null && prefersDark);
-    if (initialDark) document.body.classList.add('dark');
+    function readTheme() {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      if (saved === 'dark' || saved === 'light') return saved;
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return prefersDark ? 'dark' : 'light';
+    }
+    function applyTheme(theme) {
+      // Always set BOTH directions explicitly so the obfuscated auth-guard's
+      // forced classList.add('dark') (which fires after our init script as
+      // part of its UI reveal) doesn't pin the page to dark when the user
+      // has chosen light.
+      if (theme === 'dark') document.body.classList.add('dark');
+      else                  document.body.classList.remove('dark');
+    }
+    applyTheme(readTheme());
+
+    // The auth-guard re-asserts body.dark on every page load when it
+    // reveals the portal screen. Watch for that and reapply the user's
+    // chosen theme so light mode actually sticks.
+    new MutationObserver(function(){ applyTheme(readTheme()); })
+      .observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
     function bindTheme() {
       var t = document.getElementById('theme-toggle');
       if (!t) return;
-      t.setAttribute('aria-checked', initialDark ? 'true' : 'false');
+      var dark = readTheme() === 'dark';
+      t.setAttribute('aria-checked', dark ? 'true' : 'false');
       t.addEventListener('click', function () {
-        var isDark = document.body.classList.toggle('dark');
-        t.setAttribute('aria-checked', isDark ? 'true' : 'false');
-        try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) {}
+        var nowDark = !document.body.classList.contains('dark');
+        try { localStorage.setItem('theme', nowDark ? 'dark' : 'light'); } catch (e) {}
+        applyTheme(nowDark ? 'dark' : 'light');
+        t.setAttribute('aria-checked', nowDark ? 'true' : 'false');
       });
     }
     if (document.readyState === 'loading') {
