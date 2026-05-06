@@ -9734,7 +9734,10 @@
 
 <script>
   // --- Dark Mode ---
-  const THEME_KEY = 'opco_portal_theme';
+  // Use the same localStorage key the landing + toolkit / projects / welders
+  // pages already use, so a theme switched on the landing actually reaches
+  // documents.html. Old "opco_portal_theme" key is read once for back-compat.
+  const THEME_KEY = 'theme';
   function applyTheme(theme) {
     const icon = document.getElementById('theme-icon');
     if (theme === 'dark') {
@@ -9754,8 +9757,10 @@
   // Apply saved theme on load — default to DARK (body already has .dark class)
   (function() {
     try {
-      const saved = localStorage.getItem(THEME_KEY);
-      // Kaydedilmis tercih varsa onu uygula; yoksa body.dark zaten var, sadece ikonu ayarla
+      // Prefer the canonical 'theme' key; fall back to the legacy
+      // 'opco_portal_theme' key if a returning user only has that set.
+      let saved = localStorage.getItem(THEME_KEY)
+               || localStorage.getItem('opco_portal_theme');
       applyTheme(saved || 'dark');
     } catch(e) {
       applyTheme('dark');
