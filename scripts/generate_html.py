@@ -706,6 +706,12 @@ def update_tab_counts(html, all_rows, skg_counts=None):
         'projects': 'OPCO Portal Documents/PROJECTS/',
         'library':  'OPCO Portal Documents/LIBRARY/',
     }
+    # Library sub-tabs (library-pqr / library-wps / library-wqt) need their
+    # own per-prefix counts; otherwise the regex match falls through and the
+    # hardcoded HTML number stays, which goes stale the moment a Drive sub-
+    # folder gains or loses a document.
+    for slug, _label, drive_path in LIBRARY_SECTIONS:
+        COUNT_PREFIXES[slug] = drive_path.rstrip('/') + '/'
     skg_counts = skg_counts or {}
 
     def count_files(prefix):

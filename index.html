@@ -2606,6 +2606,27 @@
       WQT <span class="count" data-count="library-wqt">3</span>
     </button>
   </div>
+  <script>
+    // Hide any sub-tab whose Drive-driven count is "0" so an emptied folder
+    // (e.g. all WQT documents removed from Drive) doesn't leave a stub tab
+    // labeled "WQT 0" in the nav. Runs once on DOMContentLoaded — the counts
+    // get baked at generate_html.py time, no dynamic updates after that.
+    (function(){
+      function hideEmptyCountTabs(){
+        document.querySelectorAll('.sub-tab-btn .count[data-count]').forEach(function(c){
+          if ((c.textContent || '').trim() === '0') {
+            var btn = c.closest('.sub-tab-btn');
+            if (btn) btn.style.display = 'none';
+          }
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', hideEmptyCountTabs);
+      } else {
+        hideEmptyCountTabs();
+      }
+    })();
+  </script>
   <!-- LIBRARY 3. seviye: In-Service / Pipeline / Piping (PQR-WPS-WQT altinda) -->
   <div class="sub-tabs-inner sub-tabs-level2" id="library-subgroups" style="display:none;">
     <button class="sub-tab-btn group-btn" id="library-sub-pipeline-btn" onclick="selectLibrarySubgroup('pipeline')">Pipeline <span class="count" data-count-dyn="pipeline">0</span></button>
