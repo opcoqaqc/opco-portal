@@ -1279,6 +1279,14 @@
         }
       });
     });
+    // Auto-select the first welder on first render so the detail panel
+    // never starts empty.
+    if (!welderSelectedStamp && rows.length) {
+      welderSelectedStamp = rows[0].stamp;
+      var firstTr = tbody.querySelector('tr');
+      if (firstTr) firstTr.classList.add('active');
+      renderWelderQDetail(rows[0].stamp);
+    }
   }
 
   function welderItem(label, value) {
@@ -1532,6 +1540,13 @@
         }
       });
     });
+    // Auto-select first welder on first render.
+    if (!welderIsSelectedStamp && rows.length) {
+      welderIsSelectedStamp = rows[0].stamp;
+      var firstTr = tbody.querySelector('tr');
+      if (firstTr) firstTr.classList.add('active');
+      renderInServiceDetail(rows[0].stamp);
+    }
   }
 
   function renderInServiceDetail(stamp) {
@@ -2096,6 +2111,13 @@
         }
       });
     });
+    // Auto-select first welder on first render.
+    if (!welderPpSelectedStamp && rows.length) {
+      welderPpSelectedStamp = rows[0].stamp;
+      var firstTr = tbody.querySelector('tr');
+      if (firstTr) firstTr.classList.add('active');
+      renderPipingWelderDetail(rows[0].stamp);
+    }
   }
 
   // Render a single qualification card inside the welder detail panel.
