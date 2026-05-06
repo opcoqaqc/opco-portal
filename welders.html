@@ -761,10 +761,15 @@
   #subtab-pipeline-w.active > .welder-toolbar,
   #subtab-inservice-w.active > .welder-toolbar,
   #subtab-piping-w.active  > .welder-toolbar { display: none; }
+  /* Master + detail share the same height envelope so they line up flush
+     (was: master shorter than detail). Each pane scrolls independently. */
   #subtab-pipeline-w.active > .welder-table-wrap,
   #subtab-inservice-w.active > .welder-table-wrap,
-  #subtab-piping-w.active  > .welder-table-wrap {
-    max-height: calc(100vh - 180px);
+  #subtab-piping-w.active  > .welder-table-wrap,
+  #subtab-pipeline-w.active > .welder-detail-panel,
+  #subtab-inservice-w.active > .welder-detail-panel,
+  #subtab-piping-w.active  > .welder-detail-panel {
+    height: calc(100vh - 100px);
     overflow-y: auto;
     border-radius: 11px;
   }
@@ -776,8 +781,6 @@
     position: sticky;
     top: 80px;
     align-self: start;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
   }
   /* Empty-state message when no welder is selected (panel.innerHTML is '') */
   #subtab-pipeline-w.active  > .welder-detail-panel:empty::before,
