@@ -1803,6 +1803,17 @@
   .preview-header .pv-icon.docx { background: #2563EB; }
   .preview-header .pv-icon.xlsx { background: #16A34A; }
   .preview-header .pv-icon.other{ background: #6B7280; }
+  /* When the preview pulls the source .doc-icon directly (so the badge
+     mirrors the document row), shrink it to header size + tighten the
+     embedded shield SVG. */
+  .preview-header .doc-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+  }
+  .preview-header .doc-icon.multi svg { width: 22px; height: 22px; }
 
   .preview-title-wrap { flex: 1; min-width: 0; }
   .preview-title {
@@ -9850,6 +9861,24 @@
     return 'other';
   }
 
+  // Mirror the source row's .doc-icon into the preview header so the
+  // user sees the same badge (PDF / DOCX / XLSX coloured tile or the
+  // grey shield for "multi") instead of a generic "OTHER" label.
+  function _setHeaderIcon(iconNode) {
+    var slot = document.getElementById('pv-icon');
+    if (!slot) return;
+    if (iconNode) {
+      // Replace the slot with a clone of the source .doc-icon so styling
+      // (background colour + embedded SVG) matches 1-for-1.
+      var clone = iconNode.cloneNode(true);
+      clone.id = 'pv-icon';
+      slot.parentNode.replaceChild(clone, slot);
+    } else {
+      slot.className = 'pv-icon other';
+      slot.textContent = 'DOC';
+    }
+  }
+
   function open(item) {
     const titleNode = item.querySelector('.doc-title');
     const metaNode  = item.querySelector('.doc-meta');
@@ -9863,9 +9892,7 @@
     // Header guncelle
     titleEl.textContent = titleNode ? titleNode.textContent.trim() : 'Document';
     metaEl.textContent  = metaNode  ? metaNode.textContent.trim()  : '';
-    const type = _typeFromIcon(iconNode ? iconNode.className : '');
-    iconEl.className = 'pv-icon ' + type;
-    iconEl.textContent = type.toUpperCase();
+    _setHeaderIcon(iconNode);
 
     // Action button'lar
     const openUrl = id ? ('https://drive.google.com/file/d/' + id + '/view') : url;
