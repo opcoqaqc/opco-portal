@@ -92,6 +92,10 @@ jobs:
           cp -v static/toolkit.bundle.js deploy_pkg/toolkit.bundle.js
           cp -v static/projects.html     deploy_pkg/projects.html
           cp -v static/welders.html      deploy_pkg/welders.html
+          # Static asset folders (images, fonts, etc.) — copy whole if present
+          if [ -d static/img ]; then
+            cp -rv static/img            deploy_pkg/img
+          fi
           # Auto-generated file from Drive
           cp -v documents.html           deploy_pkg/documents.html
           # Custom domain for GitHub Pages
