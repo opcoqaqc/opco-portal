@@ -727,21 +727,40 @@
   }
   /* Row 1 cards (Welding methods + Pipe selection) stretch to equal
      height. Content stays flush to the top of both cards so the
-     "Welding methods" / "Pipe selection" headers align horizontally. */
+     "Welding methods" / "Pipe selection" headers align horizontally.
+     The default .setup-panel has asymmetric margins (16px-top on the
+     first, 0 on adjacent) which knocks the top edges out of sync in
+     a grid. Zero them out — grid gap already spaces the cells. */
   body[data-ctx="toolkit"] #subtab-single > #single-method-panel,
   body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    margin: 0;
   }
   /* Row 1 split: Welding methods (col 1) | Pipe selection (col 2) */
   body[data-ctx="toolkit"] #subtab-single > #single-method-panel  { grid-column: 1; }
   body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector { grid-column: 2; }
   /* Row 2: Bevel parameters + cross-section side-by-side, full width.
      The existing .sliders-bevel-grid already lays out sliders | bevel
-     in its own 2-col grid — we just span it across both outer columns. */
+     in its own 2-col grid — we just span it across both outer columns
+     and shrink the cross-section SVG so the row stays compact (matches
+     the sliders' natural height instead of stretching the whole row to
+     fit a tall diagram). */
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid {
     grid-column: 1 / -1;
+    align-items: start;
+  }
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col {
+    height: auto;
+  }
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col .bevel-box {
+    flex: 0 0 auto;
+  }
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid #bevel-svg {
+    max-height: 220px;
+    width: auto;
+    margin: 0 auto;
   }
   /* Row 3+: Pass breakdown, per-joint results, total — full width below */
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
