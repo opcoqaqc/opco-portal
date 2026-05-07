@@ -718,7 +718,7 @@
      pass-breakdown, results-grid, totals. We flatten .sliders-bevel-grid
      via display:contents so we can place its sliders-col on the left and
      bevel-col on the right with the rest of the inputs/outputs. */
-  body[data-ctx="toolkit"] #subtab-single {
+  body[data-ctx="toolkit"] #subtab-single.active {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-auto-flow: row dense;
@@ -728,7 +728,7 @@
   /* Strip the inline margin-top spacers that the source HTML added on
      Pass breakdown / Per-joint results / Total project — the grid's
      own gap already handles row spacing. */
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
+  body[data-ctx="toolkit"] #subtab-single.active > .sliders-bevel-grid ~ * {
     margin-top: 0 !important;
   }
   /* Row 1 cards (Welding methods + Pipe selection) stretch to equal
@@ -737,30 +737,30 @@
      The default .setup-panel has asymmetric margins (16px-top on the
      first, 0 on adjacent) which knocks the top edges out of sync in
      a grid. Zero them out — grid gap already spaces the cells. */
-  body[data-ctx="toolkit"] #subtab-single > #single-method-panel,
-  body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector {
+  body[data-ctx="toolkit"] #subtab-single.active > #single-method-panel,
+  body[data-ctx="toolkit"] #subtab-single.active > #single-pipe-selector {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     margin: 0;
   }
   /* Row 1 split: Welding methods (col 1) | Pipe selection (col 2) */
-  body[data-ctx="toolkit"] #subtab-single > #single-method-panel  { grid-column: 1; }
-  body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector { grid-column: 2; }
+  body[data-ctx="toolkit"] #subtab-single.active > #single-method-panel  { grid-column: 1; }
+  body[data-ctx="toolkit"] #subtab-single.active > #single-pipe-selector { grid-column: 2; }
   /* Row 2: Bevel parameters + cross-section side-by-side, full width.
      The existing .sliders-bevel-grid already lays out sliders | bevel
      in its own 2-col grid — we just span it across both outer columns
      and shrink the cross-section SVG so the row stays compact (matches
      the sliders' natural height instead of stretching the whole row to
      fit a tall diagram). */
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid {
+  body[data-ctx="toolkit"] #subtab-single.active > .sliders-bevel-grid {
     grid-column: 1 / -1;
     align-items: stretch;   /* both cards land at the same height */
   }
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col {
+  body[data-ctx="toolkit"] #subtab-single.active > .sliders-bevel-grid > .bevel-col {
     height: 100%;
   }
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col .bevel-box {
+  body[data-ctx="toolkit"] #subtab-single.active > .sliders-bevel-grid > .bevel-col .bevel-box {
     flex: 1;
     padding: 10px 14px 6px;
     justify-content: flex-start;
@@ -769,7 +769,7 @@
      The left sliders card is ~190px naturally; with align-items:stretch
      both rows resolve to the taller one — keep that around 200-210px so
      the sliders card has just a bit of breathing room at the bottom. */
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid #bevel-svg {
+  body[data-ctx="toolkit"] #subtab-single.active > .sliders-bevel-grid #bevel-svg {
     max-height: 160px;
     width: auto;
     margin: -4px auto 0;
@@ -777,11 +777,11 @@
   }
   /* Soft padding on the left sliders card so its bottom doesn't kiss
      the last slider — gives the requested "birazcik bosluk". */
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .sliders-col {
+  body[data-ctx="toolkit"] #subtab-single.active > .sliders-bevel-grid > .sliders-col {
     padding-bottom: 18px;
   }
   /* Row 3+: Pass breakdown, per-joint results, total — full width below */
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
+  body[data-ctx="toolkit"] #subtab-single.active > .sliders-bevel-grid ~ * {
     grid-column: 1 / -1;
   }
 
