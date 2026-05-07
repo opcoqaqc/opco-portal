@@ -726,17 +726,13 @@
     align-items: stretch;
   }
   /* Row 1 cards (Welding methods + Pipe selection) stretch to equal
-     height. Methods has less content than Pipe, so we vertically
-     distribute its content inside the now-taller card so it doesn't
-     hug the top with a big empty bottom. */
+     height. Content stays flush to the top of both cards so the
+     "Welding methods" / "Pipe selection" headers align horizontally. */
   body[data-ctx="toolkit"] #subtab-single > #single-method-panel,
   body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-  }
-  body[data-ctx="toolkit"] #subtab-single > #single-method-panel {
-    justify-content: space-around;  /* spread the content vertically */
   }
   /* Row 1 split: Welding methods (col 1) | Pipe selection (col 2) */
   body[data-ctx="toolkit"] #subtab-single > #single-method-panel  { grid-column: 1; }
