@@ -701,16 +701,44 @@
   .welder-qual-card-title { font-size: 13px; font-weight: 600; color: #2c2c2a; }
   .welder-qual-card-cert  { font-size: 11px; color: #185fa5; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 
-  /* ===== Welders / Projects: break out of the 760px .container =====
-     The calculator pages (Consumable, Performance, etc.) read fine at
-     760px wide, but the welders + projects pages have a master/detail
-     split that needs much more horizontal room. Let the .container fill
-     the available width on those data-ctx contexts. */
+  /* ===== Welders / Projects / Toolkit: break out of the 760px .container.
+     Welders + projects need horizontal room for their master/detail
+     split. Toolkit (calculators) gets full width too — Consumable
+     specifically uses the extra space for inputs-left / live-preview-right. */
   body[data-ctx="welders"]  .opco-content > .container,
-  body[data-ctx="projects"] .opco-content > .container {
+  body[data-ctx="projects"] .opco-content > .container,
+  body[data-ctx="toolkit"]  .opco-content > .container {
     max-width: none;
     margin: 18px 24px;
     padding: 22px 26px;
+  }
+
+  /* ===== Consumable calculator: 2-column split (inputs / live preview).
+     Source order is: methods, pipe, sliders-bevel-grid (sliders+diagram),
+     pass-breakdown, results-grid, totals. We flatten .sliders-bevel-grid
+     via display:contents so we can place its sliders-col on the left and
+     bevel-col on the right with the rest of the inputs/outputs. */
+  body[data-ctx="toolkit"] #subtab-single {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-auto-flow: row dense;
+    gap: 16px;
+    align-items: start;
+  }
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid { display: contents; }
+  /* Inputs go to the left column */
+  body[data-ctx="toolkit"] #subtab-single > #single-method-panel,
+  body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector,
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .sliders-col {
+    grid-column: 1;
+  }
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col {
+    grid-column: 2;
+  }
+  /* All output panels (pass breakdown, results-grid, totals) follow
+     .sliders-bevel-grid in source order — push them to the right column. */
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
+    grid-column: 2;
   }
 
   /* Gold scrollbars on the welders panes (matches the sidebar). */
