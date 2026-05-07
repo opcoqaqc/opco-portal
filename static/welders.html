@@ -732,6 +732,12 @@
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .sliders-col {
     grid-column: 1;
   }
+  /* Force visual order in the left column so the cross-section sits
+     directly under Welding methods (where Pipe selection used to be).
+     Source order is methods → sliders-col → bevel-col, so we override:
+     bevel-col goes BEFORE sliders-col via the `order` property. */
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col   { order: 1; }
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .sliders-col { order: 2; }
   /* RIGHT column: Pipe selection, Pass breakdown, per-joint results, totals */
   body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector,
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
