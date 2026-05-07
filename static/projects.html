@@ -749,23 +749,30 @@
      fit a tall diagram). */
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid {
     grid-column: 1 / -1;
-    align-items: start;
+    align-items: stretch;   /* both cards land at the same height */
   }
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col {
-    height: auto !important;
+    height: 100%;
   }
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col .bevel-box {
-    flex: 0 0 auto !important;
-    /* Tighten the cross-section card: pull SVG up + drop the trailing
-       empty band below it. */
-    padding: 10px 14px 4px;
+    flex: 1;
+    padding: 10px 14px 6px;
     justify-content: flex-start;
   }
+  /* Cap the SVG at 160px so the right card stays "basık" (shallow).
+     The left sliders card is ~190px naturally; with align-items:stretch
+     both rows resolve to the taller one — keep that around 200-210px so
+     the sliders card has just a bit of breathing room at the bottom. */
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid #bevel-svg {
-    max-height: 220px;
+    max-height: 160px;
     width: auto;
-    margin: -8px auto 0;     /* shift the diagram a bit higher inside the card */
+    margin: -4px auto 0;
     display: block;
+  }
+  /* Soft padding on the left sliders card so its bottom doesn't kiss
+     the last slider — gives the requested "birazcik bosluk". */
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .sliders-col {
+    padding-bottom: 18px;
   }
   /* Row 3+: Pass breakdown, per-joint results, total — full width below */
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
