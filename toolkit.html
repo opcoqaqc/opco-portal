@@ -726,17 +726,14 @@
     align-items: start;
   }
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid { display: contents; }
-  /* Inputs go to the left column */
+  /* LEFT column: Welding methods, Bevel cross-section diagram, Bevel sliders */
   body[data-ctx="toolkit"] #subtab-single > #single-method-panel,
-  body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector,
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col,
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .sliders-col {
     grid-column: 1;
   }
-  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col {
-    grid-column: 2;
-  }
-  /* All output panels (pass breakdown, results-grid, totals) follow
-     .sliders-bevel-grid in source order — push them to the right column. */
+  /* RIGHT column: Pipe selection, Pass breakdown, per-joint results, totals */
+  body[data-ctx="toolkit"] #subtab-single > #single-pipe-selector,
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
     grid-column: 2;
   }
