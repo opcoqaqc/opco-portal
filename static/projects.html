@@ -752,15 +752,20 @@
     align-items: start;
   }
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col {
-    height: auto;
+    height: auto !important;
   }
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid > .bevel-col .bevel-box {
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
+    /* Tighten the cross-section card: pull SVG up + drop the trailing
+       empty band below it. */
+    padding: 10px 14px 4px;
+    justify-content: flex-start;
   }
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid #bevel-svg {
     max-height: 220px;
     width: auto;
-    margin: 0 auto;
+    margin: -8px auto 0;     /* shift the diagram a bit higher inside the card */
+    display: block;
   }
   /* Row 3+: Pass breakdown, per-joint results, total — full width below */
   body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
