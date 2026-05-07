@@ -27,109 +27,63 @@
     pointer-events: none;
   }
 
-  /* ============ LOGIN OVERLAY (cinematic weld-arc) ============ */
+  /* ============ LOGIN OVERLAY (B&W photo carousel) ============ */
   #__opco_auth_overlay {
     position: fixed; inset: 0; z-index: 99999;
-    background: #06070a;
+    background: #050505;
     overflow: hidden;
     padding: 0;
   }
-  #__opco_auth_overlay.dark { background: #06070a; }
-  /* blue arc glow, mid-left */
-  #__opco_auth_overlay::before {
-    content: ''; position: absolute;
-    left: 18%; top: 36%;
-    width: 520px; height: 520px;
-    border-radius: 50%;
-    background: radial-gradient(circle,
-      rgba(105,180,255,0.45) 0%,
-      rgba(105,180,255,0.16) 25%,
-      rgba(105,180,255,0)    60%);
-    filter: blur(8px);
-    pointer-events: none;
-  }
-  /* warm spark glow, lower-right */
+  #__opco_auth_overlay.dark { background: #050505; }
+  /* readability tint — darker on right (form side) and bottom (tagline) */
   #__opco_auth_overlay::after {
-    content: ''; position: absolute;
-    right: 14%; bottom: 14%;
-    width: 360px; height: 360px;
-    border-radius: 50%;
-    background: radial-gradient(circle,
-      rgba(255,170,80,0.32) 0%,
-      rgba(255,140,40,0.10) 30%,
-      rgba(0,0,0,0)         60%);
-    filter: blur(10px);
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(90deg,  rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.78) 100%),
+      linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.10) 35%, rgba(0,0,0,0.10) 60%, rgba(0,0,0,0.65) 100%);
     pointer-events: none;
   }
-
-  /* ----- animations: arc flicker, endpoint pulse, sparks twinkle, glow breath ----- */
-  @keyframes opcoGlowBreathe {
-    0%, 100% { transform: scale(1);    opacity: 1;   }
-    50%      { transform: scale(1.08); opacity: 0.82; }
+  /* photo background layers, slow crossfade */
+  .__opco_bg_layer {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: grayscale(1) contrast(1.05) brightness(0.7);
+    opacity: 0;
+    will-change: opacity, transform;
+    animation: opcoCrossfade 28s ease-in-out infinite, opcoSlowZoom 28s ease-in-out infinite;
   }
-  #__opco_auth_overlay::before {
-    animation: opcoGlowBreathe 5s ease-in-out infinite;
+  .__opco_bg_layer:nth-child(1) { background-image: url('img/login-bg-1.jpg'); animation-delay:   0s,   0s; }
+  .__opco_bg_layer:nth-child(2) { background-image: url('img/login-bg-2.jpg'); animation-delay:  -7s,  -7s; }
+  .__opco_bg_layer:nth-child(3) { background-image: url('img/login-bg-3.jpg'); animation-delay: -14s, -14s; }
+  .__opco_bg_layer:nth-child(4) { background-image: url('img/login-bg-4.jpg'); animation-delay: -21s, -21s; }
+  @keyframes opcoCrossfade {
+    0%, 22%   { opacity: 1; }   /* visible */
+    28%, 97%  { opacity: 0; }   /* hidden */
+    100%      { opacity: 1; }   /* fades back in over the wrap (3%) */
   }
-  /* irregular flicker — multi-step keyframes feel chaotic, like a real arc */
-  @keyframes opcoArcFlicker {
-    0%, 18%, 26%, 60%, 100% { opacity: 0.92; }
-    20%, 24%                { opacity: 0.30; }
-    42%                     { opacity: 1.00; }
-    44%                     { opacity: 0.55; }
-    78%                     { opacity: 0.40; }
-    82%                     { opacity: 0.95; }
+  /* very subtle Ken-Burns zoom — adds life without being a spinning carousel */
+  @keyframes opcoSlowZoom {
+    0%   { transform: scale(1.04); }
+    100% { transform: scale(1.10); }
   }
-  .__opco_brand_arc > g:nth-of-type(1) { animation: opcoArcFlicker 1.8s steps(1, end) infinite; }
-  .__opco_brand_arc > g:nth-of-type(2) { animation: opcoArcFlicker 2.1s steps(1, end) 0.3s infinite; }
-  /* endpoint pulse — outer ring scales up & fades, like a sparking electrode */
-  @keyframes opcoArcPulse {
-    0%   { transform: scale(0.6); opacity: 0.85; }
-    100% { transform: scale(2.6); opacity: 0;    }
-  }
-  .__opco_brand_arc > circle:nth-of-type(2) {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: opcoArcPulse 1.6s ease-out infinite;
-  }
-  /* sparks twinkle — same animation, individual delays so they pop in sequence */
-  @keyframes opcoSparkTwinkle {
-    0%, 100% { opacity: 0.9; transform: scale(1);   }
-    50%      { opacity: 0.1; transform: scale(0.3); }
-  }
-  .__opco_brand_sparks circle {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: opcoSparkTwinkle 2.4s ease-in-out infinite;
-  }
-  .__opco_brand_sparks circle:nth-child(1) { animation-delay: 0.0s; }
-  .__opco_brand_sparks circle:nth-child(2) { animation-delay: 0.4s; }
-  .__opco_brand_sparks circle:nth-child(3) { animation-delay: 0.8s; }
-  .__opco_brand_sparks circle:nth-child(4) { animation-delay: 1.2s; }
-  .__opco_brand_sparks circle:nth-child(5) { animation-delay: 1.6s; }
-  .__opco_brand_sparks circle:nth-child(6) { animation-delay: 2.0s; }
-  /* respect reduced-motion preference */
   @media (prefers-reduced-motion: reduce) {
-    #__opco_auth_overlay::before,
-    .__opco_brand_arc > g,
-    .__opco_brand_arc > circle,
-    .__opco_brand_sparks circle { animation: none !important; }
+    .__opco_bg_layer { animation: none !important; opacity: 0; }
+    .__opco_bg_layer:nth-child(1) { opacity: 1; transform: none; }
   }
 
-  /* ----- background decoration container (was brand panel) ----- */
+  /* ----- background decoration container ----- */
   #__opco_auth_brand {
     position: absolute; inset: 0;
     pointer-events: none;
     background: transparent;
     color: #f0e4c9;
   }
-  .__opco_brand_arc {
-    position: absolute;
-    left: 28%; top: 42%;
-    width: 340px; height: 200px;
-  }
-  .__opco_brand_sparks {
+  .__opco_brand_pipework {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
+    pointer-events: none;
   }
 
   /* ----- bottom-left tagline ----- */
@@ -138,6 +92,7 @@
     left: 8%; bottom: 14%;
     max-width: 380px;
     pointer-events: auto;
+    z-index: 2;
   }
   .__opco_brand_eyebrow {
     font-size: 11px; letter-spacing: 0.4em;
@@ -170,6 +125,7 @@
     text-align: center;
     margin: 0;
     color: #e6edf3;
+    z-index: 2;
   }
   #__opco_auth_overlay.dark #__opco_auth_card {
     background: rgba(20,22,30,0.78);
@@ -428,32 +384,13 @@
 <!-- LOGIN OVERLAY -->
 <div id="__opco_auth_overlay">
 
-  <!-- BACKGROUND: arc strike + sparks + tagline (auto-collapses under 880px) -->
+  <!-- BACKGROUND: 4-photo B&W carousel + tagline (collapses under 880px) -->
   <aside id="__opco_auth_brand" aria-hidden="true">
-    <!-- arc strike -->
-    <svg class="__opco_brand_arc" viewBox="0 0 340 200">
-      <g stroke="#9ed8ff" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.85">
-        <path d="M20,180 L70,120 L110,150 L150,80 L200,140 L240,60 L300,110 L320,40"/>
-      </g>
-      <g stroke="#ffffff" stroke-width="0.8" fill="none" stroke-linecap="round">
-        <path d="M70,120 L110,150"/>
-        <path d="M150,80 L200,140"/>
-      </g>
-      <circle cx="320" cy="40" r="3" fill="#ffffff"/>
-      <circle cx="320" cy="40" r="10" fill="none" stroke="#9ed8ff" opacity="0.5"/>
-    </svg>
-    <!-- sparks scattered around the arc -->
-    <svg class="__opco_brand_sparks" viewBox="0 0 1500 950" preserveAspectRatio="none">
-      <g fill="#ffd58a" opacity="0.85">
-        <circle cx="380" cy="380" r="1.5"/>
-        <circle cx="430" cy="420" r="1"/>
-        <circle cx="510" cy="370" r="1.6"/>
-        <circle cx="600" cy="450" r="1.2"/>
-        <circle cx="320" cy="500" r="1"/>
-        <circle cx="700" cy="380" r="1.4"/>
-      </g>
-    </svg>
-    <!-- bottom-left tagline -->
+    <div class="__opco_bg_layer"></div>
+    <div class="__opco_bg_layer"></div>
+    <div class="__opco_bg_layer"></div>
+    <div class="__opco_bg_layer"></div>
+    <!-- bottom-left tagline (sits above tint) -->
     <div class="__opco_brand_tagline">
       <div class="__opco_brand_eyebrow">Orient Pipeline Co.</div>
       <div class="__opco_brand_h">Striving for Excellence.</div>
