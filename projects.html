@@ -722,8 +722,14 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-auto-flow: row dense;
-    gap: 16px;
+    gap: 10px;          /* tighter row spacing */
     align-items: stretch;
+  }
+  /* Strip the inline margin-top spacers that the source HTML added on
+     Pass breakdown / Per-joint results / Total project — the grid's
+     own gap already handles row spacing. */
+  body[data-ctx="toolkit"] #subtab-single > .sliders-bevel-grid ~ * {
+    margin-top: 0 !important;
   }
   /* Row 1 cards (Welding methods + Pipe selection) stretch to equal
      height. Content stays flush to the top of both cards so the
