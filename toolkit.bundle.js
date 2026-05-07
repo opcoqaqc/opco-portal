@@ -3478,13 +3478,16 @@
   // Print
   document.getElementById('btn-print-single').addEventListener('click', function() {
     try {
-      document.querySelector('.tab[data-tab="single"]').click();
+      // 'single' / 'mto' / 'schtable' are SUBTABS of Consumable, not top-level tabs.
+      var st = document.querySelector('.subtab[data-subtab="single"]');
+      if (st) st.click();
       setTimeout(function() { window.print(); }, 100);
     } catch (e) { alert('Print error: ' + e.message); }
   });
   document.getElementById('btn-print-mto').addEventListener('click', function() {
     try {
-      document.querySelector('.tab[data-tab="mto"]').click();
+      var st = document.querySelector('.subtab[data-subtab="mto"]');
+      if (st) st.click();
       setTimeout(function() { window.print(); }, 100);
     } catch (e) { alert('Print error: ' + e.message); }
   });
