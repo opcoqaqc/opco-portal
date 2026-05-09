@@ -558,12 +558,16 @@
   .proj-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .proj-panel-title { font-size: 13px; font-weight: 500; color: #2c2c2a; }
   .proj-panel-hint { font-size: 11px; color: #888780; }
-  .proj-leaderboard { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .proj-leaderboard { width: 100%; font-size: 12px; border-collapse: collapse; table-layout: fixed; }
   .proj-leaderboard th { font-weight: 400; color: #888780; padding: 6px 0; border-bottom: 0.5px solid rgba(0,0,0,0.1); text-align: left; }
   .proj-leaderboard td { padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.06); vertical-align: middle; }
   .proj-leaderboard tr:last-child td { border-bottom: none; }
   .proj-leaderboard .proj-th-num, .proj-leaderboard td.proj-num { text-align: right; }
   .proj-leaderboard .proj-th-last, .proj-leaderboard td.proj-last { text-align: right; color: #888780; font-size: 11px; }
+  /* even column distribution so gaps don't depend on content width */
+  .proj-leaderboard .proj-th-welder { width: auto; }
+  .proj-leaderboard .proj-th-num    { width: 9%; }
+  .proj-leaderboard .proj-th-last   { width: 11%; }
   .proj-welder-cell { display: flex; align-items: center; gap: 10px; }
   .proj-avatar { width: 32px; height: 32px; border-radius: 50%; background: #d3d1c7; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #444441; flex-shrink: 0; overflow: hidden; }
   .proj-avatar img { width: 100%; height: 100%; object-fit: cover; }
