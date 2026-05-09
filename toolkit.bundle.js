@@ -3604,6 +3604,20 @@
       };
     });
 
+    // ---- Manual row override: W-010 (Omar Rajoob) ----
+    // Real RT history has additional joints/repairs not yet logged in the
+    // joint history sheet. We patch this welder's displayed numbers ONLY —
+    // project totals (total_joints, total_wdi, total_tested, project repair
+    // rate, daily throughput) are NOT touched and continue to come straight
+    // from the spreadsheet. Remove this block once the spreadsheet catches up.
+    combined.forEach(function(w) {
+      if (w.stamp === 'W-010') {
+        w.tested = 34;
+        w.repair = 19;
+        w.repair_rate = Math.round((19 / 34) * 1000) / 10;  // 55.9
+      }
+    });
+
     // Filter to active welders only (joints > 0)
     var active = combined.filter(function(w) { return w.joints > 0; });
 
