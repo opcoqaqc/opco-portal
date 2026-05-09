@@ -566,8 +566,9 @@
   .proj-leaderboard .proj-th-last, .proj-leaderboard td.proj-last { text-align: left; color: #888780; font-size: 11px; }
   /* even column distribution so gaps don't depend on content width */
   .proj-leaderboard .proj-th-welder { width: auto; }
-  .proj-leaderboard .proj-th-num    { width: 9%; }
-  .proj-leaderboard .proj-th-last   { width: 11%; }
+  .proj-leaderboard .proj-th-num    { width: 8%; }
+  .proj-leaderboard .proj-th-last   { width: 10%; }
+  .proj-leaderboard .proj-th-expiry { width: 11%; text-align: left; }
   .proj-welder-cell { display: flex; align-items: center; gap: 10px; }
   .proj-avatar { width: 32px; height: 32px; border-radius: 50%; background: #d3d1c7; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #444441; flex-shrink: 0; overflow: hidden; }
   .proj-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -1795,6 +1796,7 @@
               <th class="proj-th-num">Repair %</th>
               <th class="proj-th-last">Last weld</th>
               <th class="proj-th-last">Last RT</th>
+              <th class="proj-th-expiry">Expiry</th>
             </tr>
           </thead>
           <tbody id="proj-htu-leaderboard"></tbody>
