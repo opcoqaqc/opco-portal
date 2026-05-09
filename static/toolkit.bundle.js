@@ -3607,12 +3607,12 @@
     // Filter to active welders only (joints > 0)
     var active = combined.filter(function(w) { return w.joints > 0; });
 
-    // Sort: testable welders by repair rate ASC; then low-sample (tested < 10) at end by joints DESC
-    var SAMPLE_THRESHOLD = 10;
-    var testable = active.filter(function(w) { return w.tested >= SAMPLE_THRESHOLD; });
-    var lowSample = active.filter(function(w) { return w.tested < SAMPLE_THRESHOLD; });
-    testable.sort(function(a, b) { return a.repair_rate - b.repair_rate; });
-    lowSample.sort(function(a, b) { return b.joints - a.joints; });
+    // Sort: anyone with a real repair rate (tested >= 1) by rate ASC;
+    // welders with no RT verdict yet at the end, sorted by joints DESC.
+    var rated   = active.filter(function(w) { return w.tested >= 1; });
+    var unrated = active.filter(function(w) { return w.tested === 0; });
+    rated.sort(function(a, b)   { return a.repair_rate - b.repair_rate; });
+    unrated.sort(function(a, b) { return b.joints - a.joints; });
 
     var tbody = document.getElementById('proj-htu-leaderboard');
     var html = '';
@@ -3644,8 +3644,8 @@
         '</tr>';
     }
 
-    testable.forEach(function(w) { html += rowHtml(w, false); });
-    lowSample.forEach(function(w) { html += rowHtml(w, true); });
+    rated.forEach(function(w)   { html += rowHtml(w, false); });
+    unrated.forEach(function(w) { html += rowHtml(w, true);  });
 
     var inactiveCount = PIPING_WELDERS.length - active.length;
     if (inactiveCount > 0) {
