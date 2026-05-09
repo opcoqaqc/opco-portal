@@ -309,12 +309,14 @@
     display: flex; flex-direction: column;
   }
   .portal-hero { margin-bottom: 28px; }
-  .portal-hero-eyebrow { font-size: 11px; letter-spacing: 0.25em; color: #C49A55; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; }
+  .portal-hero-eyebrow { font-size: 11px; letter-spacing: 0.25em; color: #8c6f24; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; }
+  body.dark .portal-hero-eyebrow { color: #C49A55; }
   .portal-hero-h { font-size: 34px; font-weight: 700; line-height: 1.15; margin: 0 0 10px; color: #1a2747; }
   body.dark .portal-hero-h { color: #f0e4c9; }
-  .portal-hero-p { font-size: 15px; color: #6b6a66; margin: 0; }
+  .portal-hero-p { font-size: 15px; color: #2c2c2a; margin: 0; }
   body.dark .portal-hero-p { color: #9aa3b2; }
-  .portal-sec-h { font-size: 11px; letter-spacing: 0.3em; color: #6c7589; font-weight: 700; margin-bottom: 16px; }
+  .portal-sec-h { font-size: 11px; letter-spacing: 0.3em; color: #3a3a36; font-weight: 700; margin-bottom: 16px; }
+  body.dark .portal-sec-h { color: #6c7589; }
   /* photo-backdrop tiles (3x2 grid, fills remaining vertical space) */
   .portal-tiles {
     display: grid;
@@ -424,8 +426,8 @@
     align-items: center;
     gap: 4px;
     padding: 3px 4px;
-    background: rgba(255,255,255,0.88);
-    border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(0,0,0,0.10);                 /* tints the taupe slightly darker */
+    border: 1px solid rgba(0,0,0,0.12);
     border-radius: 999px;
     font-family: inherit;
     backdrop-filter: blur(8px);
