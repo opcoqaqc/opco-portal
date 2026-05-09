@@ -10650,9 +10650,15 @@
       // ship for .sub-tab-btn).
       if (!cnt || cnt === '0') return;
       var ico = libIcoSvg(c.id) || esc(c.id.toUpperCase()); // SVG, fall back to letter code
+      // Wrap each category in the same .sb-project-card shell QMS uses,
+      // so the visual rhythm (icon + name in a card, expand on click) is
+      // identical between QMS and LIBRARY sidebars.
+      html += '<div class="sb-project-card" data-library="' + c.id + '">';
       html += '<div class="sb-item" data-library="' + c.id + '">'
             + '<span class="sb-ico ' + c.id + '">' + ico + '</span>'
-            + '<span class="sb-label">' + esc(c.label) + '</span>'
+            + '<div class="sb-project-card-meta">'
+              + '<div class="sb-project-card-name">' + esc(c.label) + '</div>'
+            + '</div>'
             + (cnt ? '<span class="sb-cnt">' + esc(cnt) + '</span>' : '')
             + '</div>';
       html += '<div class="sb-children" data-parent="lib-' + c.id + '">';
@@ -10669,6 +10675,7 @@
               + '</div>';
       });
       html += '</div>';
+      html += '</div>'; // close .sb-project-card
     });
     list.innerHTML = html;
   }
