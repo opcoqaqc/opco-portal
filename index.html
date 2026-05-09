@@ -293,32 +293,101 @@
   .portal-hero-p { font-size: 15px; color: #6b6a66; margin: 0; }
   body.dark .portal-hero-p { color: #9aa3b2; }
   .portal-sec-h { font-size: 11px; letter-spacing: 0.3em; color: #6c7589; font-weight: 700; margin-bottom: 16px; }
-  .portal-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
-  .portal-tile {
-    background: #ffffff;
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 16px;
-    padding: 22px 14px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 10px; aspect-ratio: 1; min-height: 160px;
-    text-decoration: none; color: inherit;
-    position: relative; overflow: hidden;
-    transition: transform .2s, border-color .2s, box-shadow .2s;
+  /* photo-backdrop tiles (3x2 grid) */
+  .portal-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 230px;
+    gap: 14px;
   }
-  body.dark .portal-tile { background: #181b24; border-color: #262a36; }
-  .portal-tile::before { content: ''; position: absolute; inset: 0; background: var(--accent); opacity: 0; transition: opacity .2s; pointer-events: none; }
-  .portal-tile:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 14px 32px rgba(10,37,64,0.14); }
-  body.dark .portal-tile:hover { box-shadow: 0 14px 32px rgba(0,0,0,0.5); }
-  .portal-tile:hover::before { opacity: 0.07; }
+  .portal-tile {
+    background-color: #0a0a0a;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    aspect-ratio: auto;
+    min-height: 0;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+  body.dark .portal-tile { background-color: #0a0a0a; border-color: rgba(255,255,255,0.06); }
+  /* photo backdrop, B&W */
+  .portal-tile::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: var(--photo);
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(1) brightness(0.55) contrast(1.05);
+    transition: filter .35s ease, transform .35s ease;
+    z-index: 0;
+  }
+  /* dark gradient for text legibility */
+  .portal-tile::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.85) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
   .portal-tile > * { position: relative; z-index: 1; }
-  .portal-tile-icon { width: 50px; height: 50px; color: var(--accent); }
-  .portal-tile-icon svg { width: 100%; height: 100%; }
-  .portal-tile-name { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; color: #1a2747; }
-  body.dark .portal-tile-name { color: #e8e6e0; }
-  .portal-tile-full { font-size: 10px; color: #6b6a66; text-align: center; line-height: 1.35; }
-  body.dark .portal-tile-full { color: #6c7589; }
-  @media (max-width: 1100px) { .portal-tiles { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 600px) { .portal-tiles { grid-template-columns: repeat(2, 1fr); } }
+
+  /* top-left small accent chip wrapping the SVG icon */
+  .portal-tile-icon {
+    align-self: flex-start;
+    width: 34px; height: 34px;
+    padding: 0;
+    background: rgba(0,0,0,0.50);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .portal-tile-icon svg { width: 17px; height: 17px; }
+
+  /* bottom-left title + subtitle */
+  .portal-tile-name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+    margin-top: auto;
+    text-align: left;
+  }
+  body.dark .portal-tile-name { color: #ffffff; }
+  .portal-tile-full {
+    font-size: 12px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.4;
+    text-align: left;
+    margin-top: 3px;
+  }
+  body.dark .portal-tile-full { color: rgba(255,255,255,0.72); }
+
+  /* hover: lift up + slight zoom + slight color reveal (keep this animation) */
+  .portal-tile:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.45);
+  }
+  body.dark .portal-tile:hover { box-shadow: 0 14px 32px rgba(0,0,0,0.6); }
+  .portal-tile:hover::before {
+    filter: grayscale(0.55) brightness(0.65) contrast(1.05);
+    transform: scale(1.04);
+  }
+
+  @media (max-width: 1100px) { .portal-tiles { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px)  { .portal-tiles { grid-template-columns: 1fr; grid-auto-rows: 200px; } }
 
   /* Top-right user widget — same shape as the .opco-band widget on
      toolkit/projects/welders/documents: "<username> · [moon] [sign-out]"
@@ -431,32 +500,32 @@
     <section>
       <div class="portal-sec-h">JUMP TO</div>
       <div class="portal-tiles">
-        <a href="documents.html#view=qms" class="portal-tile" style="--accent:#C49A55; view-transition-name: card-qms;">
+        <a href="documents.html#view=qms" class="portal-tile" style="--accent:#C49A55; --photo:url('img/tile-qms.jpg'); view-transition-name: card-qms;">
           <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
           <div class="portal-tile-name">QMS</div>
           <div class="portal-tile-full">Quality Management System Documents</div>
         </a>
-        <a href="documents.html#view=projects" class="portal-tile" style="--accent:#5DA3E0; view-transition-name: card-projects;">
+        <a href="documents.html#view=projects" class="portal-tile" style="--accent:#5DA3E0; --photo:url('img/login-bg-3.jpg'); view-transition-name: card-projects;">
           <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="11" y2="9"/></svg></div>
           <div class="portal-tile-name">Project QC</div>
           <div class="portal-tile-full">Project QC Document</div>
         </a>
-        <a href="projects.html" class="portal-tile" style="--accent:#5DCAA5; view-transition-name: card-dashboard;">
+        <a href="projects.html" class="portal-tile" style="--accent:#5DCAA5; --photo:url('img/login-bg-4.jpg'); view-transition-name: card-dashboard;">
           <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
           <div class="portal-tile-name">Dashboard</div>
           <div class="portal-tile-full">Project Dashboard</div>
         </a>
-        <a href="toolkit.html" class="portal-tile" style="--accent:#EF9F27; view-transition-name: card-toolkit;">
+        <a href="toolkit.html" class="portal-tile" style="--accent:#EF9F27; --photo:url('img/tile-toolkit.jpg'); view-transition-name: card-toolkit;">
           <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
           <div class="portal-tile-name">Toolkit</div>
           <div class="portal-tile-full">Calculators &amp; references</div>
         </a>
-        <a href="welders.html" class="portal-tile" style="--accent:#E47480; view-transition-name: card-welders;">
+        <a href="welders.html" class="portal-tile" style="--accent:#E47480; --photo:url('img/tile-welders.jpg'); view-transition-name: card-welders;">
           <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
           <div class="portal-tile-name">Welders</div>
           <div class="portal-tile-full">Welder Qualification</div>
         </a>
-        <a href="documents.html#view=library" class="portal-tile" style="--accent:#A77CCB; view-transition-name: card-library;">
+        <a href="documents.html#view=library" class="portal-tile" style="--accent:#A77CCB; --photo:url('img/tile-library.jpg'); view-transition-name: card-library;">
           <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
           <div class="portal-tile-name">Library</div>
           <div class="portal-tile-full">PQR, WPS &amp; WQT references</div>
