@@ -3623,13 +3623,9 @@
       var avatar = photoSrc
         ? '<div class="proj-avatar"><img src="' + photoSrc + '" alt="' + w.stamp + '" /></div>'
         : '<div class="proj-avatar">' + projInitials(w.name) + '</div>';
-      var rate = isLowSample
-        ? '<span class="proj-pill proj-pill-na">low sample</span>'
-        : projRepairPill(w.repair_rate, w.tested);
+      var rate = projRepairPill(w.repair_rate, w.tested);
       var meta;
-      if (isLowSample) {
-        meta = 'tested ' + w.tested + ' (low sample)';
-      } else {
+      {
         meta = 'tested ' + w.tested + ' of ' + w.joints;
       }
       return '<tr>' +
