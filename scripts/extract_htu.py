@@ -27,6 +27,7 @@ COL_DIA        = 7   # H  Dia-Inch
 COL_ROOT       = 17  # R  Welder ROOT (primary welder for stat purposes)
 COL_WELD_DATE  = 20  # U  Weld Date
 COL_RT_REPORT  = 27  # AB RT/UT Report No
+COL_RT_DATE    = 28  # AC RT/UT Date (when the joint was actually shot)
 COL_RT_RESULT  = 29  # AD RT/UT Result (ACC/REJ/RS/RT)
 COL_RS_RESULT  = 33  # AH After-repair RT/RS Result (ACC/REJ)
 
@@ -63,6 +64,7 @@ def main():
     per_welder_rej    = defaultdict(int)
     per_welder_pending = defaultdict(int)
     per_welder_last   = defaultdict(lambda: None)
+    per_welder_last_rt = defaultdict(lambda: None)
 
     daily_joints = defaultdict(int)
     daily_wdi    = defaultdict(float)
@@ -95,6 +97,7 @@ def main():
         weld_date = row[COL_WELD_DATE] if len(row) > COL_WELD_DATE else None
         rt        = row[COL_RT_RESULT] if len(row) > COL_RT_RESULT else None
         rs        = row[COL_RS_RESULT] if len(row) > COL_RS_RESULT else None
+        rt_date   = row[COL_RT_DATE]   if len(row) > COL_RT_DATE   else None
 
         is_completed = isinstance(weld_date, datetime)
         if is_completed:
@@ -116,6 +119,11 @@ def main():
         if is_completed:
             if per_welder_last[welder] is None or weld_date > per_welder_last[welder]:
                 per_welder_last[welder] = weld_date
+        # last RT date for this welder — only count cells where the joint was
+        # actually shot (rt_date is a real datetime, not None / empty / text).
+        if isinstance(rt_date, datetime):
+            if per_welder_last_rt[welder] is None or rt_date > per_welder_last_rt[welder]:
+                per_welder_last_rt[welder] = rt_date
 
         if verdict == "ACC":
             per_welder_acc[welder] += 1
@@ -150,6 +158,7 @@ def main():
             "pending": per_welder_pending[stamp],
             "repair_rate": rate,
             "last_weld": to_iso(per_welder_last[stamp]),
+            "last_rt":   to_iso(per_welder_last_rt[stamp]),
         })
 
     daily_out = []
