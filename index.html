@@ -295,11 +295,11 @@
     display: none;
     height: 100vh;                 /* exactly viewport, no scroll */
     padding: 36px 36px 28px;
-    background: #0d1117;           /* always-dark, ignores body theme */
     overflow: hidden;
+    /* body bg shows through: #f7f7f5 in light mode, #1a1a1a in dark mode.
+       Both look fine — dark photo tiles work on either. */
   }
   #portal_screen.shown { display: flex; flex-direction: column; }
-  body.dark #portal_screen { background: #0d1117; }
   #portal_screen.shown { display: block; }
   .portal-wrap {
     max-width: 1280px; margin: 0 auto;
