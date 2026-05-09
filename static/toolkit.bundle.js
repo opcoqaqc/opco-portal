@@ -3523,6 +3523,25 @@
     else if (rate > 5) cls = 'proj-pill-normal';
     return '<span class="proj-pill ' + cls + '">' + rate.toFixed(1) + '%</span>';
   }
+  // ASME IX continuity: welder qualification expires 6 months after last RT shot.
+  // Returns days remaining (negative = expired) or null if welder never had RT.
+  function projDaysUntilExpiry(lastRtIso) {
+    if (!lastRtIso) return null;
+    var lastRt = new Date(lastRtIso + 'T00:00:00');
+    if (isNaN(lastRt.getTime())) return null;
+    var expiry = new Date(lastRt);
+    expiry.setMonth(expiry.getMonth() + 6);
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+  }
+  function projExpiryPill(lastRtIso) {
+    var d = projDaysUntilExpiry(lastRtIso);
+    if (d === null) return '<span class="proj-pill proj-pill-na">—</span>';
+    if (d <= 0)     return '<span class="proj-pill proj-pill-review">expired</span>';
+    if (d <= 30)    return '<span class="proj-pill proj-pill-watch">' + d + 'd</span>';
+    return            '<span class="proj-pill proj-pill-excellent">' + d + 'd</span>';
+  }
   function projFmtDate(iso) {
     if (!iso) return '—';
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -3621,6 +3640,7 @@
         '<td class="proj-num">' + rate + '</td>' +
         '<td class="proj-last">' + projFmtDate(w.last_weld) + '</td>' +
         '<td class="proj-last">' + projFmtDate(w.last_rt)   + '</td>' +
+        '<td>' + projExpiryPill(w.last_rt) + '</td>' +
         '</tr>';
     }
 
@@ -3629,7 +3649,7 @@
 
     var inactiveCount = PIPING_WELDERS.length - active.length;
     if (inactiveCount > 0) {
-      html += '<tr class="proj-low-sample-row"><td colspan="8">+ ' + inactiveCount + ' welders with no activity in this project</td></tr>';
+      html += '<tr class="proj-low-sample-row"><td colspan="9">+ ' + inactiveCount + ' welders with no activity in this project</td></tr>';
     }
 
     tbody.innerHTML = html;
