@@ -3566,6 +3566,16 @@
     if (dateEl) dateEl.textContent = '(last updated: ' + projFmtDate(data.data_date) + ')';
 
     var t = data.totals;
+    // ---- Manual summary override: W-010 (Omar Rajoob) ----
+    // Mirror the +14 repairs / +14 tested adjustment we apply to the W-010
+    // row so the headline repair rate matches the leaderboard. Project
+    // joint count and WDI are NOT touched. Remove with the W-010 row block
+    // below once the spreadsheet catches up.
+    t = Object.assign({}, t);
+    t.total_tested = t.total_tested + 14;
+    t.total_repair = t.total_repair + 14;
+    t.project_repair_rate = Math.round((t.total_repair / t.total_tested) * 1000) / 10;
+
     document.getElementById('proj-htu-total-wdi').textContent = projFmtNum(Math.round(t.total_wdi));
     document.getElementById('proj-htu-total-wdi-sub').textContent = 'in ' + t.total_lines + ' lines';
     document.getElementById('proj-htu-completed-wdi').textContent = projFmtNum(Math.round(t.completed_wdi));
