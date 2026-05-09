@@ -907,9 +907,7 @@
     padding: 60px 20px;
   }
 
-  /* Convert the welder table into card-rows for the master pane — same
-     visual rhythm as the .sb-project-card list on documents.html (icon +
-     name in a bordered, rounded card; gold-accented when active).
+  /* Convert the welder table into compact card-rows for the master pane.
      Hides the header + the position/OD/thickness columns (those move into
      the detail panel which has the full picture). */
   .welder-q-table thead { display: none; }
@@ -922,24 +920,15 @@
     gap: 10px;
     padding: 10px 14px;
     cursor: pointer;
-    border: 1px solid rgba(0,0,0,0.08);
-    border-radius: 10px;
-    margin-bottom: 6px;
-    background: #ffffff;
-    transition: border-color .15s, background .15s;
+    border-left: 3px solid transparent;
+    border-bottom: 0.5px solid rgba(0,0,0,0.05);
   }
-  body.dark .welder-q-table tr {
-    border-color: rgba(255,255,255,0.08);
-    background: #161b22;
-  }
+  body.dark .welder-q-table tr { border-bottom-color: rgba(255,255,255,0.05); }
   .welder-q-table tr.active {
-    background: rgba(201,169,97,0.06);
-    border-color: rgba(201,169,97,0.4);
+    background: rgba(201,169,97,0.12);
+    border-left-color: #C9A961;
   }
-  body.dark .welder-q-table tr.active {
-    background: rgba(201,169,97,0.08);
-    border-color: rgba(201,169,97,0.45);
-  }
+  body.dark .welder-q-table tr.active { background: rgba(201,169,97,0.15); }
   .welder-q-table tr.active td { background: transparent !important; }
   .welder-q-table td { display: block; padding: 0; border: 0; background: transparent; }
   /* Only stamp (col 1), name (col 2), process (col 3) are shown in the
