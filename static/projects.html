@@ -1177,22 +1177,29 @@
   body.dark .opco-side-title { color: #C9A961; opacity: 0.85; }
   .opco-side-item {
     display: flex; align-items: center;
-    padding: 8px 16px 8px 18px;
+    padding: 10px 12px;
+    margin: 6px 14px;
     font-size: 13.5px; color: #1A2B47;
-    border-left: 3px solid transparent;
+    border: 1px solid rgba(0,0,0,0.10);
+    border-radius: 10px;
+    background: transparent;
     cursor: pointer; user-select: none;
-    transition: background .12s, color .12s;
+    transition: background .15s, color .15s, border-color .15s;
     text-decoration: none;
   }
   .opco-side-item:hover { background: rgba(10,37,64,0.04); color: #0A2540; }
-  body.dark .opco-side-item { color: #c9d1d9; }
-  body.dark .opco-side-item:hover { background: rgba(201,169,97,0.08); color: #C9A961; }
+  body.dark .opco-side-item { color: #c9d1d9; border-color: rgba(255,255,255,0.08); }
+  body.dark .opco-side-item:hover { background: rgba(201,169,97,0.05); color: #C9A961; }
   .opco-side-item.active {
-    background: rgba(201,169,97,0.12);
+    background: rgba(201,169,97,0.06);
     color: #0A2540; font-weight: 700;
-    border-left-color: #C9A961;
+    border-color: rgba(201,169,97,0.4);
   }
-  body.dark .opco-side-item.active { background: rgba(201,169,97,0.15); color: #C9A961; }
+  body.dark .opco-side-item.active {
+    background: rgba(201,169,97,0.08);
+    color: #C9A961;
+    border-color: rgba(201,169,97,0.45);
+  }
   /* Sidebar logo badges — small colored gradient square + white SVG icon,
      matches the .sb-ico convention used by the QMS sidebar. */
   .opco-side-icon {
