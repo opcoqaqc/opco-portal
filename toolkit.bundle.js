@@ -3537,10 +3537,14 @@
   }
   function projExpiryPill(lastRtIso) {
     var d = projDaysUntilExpiry(lastRtIso);
-    if (d === null) return '<span class="proj-pill proj-pill-na">—</span>';
-    if (d <= 0)     return '<span class="proj-pill proj-pill-review">expired</span>';
-    if (d <= 30)    return '<span class="proj-pill proj-pill-watch">' + d + 'd</span>';
-    return            '<span class="proj-pill proj-pill-excellent">' + d + 'd</span>';
+    var dot, cls, label;
+    if (d === null)   { dot = '#4B5563'; cls = 'na';      label = '—'; }
+    else if (d <= 0)  { dot = '#EF4444'; cls = 'expired'; label = 'expired'; }
+    else if (d <= 30) { dot = '#F59E0B'; cls = 'watch';   label = d + 'd'; }
+    else              { dot = '#10B981'; cls = 'ok';      label = d + 'd'; }
+    return '<span class="proj-expiry-cell ' + cls + '">' +
+           '<span class="proj-expiry-dot" style="background:' + dot + ';"></span>' +
+           label + '</span>';
   }
   function projFmtDate(iso) {
     if (!iso) return '—';

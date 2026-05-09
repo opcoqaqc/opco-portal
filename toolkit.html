@@ -569,6 +569,15 @@
   .proj-leaderboard .proj-th-num    { width: 8%; }
   .proj-leaderboard .proj-th-last   { width: 10%; }
   .proj-leaderboard .proj-th-expiry { width: 11%; text-align: left; }
+  /* dot + text style for the expiry column */
+  .proj-expiry-cell { display: inline-flex; align-items: center; gap: 7px;
+                      font-size: 11px; font-weight: 500; color: inherit; }
+  .proj-expiry-dot  { width: 8px; height: 8px; border-radius: 50%;
+                      flex-shrink: 0; display: inline-block; }
+  .proj-expiry-cell.expired { color: #c0392b; }
+  .proj-expiry-cell.na      { color: #888780; }
+  body.dark .proj-expiry-cell.expired { color: #E47480; }
+  body.dark .proj-expiry-cell.na      { color: #6c7589; }
   .proj-welder-cell { display: flex; align-items: center; gap: 10px; }
   .proj-avatar { width: 32px; height: 32px; border-radius: 50%; background: #d3d1c7; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #444441; flex-shrink: 0; overflow: hidden; }
   .proj-avatar img { width: 100%; height: 100%; object-fit: cover; }
