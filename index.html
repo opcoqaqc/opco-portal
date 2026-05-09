@@ -10760,12 +10760,29 @@
     showSection('sb-projects-section');
     collapseAll();
     clearActive();
+    // Default state on entry: SKG card expanded, Procedures group expanded,
+    // General discipline highlighted (mirrors the main content auto-state).
+    expandProject('skg');
+    expandSkgGroup('procedures');
+    var skgItem = document.querySelector('.sb-item[data-project="skg"]');
+    if (skgItem) skgItem.classList.add('active');
+    var procSub = document.querySelector('.sb-sub[data-skg-group="procedures"]');
+    if (procSub) procSub.classList.add('active');
+    var generalSub3 = document.querySelector('.sb-sub3[data-tab="skg-general"]');
+    if (generalSub3) generalSub3.classList.add('active');
   }
   function onShowLibrary() {
     buildLibrarySidebar();
     showSection('sb-library-section');
     collapseAll();
     clearActive();
+    // Default state on entry: PQR card expanded, Pipeline sub highlighted
+    // (mirrors the main content auto-state in showLibraryBar).
+    expandLibrary('pqr');
+    var pqrItem = document.querySelector('.sb-item[data-library="pqr"]');
+    if (pqrItem) pqrItem.classList.add('active');
+    var pipelineSub = document.querySelector('.sb-sub[data-library="pqr"][data-library-sub="pipeline"]');
+    if (pipelineSub) pipelineSub.classList.add('active');
   }
   function onTabHome() {
     hideAllSections();
