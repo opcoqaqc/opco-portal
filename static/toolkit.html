@@ -592,6 +592,58 @@
   .proj-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: middle; margin-right: 4px; }
   .proj-chart { width: 100%; height: 110px; display: block; }
   .proj-chart-wrap { position: relative; }
+
+  /* Weekly RT chart — bars + tooltip on hover */
+  .proj-weekly-legend {
+    display: flex; gap: 18px; font-size: 11px;
+    color: #6b6a66; margin-top: 8px; flex-wrap: wrap;
+  }
+  body.dark .proj-weekly-legend { color: #8b949e; }
+  .proj-weekly-legend .proj-weekly-hint { margin-left: auto; font-style: italic; opacity: 0.7; }
+  .proj-weekly-tt {
+    position: absolute; pointer-events: none; z-index: 10;
+    background: #ffffff; border: 1px solid #C9A961; border-radius: 8px;
+    padding: 10px 13px; min-width: 200px;
+    font-size: 11.5px; box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    opacity: 0; transition: opacity .08s;
+  }
+  body.dark .proj-weekly-tt {
+    background: #0d1117; box-shadow: 0 8px 20px rgba(0,0,0,0.55);
+  }
+  .proj-weekly-tt.show { opacity: 1; }
+  .proj-weekly-tt-title { color: #1a2747; font-weight: 700; margin-bottom: 6px; }
+  body.dark .proj-weekly-tt-title { color: #f0e4c9; }
+  .proj-weekly-tt-totals {
+    display: flex; gap: 12px; font-size: 11px;
+    margin-bottom: 8px; padding-bottom: 6px;
+    border-bottom: 1px solid rgba(0,0,0,0.10);
+  }
+  body.dark .proj-weekly-tt-totals { border-bottom-color: #30363d; }
+  .proj-weekly-tt-totals .v-rt  { color: #185fa5; font-weight: 700; }
+  body.dark .proj-weekly-tt-totals .v-rt { color: #5DA3E0; }
+  .proj-weekly-tt-totals .v-rep { color: #b35747; font-weight: 700; }
+  body.dark .proj-weekly-tt-totals .v-rep { color: #E47480; }
+  .proj-weekly-tt-totals .v-pct { color: #9c7d3a; font-weight: 700; }
+  body.dark .proj-weekly-tt-totals .v-pct { color: #EF9F27; }
+  .proj-weekly-tt-header {
+    font-size: 9.5px; color: #888780; letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 3px;
+  }
+  body.dark .proj-weekly-tt-header { color: #8b949e; }
+  .proj-weekly-tt-row {
+    display: grid; grid-template-columns: 60px 1fr 32px 32px;
+    gap: 6px; padding: 2px 0; align-items: center;
+  }
+  .proj-weekly-tt-w   { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #185fa5; font-size: 11px; }
+  body.dark .proj-weekly-tt-w { color: #5DA3E0; }
+  .proj-weekly-tt-rt  { color: #2c2c2a; text-align: right; }
+  body.dark .proj-weekly-tt-rt { color: #c9d1d9; }
+  .proj-weekly-tt-rej { color: #b35747; text-align: right; font-weight: 600; }
+  body.dark .proj-weekly-tt-rej { color: #E47480; }
+  .proj-weekly-tt-rej.zero { color: #aaa6a0; font-weight: 400; }
+  body.dark .proj-weekly-tt-rej.zero { color: #5c6675; }
+  .proj-weekly-bar { transition: opacity .12s; cursor: pointer; }
+  .proj-weekly-hit { fill: transparent; cursor: pointer; }
   .proj-bar { cursor: pointer; transition: fill 0.1s; }
   .proj-chart-tooltip { display: none; position: absolute; pointer-events: none; background: #2c2c2a; color: #f1efe8; padding: 8px 10px; border-radius: 6px; font-size: 11px; white-space: nowrap; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
   .proj-tip-date { font-weight: 500; margin-bottom: 4px; font-size: 12px; }
@@ -1828,6 +1880,25 @@
         </div>
         <div class="proj-chart-wrap">
           <svg id="proj-htu-daily-chart" class="proj-chart"></svg>
+        </div>
+      </div>
+
+      <!-- Weekly RT shots + repair rate. OPCO work-week is Sat..Thu
+           (Fri off), so weeks are anchored to Saturday. Hover any bar
+           for the per-welder breakdown. -->
+      <div class="proj-panel" id="proj-htu-weekly-panel" style="display:none;">
+        <div class="proj-panel-header">
+          <div class="proj-panel-title">Weekly RT shots &amp; repair rate</div>
+          <div class="proj-panel-hint" id="proj-htu-weekly-summary">—</div>
+        </div>
+        <div class="proj-chart-wrap" style="position:relative;">
+          <svg id="proj-htu-weekly-chart" class="proj-chart" style="height:280px;"></svg>
+          <div id="proj-htu-weekly-tt" class="proj-weekly-tt"></div>
+        </div>
+        <div class="proj-weekly-legend">
+          <span><span class="proj-dot" style="background:#5DA3E0;"></span> RT shots (left axis)</span>
+          <span><span class="proj-dot" style="background:#EF9F27;"></span> Repair rate % (right axis)</span>
+          <span class="proj-weekly-hint">hover a bar for per-welder breakdown</span>
         </div>
       </div>
     </div>

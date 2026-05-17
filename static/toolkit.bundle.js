@@ -3679,6 +3679,190 @@
     tbody.innerHTML = html;
 
     renderProjectHTUDailyChart(data.daily_throughput);
+    renderProjectHTUWeeklyChart(data.weekly_rt);
+  }
+
+  // Weekly RT shots + repair-rate chart (OPCO week = Sat..Thu, Fri off).
+  // Bars = RT shot count (left axis); line = repair rate % (right axis).
+  // Hover any bar -> per-welder breakdown tooltip.
+  function renderProjectHTUWeeklyChart(weekly) {
+    var panel = document.getElementById('proj-htu-weekly-panel');
+    var svg   = document.getElementById('proj-htu-weekly-chart');
+    var tt    = document.getElementById('proj-htu-weekly-tt');
+    var sum   = document.getElementById('proj-htu-weekly-summary');
+    if (!panel || !svg || !tt) return;
+    // Hide entirely if no data (e.g. older JSON without weekly_rt)
+    if (!weekly || !weekly.length) { panel.style.display = 'none'; return; }
+    panel.style.display = '';
+
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var W = 1280, H = 280, ML = 42, MR = 42, MT = 14, MB = 38;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var plotW = W - ML - MR, plotH = H - MT - MB;
+    var n = weekly.length, slot = plotW / n, barW = Math.max(4, slot * 0.55);
+    var maxRT = 0;
+    weekly.forEach(function (w) { if (w.rt_total > maxRT) maxRT = w.rt_total; });
+    maxRT = Math.max(50, Math.ceil(maxRT / 50) * 50);
+    var maxPct = 0;
+    weekly.forEach(function (w) {
+      var p = w.rt_total ? w.rej_total / w.rt_total * 100 : 0;
+      if (p > maxPct) maxPct = p;
+    });
+    maxPct = Math.max(8, Math.ceil(maxPct / 2) * 2);
+
+    var NS = 'http://www.w3.org/2000/svg';
+    function el(name, attrs, txt) {
+      var e = document.createElementNS(NS, name);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      if (txt != null) e.textContent = txt;
+      svg.appendChild(e);
+      return e;
+    }
+    // Theme-aware colors
+    var dark = document.body && document.body.classList.contains('dark');
+    var gridCol = dark ? '#30363d' : 'rgba(0,0,0,0.10)';
+    var axisRT  = dark ? '#5DA3E0' : '#185fa5';
+    var axisPct = dark ? '#EF9F27' : '#9c7d3a';
+    var labelCol= dark ? '#8b949e' : '#888780';
+    var barCol  = dark ? '#5DA3E0' : '#185fa5';
+    var lineCol = dark ? '#EF9F27' : '#9c7d3a';
+
+    // Grid + left axis (RT count)
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (r) {
+      var y = MT + plotH * (1 - r);
+      el('line', { x1: ML, y1: y, x2: W - MR, y2: y, stroke: gridCol, 'stroke-width': 0.5, 'stroke-dasharray': '2 3' });
+      el('text', { x: ML - 6, y: y + 3, 'font-size': 9, fill: axisRT, 'text-anchor': 'end' }, Math.round(maxRT * r));
+    });
+    // Right axis (repair %)
+    [0, 0.5, 1].forEach(function (r) {
+      var y = MT + plotH * (1 - r);
+      el('text', { x: W - MR + 6, y: y + 3, 'font-size': 9, fill: axisPct, 'text-anchor': 'start' }, (maxPct * r).toFixed(0) + '%');
+    });
+
+    // Label cadence — try to show ~12-15 labels max
+    var labelStep = Math.max(1, Math.ceil(n / 14));
+
+    // Bars + invisible hit areas
+    weekly.forEach(function (wk, i) {
+      var cx = ML + i * slot + slot / 2;
+      var bx = cx - barW / 2;
+      var bh = (wk.rt_total / maxRT) * plotH;
+      var by = MT + plotH - bh;
+      var bar = el('rect', {
+        class: 'proj-weekly-bar',
+        'data-idx': i,
+        x: bx.toFixed(1), y: by.toFixed(1),
+        width: barW.toFixed(1), height: bh.toFixed(1),
+        fill: barCol, opacity: 0.62, rx: 2
+      });
+      el('rect', {
+        class: 'proj-weekly-hit', 'data-idx': i,
+        x: (ML + i * slot).toFixed(1), y: MT,
+        width: slot.toFixed(1), height: plotH
+      });
+      if (i % labelStep === 0) {
+        var lbl = shortWeekLabel(wk.week_start);
+        el('text', { x: cx.toFixed(1), y: MT + plotH + 14, 'font-size': 9, fill: labelCol, 'text-anchor': 'middle' }, lbl);
+      }
+    });
+
+    // Line overlay (repair %)
+    var pts = weekly.map(function (wk, i) {
+      var cx = ML + i * slot + slot / 2;
+      var pct = wk.rt_total ? wk.rej_total / wk.rt_total * 100 : 0;
+      var py = MT + plotH * (1 - Math.min(pct, maxPct) / maxPct);
+      return { x: cx, y: py, pct: pct };
+    });
+    el('polyline', {
+      points: pts.map(function (p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' '),
+      fill: 'none', stroke: lineCol, 'stroke-width': 1.8, opacity: 0.85
+    });
+    pts.forEach(function (p) {
+      el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: 2.8, fill: lineCol, stroke: dark ? '#0d1117' : '#ffffff', 'stroke-width': 1.2 });
+    });
+
+    // Summary line (top-right of panel header)
+    if (sum) {
+      var totRT  = weekly.reduce(function (s, w) { return s + w.rt_total;  }, 0);
+      var totRej = weekly.reduce(function (s, w) { return s + w.rej_total; }, 0);
+      var avgPct = totRT ? totRej / totRT * 100 : 0;
+      sum.textContent = n + ' weeks · ' + totRT + ' RT / ' + totRej + ' rej · avg ' + avgPct.toFixed(1) + '%';
+    }
+
+    // --- Tooltip ---
+    var wrap = svg.parentNode; // .proj-chart-wrap (position:relative)
+    function showTip(i, evt) {
+      var wk = weekly[i];
+      var pct = wk.rt_total ? wk.rej_total / wk.rt_total * 100 : 0;
+      var html = '<div class="proj-weekly-tt-title">Week of ' + longWeekLabel(wk.week_start) + '</div>'
+        + '<div class="proj-weekly-tt-totals">'
+        + '<span>RT: <span class="v-rt">' + wk.rt_total + '</span></span>'
+        + '<span>Rep: <span class="v-rep">' + wk.rej_total + '</span></span>'
+        + '<span>Rate: <span class="v-pct">' + pct.toFixed(1) + '%</span></span>'
+        + '</div>'
+        + '<div class="proj-weekly-tt-header"><div class="proj-weekly-tt-row" style="padding:0;">'
+        + '<div>Welder</div><div></div><div style="text-align:right;">RT</div><div style="text-align:right;">REJ</div>'
+        + '</div></div>';
+      (wk.per_welder || []).forEach(function (pw) {
+        var rejTxt = pw.rej > 0 ? pw.rej : '—';
+        var rejCls = pw.rej > 0 ? '' : ' zero';
+        html += '<div class="proj-weekly-tt-row">'
+          + '<div class="proj-weekly-tt-w">' + esc(pw.stamp) + '</div><div></div>'
+          + '<div class="proj-weekly-tt-rt">' + pw.rt + '</div>'
+          + '<div class="proj-weekly-tt-rej' + rejCls + '">' + rejTxt + '</div>'
+          + '</div>';
+      });
+      tt.innerHTML = html;
+      tt.classList.add('show');
+      var rect = wrap.getBoundingClientRect();
+      var x = evt.clientX - rect.left + 12;
+      var y = evt.clientY - rect.top  + 12;
+      var ttW = tt.offsetWidth || 220;
+      var ttH = tt.offsetHeight || 200;
+      if (x + ttW > rect.width - 8)  x = evt.clientX - rect.left - ttW - 12;
+      if (y + ttH > rect.height - 8) y = Math.max(8, evt.clientY - rect.top - ttH - 12);
+      tt.style.left = x + 'px';
+      tt.style.top  = y + 'px';
+    }
+    function hideTip() { tt.classList.remove('show'); }
+    function resetBars() {
+      var bars = svg.querySelectorAll('.proj-weekly-bar');
+      for (var j = 0; j < bars.length; j++) bars[j].setAttribute('opacity', 0.62);
+    }
+    svg.onmousemove = function (e) {
+      var t = e.target;
+      if (t && t.classList && (t.classList.contains('proj-weekly-bar') || t.classList.contains('proj-weekly-hit'))) {
+        var idx = parseInt(t.getAttribute('data-idx'), 10);
+        if (!isNaN(idx)) {
+          var bars = svg.querySelectorAll('.proj-weekly-bar');
+          for (var j = 0; j < bars.length; j++) bars[j].setAttribute('opacity', j === idx ? 1 : 0.45);
+          showTip(idx, e);
+          return;
+        }
+      }
+      resetBars();
+      hideTip();
+    };
+    svg.onmouseleave = function () { resetBars(); hideTip(); };
+  }
+  // Helpers — week label formatting
+  function shortWeekLabel(iso) {
+    if (!iso) return '';
+    var p = iso.split('-'); if (p.length < 3) return iso;
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[parseInt(p[1],10)-1] + ' ' + parseInt(p[2], 10);
+  }
+  function longWeekLabel(iso) {
+    if (!iso) return '';
+    var p = iso.split('-'); if (p.length < 3) return iso;
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return parseInt(p[2], 10) + ' ' + months[parseInt(p[1],10)-1] + ' ' + p[0];
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+    });
   }
 
   function renderProjectHTUDailyChart(daily) {

@@ -14,10 +14,22 @@ Run:  python scripts/extract_htu.py > /path/to/htu.json
 """
 import json
 import sys
-from collections import defaultdict
-from datetime import datetime
+from collections import defaultdict, OrderedDict
+from datetime import datetime, timedelta
 
 import openpyxl
+
+
+def sat_week_start(d):
+    """Return the Saturday on-or-before `d`. OPCO work week is Sat..Thu with
+    Fri usually off — so the week 'anchor' is Saturday.
+
+    Python weekday(): Mon=0, Sat=5, Sun=6.
+    For a given date d, distance back to its Saturday = (d.weekday() - 5) % 7.
+    """
+    if isinstance(d, datetime):
+        d = d.date()
+    return d - timedelta(days=(d.weekday() - 5) % 7)
 
 XLSX = r"C:\Users\Msi\Desktop\HTU- Joint History 14.05.2026.xlsx"
 
@@ -69,6 +81,10 @@ def main():
     daily_joints = defaultdict(int)
     daily_wdi    = defaultdict(float)
 
+    # Weekly RT aggregate. Keys: Saturday ISO date (start of OPCO work week).
+    # Value: {"rt": int, "rej": int, "per_welder": {stamp: [rt, rej]}}
+    weekly_rt = {}
+
     total_joints = 0
     completed_joints = 0
     total_wdi = 0.0
@@ -110,6 +126,19 @@ def main():
         elif verdict == "REJ":
             total_tested += 1
             total_repair += 1
+
+        # Weekly RT aggregate — joint counted in the week of its ORIGINAL RT
+        # shot (col AC). REJ counted when the FINAL verdict is REJ. RS->ACC
+        # reshoots don't count as repairs (NDT issue, not welder issue).
+        if isinstance(rt_date, datetime) and welder is not None:
+            wk_key = sat_week_start(rt_date).strftime("%Y-%m-%d")
+            wk = weekly_rt.setdefault(wk_key, {"rt": 0, "rej": 0, "per_welder": {}})
+            wk["rt"] += 1
+            pw = wk["per_welder"].setdefault(welder, [0, 0])
+            pw[0] += 1
+            if verdict == "REJ":
+                wk["rej"] += 1
+                pw[1] += 1
 
         if welder is None:
             continue
@@ -169,6 +198,24 @@ def main():
             "wdi": round(daily_wdi[d], 2),
         })
 
+    # Weekly RT aggregate: sort by week_start ASC, sort per_welder by RT count DESC
+    weekly_rt_out = []
+    for wk_key in sorted(weekly_rt.keys()):
+        wk = weekly_rt[wk_key]
+        per_welder_sorted = sorted(
+            wk["per_welder"].items(),
+            key=lambda kv: (-kv[1][0], kv[0]),
+        )
+        weekly_rt_out.append({
+            "week_start": wk_key,
+            "rt_total": wk["rt"],
+            "rej_total": wk["rej"],
+            "per_welder": [
+                {"stamp": s, "rt": v[0], "rej": v[1]}
+                for s, v in per_welder_sorted
+            ],
+        })
+
     data_date = daily_out[-1]["date"] if daily_out else "2026-05-03"
 
     project_htu = {
@@ -187,6 +234,7 @@ def main():
         },
         "welders": welders_out,
         "daily_throughput": daily_out,
+        "weekly_rt": weekly_rt_out,
     }
 
     sys.stdout.reconfigure(encoding="utf-8")
