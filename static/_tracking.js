@@ -15,8 +15,8 @@
  * still works, nothing is sent. Set the URL + secret to switch it on.
  */
 (function () {
-  var LOG_ENDPOINT = ''; // <-- paste Apps Script /exec URL here once deployed
-  var LOG_SECRET   = ''; // <-- paste the SHARED_SECRET from apps_script_log.gs here
+  var LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwpJ-iK0tfaW9elwo1_LdSqZYrrfB7WD4ZZUqaCdxAcA-rgQePnBOl0tGJLvAFkZykt/exec';
+  var LOG_SECRET   = 'opco-2026-x4r7w9';
 
   function readSessionUser() {
     try {
