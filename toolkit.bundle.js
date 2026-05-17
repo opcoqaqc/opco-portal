@@ -3682,6 +3682,66 @@
     renderProjectHTUWeeklyChart(data.weekly_rt);
   }
 
+  // Apply the W-010 (Omar Rajoob) display override to the weekly chart too.
+  // Same +14 tested / +14 repair the leaderboard + summary already show;
+  // distributed proportionally across W-010's existing weekly RT counts so
+  // no single week absorbs the entire bump. Remove together with the W-010
+  // override blocks above once the spreadsheet catches up.
+  function applyW010WeeklyOverride(weekly) {
+    if (!weekly || !weekly.length) return weekly;
+    var EXTRA_RT = 14, EXTRA_REJ = 14;
+    // Find W-010 in each week
+    var hits = [];
+    var totalRT = 0;
+    for (var i = 0; i < weekly.length; i++) {
+      var pwArr = weekly[i].per_welder || [];
+      for (var j = 0; j < pwArr.length; j++) {
+        if (pwArr[j].stamp === 'W-010') {
+          hits.push({ wi: i, pj: j, rt: pwArr[j].rt });
+          totalRT += pwArr[j].rt;
+          break;
+        }
+      }
+    }
+    if (!hits.length || !totalRT) return weekly;
+    // Clone so we don't mutate the original PROJECT_HTU
+    var out = weekly.map(function (wk) {
+      return {
+        week_start: wk.week_start,
+        rt_total: wk.rt_total,
+        rej_total: wk.rej_total,
+        per_welder: (wk.per_welder || []).map(function (pw) {
+          return { stamp: pw.stamp, rt: pw.rt, rej: pw.rej };
+        }),
+      };
+    });
+    // Distribute EXTRA proportionally to W-010's existing RT share per week.
+    // Last hit gets whatever remainder is left after flooring the others
+    // so the totals come out exact.
+    var rtAssigned = 0, rejAssigned = 0;
+    hits.forEach(function (h, idx) {
+      var isLast = idx === hits.length - 1;
+      var rtShare  = isLast ? EXTRA_RT  - rtAssigned  : Math.floor(EXTRA_RT  * h.rt / totalRT);
+      var rejShare = isLast ? EXTRA_REJ - rejAssigned : Math.floor(EXTRA_REJ * h.rt / totalRT);
+      if (rtShare  < 0) rtShare  = 0;
+      if (rejShare < 0) rejShare = 0;
+      var wk = out[h.wi];
+      var pw = wk.per_welder[h.pj];
+      pw.rt        += rtShare;
+      pw.rej       += rejShare;
+      wk.rt_total  += rtShare;
+      wk.rej_total += rejShare;
+      rtAssigned   += rtShare;
+      rejAssigned  += rejShare;
+    });
+    // Re-sort per-welder by RT count DESC in the weeks we touched, so the
+    // tooltip ordering still matches "highest activity first".
+    hits.forEach(function (h) {
+      out[h.wi].per_welder.sort(function (a, b) { return b.rt - a.rt; });
+    });
+    return out;
+  }
+
   // Weekly RT shots + repair-rate chart (OPCO week = Sat..Thu, Fri off).
   // Bars = RT shot count (left axis); line = repair rate % (right axis).
   // Hover any bar -> per-welder breakdown tooltip.
@@ -3691,6 +3751,8 @@
     var tt    = document.getElementById('proj-htu-weekly-tt');
     var sum   = document.getElementById('proj-htu-weekly-summary');
     if (!panel || !svg || !tt) return;
+    // Apply the W-010 manual override to the weekly aggregate too.
+    weekly = applyW010WeeklyOverride(weekly);
     // Hide entirely if no data (e.g. older JSON without weekly_rt)
     if (!weekly || !weekly.length) { panel.style.display = 'none'; return; }
     panel.style.display = '';
