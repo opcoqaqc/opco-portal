@@ -113,6 +113,9 @@
   </button>
 </div>
 
+<!-- activity tracking (no-op until LOG_ENDPOINT is configured) -->
+<script src="_tracking.js"></script>
+
 <script>
 (function(){
   // Hide content until verified
@@ -182,6 +185,7 @@
     users.forEach(function(ul){ ul.textContent = sess.u + " · "; });
     logouts.forEach(function(lo){
       lo.addEventListener("click", function(){
+        try { if (window.opcoTrack) window.opcoTrack('logout', ''); } catch(e){}
         try { localStorage.removeItem(__OPCO_SESSION_KEY); } catch(e){}
         // Also clear legacy keys so the doc-portal's own session check is reset
         try {

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPCO Portal — Activity Log</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  body { background: #0d1117; color: #c9d1d9; font-size: 13px; }
+  body::before { content:''; position:fixed; top:0; left:0; right:0; height:4px;
+                 background:linear-gradient(90deg,#0A2540 0%,#C9A961 50%,#0A2540 100%); z-index:1001; }
+
+  /* Auth gate — page is hidden until we confirm admin */
+  body.__gated > main { display: none; }
+  #gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0d1117;
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 14px;
+    text-align: center; padding: 24px;
+  }
+  body.__gated #gate { display: flex; }
+  #gate h1 { font-size: 18px; color: #f0e4c9; font-weight: 600; }
+  #gate p  { color: #8b949e; max-width: 420px; line-height: 1.5; }
+  #gate a  { color: #C9A961; text-decoration: none; font-weight: 600;
+             padding: 8px 18px; border: 1px solid #C9A961; border-radius: 8px;
+             margin-top: 6px; }
+  #gate a:hover { background: rgba(201,169,97,0.10); }
+
+  main { padding: 32px 40px 48px; max-width: 1500px; margin: 0 auto; }
+  .topbar { display: flex; align-items: baseline; gap: 14px; margin-bottom: 4px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.3em; color: #C49A55; font-weight: 700; text-transform: uppercase; }
+  .topbar h1 { font-size: 26px; color: #f0e4c9; font-weight: 700; margin: 0; }
+  .topbar .who { margin-left: auto; font-size: 12px; color: #8b949e; }
+  .topbar .who a { color: #C9A961; text-decoration: none; }
+  .lead { color: #8b949e; margin: 4px 0 22px; font-size: 13px; }
+
+  /* KPI cards */
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 22px; }
+  .kpi { background: #161b22; border: 1px solid #30363d; border-radius: 11px; padding: 14px 18px; }
+  .kpi .lbl { font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #8b949e; margin-bottom: 6px; }
+  .kpi .val { font-size: 22px; font-weight: 700; color: #f0e4c9; }
+  .kpi .sub { font-size: 11px; color: #8b949e; margin-top: 2px; }
+
+  /* Filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px;
+             padding: 12px 16px; background: #161b22; border: 1px solid #30363d; border-radius: 11px; }
+  .filters label { font-size: 11.5px; color: #8b949e; display: inline-flex; align-items: center; gap: 6px; }
+  .filters select, .filters input {
+    background: #0d1117; color: #cfd6df; border: 1px solid #30363d;
+    border-radius: 7px; padding: 6px 10px; font-size: 12px; font-family: inherit;
+  }
+  .filters .grow { flex: 1; }
+  .filters button {
+    background: #1a2747; color: #f0e4c9; border: 0; border-radius: 7px;
+    padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  .filters button:hover { background: #243358; }
+  .filters .meta { font-size: 11px; color: #8b949e; margin-left: 8px; }
+
+  /* Table */
+  .table-wrap { background: #161b22; border: 1px solid #30363d; border-radius: 11px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th {
+    background: #11151b; color: #C49A55; padding: 10px 12px; text-align: left;
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    border-bottom: 1px solid #30363d; font-weight: 700;
+    position: sticky; top: 0;
+  }
+  thead th.num { text-align: right; }
+  tbody td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cfd6df; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  td.ts   { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: #9aa3b2; white-space: nowrap; }
+  td.user { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #5DA3E0; font-weight: 600; }
+  td.type { font-size: 11px; }
+  td.detail { color: #e6edf3; }
+  td.ua { font-size: 10.5px; color: #6c7589; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pill { display: inline-block; padding: 2px 9px; border-radius: 9px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; }
+  .pill-login     { background: rgba(93,202,165,0.12); color: #5DCAA5; }
+  .pill-logout    { background: rgba(108,117,137,0.18); color: #9aa3b2; }
+  .pill-page_load { background: rgba(255,255,255,0.04); color: #6c7589; }
+  .pill-tab       { background: rgba(93,163,224,0.12); color: #5DA3E0; }
+  .pill-doc_view  { background: rgba(201,169,97,0.12); color: #C9A961; }
+  .pill-doc_download { background: rgba(167,124,203,0.14); color: #A77CCB; }
+
+  .empty, .loading { padding: 36px; text-align: center; color: #6c7589; font-size: 12.5px; }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    td.ua { display: none; }
+    thead th.col-ua { display: none; }
+  }
+</style>
+<script src="_tracking.js"></script>
+</head>
+<body class="__gated">
+
+<div id="gate">
+  <h1>OPCO Portal — Activity Log</h1>
+  <p>This page is for the admin user only. Sign in to the portal first, then come back here.</p>
+  <a href="./">← Portal</a>
+</div>
+
+<main>
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Admin</div>
+      <h1>Activity log</h1>
+    </div>
+    <div class="who">
+      <span id="who-user">—</span> · <a href="./">← Portal</a>
+    </div>
+  </div>
+  <p class="lead">Login, logout, navigation and document activity. Newest first. Pulled from the bound Google Sheet.</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">Events</div><div class="val" id="k-events">—</div><div class="sub" id="k-window">last refresh</div></div>
+    <div class="kpi"><div class="lbl">Unique users</div><div class="val" id="k-users">—</div><div class="sub">in current view</div></div>
+    <div class="kpi"><div class="lbl">Logins</div><div class="val" id="k-logins">—</div><div class="sub" id="k-logins-sub">sessions</div></div>
+    <div class="kpi"><div class="lbl">Documents opened</div><div class="val" id="k-docs">—</div><div class="sub">views + downloads</div></div>
+    <div class="kpi"><div class="lbl">Last event</div><div class="val" id="k-last">—</div><div class="sub" id="k-last-sub"></div></div>
+  </div>
+
+  <div class="filters">
+    <label>Type
+      <select id="f-type">
+        <option value="">all</option>
+        <option value="login">login</option>
+        <option value="logout">logout</option>
+        <option value="page_load">page_load</option>
+        <option value="tab">tab</option>
+        <option value="doc_view">doc_view</option>
+        <option value="doc_download">doc_download</option>
+      </select>
+    </label>
+    <label>User
+      <select id="f-user"><option value="">all</option></select>
+    </label>
+    <label class="grow">Search detail
+      <input id="f-q" type="text" placeholder="WPS-014, J-318, …" style="width:100%;">
+    </label>
+    <button id="f-refresh">Refresh</button>
+    <span class="meta" id="f-meta">—</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>User</th>
+          <th>Type</th>
+          <th>Detail</th>
+          <th>Page</th>
+          <th class="col-ua">Browser</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="loading" id="state">loading…</div>
+  </div>
+</main>
+
+<script>
+(function () {
+  // === wire to Apps Script ===
+  // These two come from setup_activity_log.md. Same values that
+  // _tracking.js uses for POSTing.
+  var LOG_ENDPOINT = '';   // <-- paste Apps Script /exec URL here
+  var LOG_SECRET   = '';   // <-- paste SHARED_SECRET here
+  var ADMIN_USER   = 'o.cavdar';
+
+  // Auth gate — only the admin can see this page
+  function readSession() {
+    try { var raw = localStorage.getItem('__opco_session_v1');
+          return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+  }
+  var sess = readSession();
+  if (!sess || sess.u !== ADMIN_USER) {
+    // Stay gated, show the message in #gate
+    return;
+  }
+  document.body.classList.remove('__gated');
+  document.getElementById('who-user').textContent = sess.u;
+
+  var allEvents = [];
+  var STATE = document.getElementById('state');
+  var ROWS  = document.getElementById('rows');
+  var FUSER = document.getElementById('f-user');
+  var FTYPE = document.getElementById('f-type');
+  var FQ    = document.getElementById('f-q');
+  var FMETA = document.getElementById('f-meta');
+
+  function fmtTs(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    var pad = function (n) { return n < 10 ? '0' + n : n; };
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+         + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  function uaShort(ua) {
+    if (!ua) return '';
+    // crude browser detection
+    var m;
+    if ((m = ua.match(/Edg\/([0-9.]+)/)))      return 'Edge ' + m[1].split('.')[0];
+    if ((m = ua.match(/Chrome\/([0-9.]+)/)))   return 'Chrome ' + m[1].split('.')[0];
+    if ((m = ua.match(/Firefox\/([0-9.]+)/)))  return 'Firefox ' + m[1].split('.')[0];
+    if ((m = ua.match(/Version\/([0-9.]+).+Safari/))) return 'Safari ' + m[1].split('.')[0];
+    return ua.slice(0, 60);
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+
+  function render() {
+    var type = FTYPE.value;
+    var user = FUSER.value;
+    var q    = (FQ.value || '').trim().toLowerCase();
+
+    var filtered = allEvents.filter(function (e) {
+      if (type && e.type !== type) return false;
+      if (user && e.user !== user) return false;
+      if (q && (e.detail || '').toLowerCase().indexOf(q) === -1
+            && (e.page   || '').toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+
+    // KPIs
+    document.getElementById('k-events').textContent = filtered.length;
+    var users = {};
+    var logins = 0, docs = 0;
+    filtered.forEach(function (e) {
+      if (e.user) users[e.user] = true;
+      if (e.type === 'login') logins++;
+      if (e.type === 'doc_view' || e.type === 'doc_download') docs++;
+    });
+    document.getElementById('k-users').textContent  = Object.keys(users).length;
+    document.getElementById('k-logins').textContent = logins;
+    document.getElementById('k-docs').textContent   = docs;
+    var last = filtered[0];
+    document.getElementById('k-last').textContent     = last ? fmtTs(last.ts).split(' ')[1] : '—';
+    document.getElementById('k-last-sub').textContent = last ? last.user + ' · ' + last.type : '';
+
+    // Table (limit to first 1000 rendered for perf)
+    var slice = filtered.slice(0, 1000);
+    if (!slice.length) {
+      ROWS.innerHTML = '';
+      STATE.style.display = '';
+      STATE.textContent = filtered.length === 0 && allEvents.length === 0
+        ? 'No events yet.'
+        : 'No events match the current filters.';
+      FMETA.textContent = filtered.length + ' of ' + allEvents.length;
+      return;
+    }
+    STATE.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < slice.length; i++) {
+      var ev = slice[i];
+      html += '<tr>'
+        + '<td class="ts">'   + esc(fmtTs(ev.ts)) + '</td>'
+        + '<td class="user">' + esc(ev.user || '—') + '</td>'
+        + '<td class="type"><span class="pill pill-' + esc(ev.type) + '">' + esc(ev.type) + '</span></td>'
+        + '<td class="detail">' + esc(ev.detail) + '</td>'
+        + '<td class="ua">'   + esc(ev.page || '') + '</td>'
+        + '<td class="ua col-ua">' + esc(uaShort(ev.user_agent)) + '</td>'
+        + '</tr>';
+    }
+    ROWS.innerHTML = html;
+    FMETA.textContent = (filtered.length > 1000 ? '1000 of ' : '')
+                       + filtered.length + ' of ' + allEvents.length
+                       + (allEvents.length === 1000 ? ' (server-limited)' : '');
+  }
+
+  function load() {
+    if (!LOG_ENDPOINT || !LOG_SECRET) {
+      STATE.textContent = 'Log endpoint not configured yet — paste the Apps Script URL + secret into static/admin.html and redeploy.';
+      return;
+    }
+    STATE.textContent = 'loading…';
+    STATE.style.display = '';
+    var url = LOG_ENDPOINT
+            + (LOG_ENDPOINT.indexOf('?') === -1 ? '?' : '&')
+            + 'secret=' + encodeURIComponent(LOG_SECRET)
+            + '&limit=1000';
+    fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+      if (!data || !data.ok) {
+        STATE.textContent = 'Failed: ' + ((data && data.error) || 'unknown');
+        return;
+      }
+      allEvents = data.events || [];
+      // Populate user filter
+      var users = {};
+      allEvents.forEach(function (e) { if (e.user) users[e.user] = true; });
+      var prev = FUSER.value;
+      FUSER.innerHTML = '<option value="">all</option>'
+        + Object.keys(users).sort().map(function (u) {
+            return '<option value="' + esc(u) + '">' + esc(u) + '</option>';
+          }).join('');
+      FUSER.value = prev;
+      document.getElementById('k-window').textContent = 'fetched ' + fmtTs(new Date().toISOString());
+      render();
+    }).catch(function (err) {
+      STATE.textContent = 'Network error: ' + String(err && err.message || err);
+    });
+  }
+
+  // Wire filters
+  FTYPE.addEventListener('change', render);
+  FUSER.addEventListener('change', render);
+  FQ.addEventListener('input', render);
+  document.getElementById('f-refresh').addEventListener('click', load);
+
+  load();
+})();
+</script>
+</body>
+</html>

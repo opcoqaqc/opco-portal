@@ -141,6 +141,7 @@
       return;
     }
     writeSession(u);
+    try { if (window.opcoTrack) window.opcoTrack('login', u); } catch (e) {}
     hideOverlay(u);
   }
 
@@ -174,6 +175,7 @@
     var logout = $('__opco_auth_logout');
     if (logout) {
       logout.addEventListener('click', function () {
+        try { if (window.opcoTrack) window.opcoTrack('logout', ''); } catch (e) {}
         try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
         location.reload();
       });
