@@ -3778,11 +3778,17 @@
     var maxRT = 0;
     weekly.forEach(function (w) { if (w.rt_total > maxRT) maxRT = w.rt_total; });
     maxRT = Math.max(50, Math.ceil(maxRT / 50) * 50);
-    var maxPct = 0;
-    weekly.forEach(function (w) {
-      var p = w.rt_total ? w.rej_total / w.rt_total * 100 : 0;
-      if (p > maxPct) maxPct = p;
+    // Cumulative (running) repair rate per week. Last value matches the
+    // overall project rate shown in the top summary. Weekly rate stays
+    // available in the tooltip; the line is the running total.
+    var cumRT = 0, cumRej = 0;
+    var cumPcts = weekly.map(function (w) {
+      cumRT  += w.rt_total;
+      cumRej += w.rej_total;
+      return cumRT ? cumRej / cumRT * 100 : 0;
     });
+    var maxPct = 0;
+    cumPcts.forEach(function (p) { if (p > maxPct) maxPct = p; });
     maxPct = Math.max(8, Math.ceil(maxPct / 2) * 2);
 
     var NS = 'http://www.w3.org/2000/svg';
@@ -3841,10 +3847,12 @@
       }
     });
 
-    // Line overlay (repair %)
+    // Line overlay — cumulative project repair rate (running total).
+    // Weekly rate is in the tooltip; the line is the running total so
+    // the final point lands on the project's overall repair rate.
     var pts = weekly.map(function (wk, i) {
       var cx = ML + i * slot + slot / 2;
-      var pct = wk.rt_total ? wk.rej_total / wk.rt_total * 100 : 0;
+      var pct = cumPcts[i];
       var py = MT + plotH * (1 - Math.min(pct, maxPct) / maxPct);
       return { x: cx, y: py, pct: pct };
     });
