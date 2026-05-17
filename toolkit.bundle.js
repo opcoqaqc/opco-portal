@@ -3684,29 +3684,31 @@
 
   // Apply the W-010 (Omar Rajoob) display override to the weekly chart too.
   // Same +14 tested / +14 repair the leaderboard + summary already show;
-  // distributed proportionally across W-010's existing weekly RT counts so
-  // no single week absorbs the entire bump. Remove together with the W-010
-  // override blocks above once the spreadsheet catches up.
+  // distributed evenly across MARCH 2026 weeks (Sat-anchored: Mar 7, 14,
+  // 21, 28) because that's when these joints actually went through —
+  // not the most recent months. Remove together with the W-010 override
+  // blocks above once the spreadsheet catches up.
   function applyW010WeeklyOverride(weekly) {
     if (!weekly || !weekly.length) return weekly;
     var EXTRA_RT = 14, EXTRA_REJ = 14;
-    // weekly_rt stamps come straight from the spreadsheet (e.g. 'W-10'),
-    // not the canonical 'W-010'. Normalize when comparing.
+    var MARCH_PREFIX = '2026-03';
     var TARGET = projNormalizeStamp('W-010');
-    // Find W-010 in each week
+
+    // Every week with a Saturday anchor in March 2026. For each, note
+    // whether W-010 already has an entry (we'll add to it) or not
+    // (we'll insert one).
     var hits = [];
-    var totalRT = 0;
     for (var i = 0; i < weekly.length; i++) {
+      if (String(weekly[i].week_start || '').indexOf(MARCH_PREFIX) !== 0) continue;
       var pwArr = weekly[i].per_welder || [];
+      var pwIdx = -1;
       for (var j = 0; j < pwArr.length; j++) {
-        if (projNormalizeStamp(pwArr[j].stamp) === TARGET) {
-          hits.push({ wi: i, pj: j, rt: pwArr[j].rt });
-          totalRT += pwArr[j].rt;
-          break;
-        }
+        if (projNormalizeStamp(pwArr[j].stamp) === TARGET) { pwIdx = j; break; }
       }
+      hits.push({ wi: i, pj: pwIdx });
     }
-    if (!hits.length || !totalRT) return weekly;
+    if (!hits.length) return weekly;
+
     // Clone so we don't mutate the original PROJECT_HTU
     var out = weekly.map(function (wk) {
       return {
@@ -3718,27 +3720,34 @@
         }),
       };
     });
-    // Distribute EXTRA proportionally to W-010's existing RT share per week.
-    // Last hit gets whatever remainder is left after flooring the others
-    // so the totals come out exact.
-    var rtAssigned = 0, rejAssigned = 0;
+
+    // Even distribution across March weeks; remainders go to the first N.
+    var n = hits.length;
+    var baseRT  = Math.floor(EXTRA_RT  / n);
+    var baseRej = Math.floor(EXTRA_REJ / n);
+    var remRT  = EXTRA_RT  - baseRT  * n;
+    var remRej = EXTRA_REJ - baseRej * n;
+
     hits.forEach(function (h, idx) {
-      var isLast = idx === hits.length - 1;
-      var rtShare  = isLast ? EXTRA_RT  - rtAssigned  : Math.floor(EXTRA_RT  * h.rt / totalRT);
-      var rejShare = isLast ? EXTRA_REJ - rejAssigned : Math.floor(EXTRA_REJ * h.rt / totalRT);
-      if (rtShare  < 0) rtShare  = 0;
-      if (rejShare < 0) rejShare = 0;
+      var rtShare  = baseRT  + (idx < remRT  ? 1 : 0);
+      var rejShare = baseRej + (idx < remRej ? 1 : 0);
       var wk = out[h.wi];
-      var pw = wk.per_welder[h.pj];
+      var pw;
+      if (h.pj >= 0) {
+        pw = wk.per_welder[h.pj];
+      } else {
+        // No W-010 entry in this March week — insert one. Use 'W-10' to
+        // match the raw stamp form used elsewhere in this JSON.
+        pw = { stamp: 'W-10', rt: 0, rej: 0 };
+        wk.per_welder.push(pw);
+      }
       pw.rt        += rtShare;
       pw.rej       += rejShare;
       wk.rt_total  += rtShare;
       wk.rej_total += rejShare;
-      rtAssigned   += rtShare;
-      rejAssigned  += rejShare;
     });
-    // Re-sort per-welder by RT count DESC in the weeks we touched, so the
-    // tooltip ordering still matches "highest activity first".
+
+    // Re-sort per-welder by RT count DESC in the weeks we touched
     hits.forEach(function (h) {
       out[h.wi].per_welder.sort(function (a, b) { return b.rt - a.rt; });
     });
