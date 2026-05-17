@@ -100,6 +100,17 @@ jobs:
           cp -v documents.html           deploy_pkg/documents.html
           # Custom domain for GitHub Pages
           echo "opcoportal.com" > deploy_pkg/CNAME
+
+          # Cache-bust: stamp the bundle URL with the short commit SHA so
+          # browsers fetch a fresh copy on every deploy (default
+          # Cache-Control: max-age=14400 is too long for our update cadence).
+          BUNDLE_VER="${GITHUB_SHA::8}"
+          echo "Cache-busting toolkit.bundle.js with ?v=${BUNDLE_VER}"
+          for f in toolkit.html projects.html welders.html; do
+            sed -i "s|toolkit\.bundle\.js\"|toolkit.bundle.js?v=${BUNDLE_VER}\"|g" "deploy_pkg/$f"
+          done
+          grep -nE "toolkit\.bundle\.js" deploy_pkg/toolkit.html | head -2
+
           echo "--- Deploy package ---"
           ls -la deploy_pkg/
 
