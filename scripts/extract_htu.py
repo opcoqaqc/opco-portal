@@ -128,9 +128,11 @@ def main():
             total_repair += 1
 
         # Weekly RT aggregate — joint counted in the week of its ORIGINAL RT
-        # shot (col AC). REJ counted when the FINAL verdict is REJ. RS->ACC
-        # reshoots don't count as repairs (NDT issue, not welder issue).
-        if isinstance(rt_date, datetime) and welder is not None:
+        # shot (col AC). Only joints that have reached a FINAL verdict
+        # (ACC or REJ) are included, so the weekly chart's totals match the
+        # 'Tested' KPI in the summary panel (RS-pending joints are excluded
+        # in both places).
+        if isinstance(rt_date, datetime) and welder is not None and verdict in ("ACC", "REJ"):
             wk_key = sat_week_start(rt_date).strftime("%Y-%m-%d")
             wk = weekly_rt.setdefault(wk_key, {"rt": 0, "rej": 0, "per_welder": {}})
             wk["rt"] += 1
