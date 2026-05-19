@@ -689,6 +689,19 @@
     [0, 50, 150, 400, 1000].forEach(function(d){
       setTimeout(applyTileRestrictions, d);
     });
+    // The 5 staggered timeouts above only cover initial page load. On a
+    // fresh login the session is written by the auth overlay *after* those
+    // fired, so the restricted tile stays hidden until the user refreshes.
+    // Poll every 250ms until we see a session (then stop), or after 60s.
+    (function () {
+      var startedAt = Date.now();
+      var handle = setInterval(function () {
+        applyTileRestrictions();
+        if (readSessionUser() || Date.now() - startedAt > 60000) {
+          clearInterval(handle);
+        }
+      }, 250);
+    })();
 
     function bindTheme() {
       var t = document.getElementById('theme-toggle');
