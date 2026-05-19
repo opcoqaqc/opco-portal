@@ -232,13 +232,17 @@ def extract_sources(sh):
                 governance.append({'label': label, 'text': text})
             continue
         if kpi_id.startswith('KPI-'):
+            # Display override: ISO Audit cadence is yearly, not monthly
+            # (spreadsheet still says "Monthly (internal)" for legacy reasons).
+            freq = s(cell(row, 6))
+            freq = freq.replace('Monthly (internal)', 'Yearly (internal)')
             items.append({
                 'id':         kpi_id,
                 'kpi':        s(cell(row, 2)),
                 'source':     s(cell(row, 3)),
                 'system':     s(cell(row, 4)),
                 'owner':      s(cell(row, 5)),
-                'frequency':  s(cell(row, 6)),
+                'frequency':  freq,
                 'retention':  s(cell(row, 7)),
             })
     return {'rows': items, 'governance': governance}
