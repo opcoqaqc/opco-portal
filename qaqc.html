@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OPCO Portal — QA/QC KPIs</title>
+<title>OPCO Portal — QA/QC Manager KPIs</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%;
@@ -12,16 +12,11 @@
   body::before { content:''; position:fixed; top:0; left:0; right:0; height:4px;
                  background:linear-gradient(90deg,#0A2540 0%,#C9A961 50%,#0A2540 100%); z-index:1001; }
 
-  /* Auth gate — page is hidden until we confirm one of the 4 allowed users */
-  body.__gated > main { display: none; }
-  #gate {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #0d1117;
-    display: none;
-    align-items: center; justify-content: center;
-    flex-direction: column; gap: 14px;
-    text-align: center; padding: 24px;
-  }
+  /* ------- Auth gate ------- */
+  body.__gated > .shell, body.__gated > .band { display: none; }
+  #gate { position: fixed; inset: 0; z-index: 9999; background: #0d1117;
+          display: none; align-items: center; justify-content: center;
+          flex-direction: column; gap: 14px; text-align: center; padding: 24px; }
   body.__gated #gate { display: flex; }
   #gate h1 { font-size: 18px; color: #f0e4c9; font-weight: 600; }
   #gate p  { color: #8b949e; max-width: 460px; line-height: 1.5; }
@@ -30,75 +25,644 @@
              margin-top: 6px; }
   #gate a:hover { background: rgba(45,212,191,0.10); }
 
-  main { padding: 36px 40px 48px; max-width: 1500px; margin: 0 auto; }
-  .topbar { display: flex; align-items: baseline; gap: 14px; margin-bottom: 4px; }
-  .eyebrow { font-size: 11px; letter-spacing: 0.3em; color: #2DD4BF; font-weight: 700; text-transform: uppercase; }
-  .topbar h1 { font-size: 28px; color: #f0e4c9; font-weight: 700; margin: 0; }
-  .topbar .who { margin-left: auto; font-size: 12px; color: #8b949e; }
-  .topbar .who a { color: #C9A961; text-decoration: none; }
-  .lead { color: #8b949e; margin: 4px 0 28px; font-size: 13px; }
+  /* ------- Band ------- */
+  .band { background: #11131a; height: 54px; display: flex; align-items: center;
+          padding: 0 28px; gap: 12px; border-bottom: 1px solid #1d212d; }
+  .band-back { padding: 6px 12px; background: rgba(255,255,255,0.04);
+               border: 1px solid rgba(255,255,255,0.07); border-radius: 999px;
+               font-size: 12px; font-weight: 600; color: #b0b8c4; text-decoration:none; }
+  .band-back:hover { background: rgba(255,255,255,0.07); }
+  .band-tile { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px;
+               background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+               border-radius: 8px; font-size: 12px; font-weight: 600; color: #cfd6df;
+               text-decoration: none; }
+  .band-tile:hover { background: rgba(255,255,255,0.06); }
+  .band-tile.active { background: rgba(45,212,191,0.10);
+                      border-color: rgba(45,212,191,0.45); color: #2DD4BF; }
+  .band-tile-dot { width: 11px; height: 11px; border-radius: 3px; }
+  .band-spacer { flex: 1; }
+  .band-user { font-size: 11.5px; color: #6c7589; padding: 6px 12px;
+               background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+               border-radius: 999px; }
+  .band-user a { color: inherit; text-decoration: none; margin-left: 6px; }
 
-  .placeholder {
-    background: #161b22; border: 1px solid #30363d; border-radius: 12px;
-    padding: 48px 32px; text-align: center;
+  /* ------- Shell ------- */
+  .shell { display: flex; min-height: calc(100vh - 54px); }
+
+  /* ------- Sidebar (calculators-style) ------- */
+  .sidebar { width: 260px; flex-shrink: 0; background: #0c1117;
+             border-right: 1px solid #1d212d; padding: 28px 0 20px; }
+  .side-title { padding: 0 22px 12px; font-size: 11px; letter-spacing: 0.25em;
+                color: #C9A961; font-weight: 700; text-transform: uppercase; }
+  .side-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+               margin: 6px 14px; border: 1px solid rgba(255,255,255,0.08);
+               border-radius: 10px; font-size: 13.5px; font-weight: 700; color: #c9d1d9;
+               cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+               text-decoration: none; }
+  .side-item:hover { background: rgba(201,169,97,0.04); }
+  .side-item.active { background: rgba(201,169,97,0.08);
+                      border-color: rgba(201,169,97,0.45); color: #C9A961; }
+  .side-icon { width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+               display: inline-flex; align-items: center; justify-content: center;
+               color: #ffffff; }
+  .side-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor;
+                   stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ------- Content ------- */
+  .content { flex: 1; padding: 32px 40px 48px; min-width: 0; max-width: 1400px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.3em; color: #2DD4BF;
+             font-weight: 700; text-transform: uppercase; }
+  h1.page-h { font-size: 26px; color: #f0e4c9; margin: 8px 0 6px; font-weight: 700; }
+  .lead { color: #8b949e; margin: 0 0 22px; font-size: 13px; line-height: 1.5; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ------- Cards (shared) ------- */
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+          padding: 20px 24px; margin-bottom: 14px; }
+  .card-h { font-size: 11px; letter-spacing: 0.18em; color: #C49A55;
+            font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: #8b949e; margin-bottom: 16px; }
+  .card-body { line-height: 1.6; color: #cfd6df; }
+  .card-body p { margin-bottom: 8px; }
+
+  /* ------- Cover view ------- */
+  .meta-grid { display: grid; grid-template-columns: 200px 1fr; gap: 10px 18px;
+               font-size: 13px; }
+  .meta-grid .lbl { color: #8b949e; font-size: 11.5px; letter-spacing: 0.05em;
+                    text-transform: uppercase; font-weight: 600; }
+  .meta-grid .val { color: #cfd6df; }
+  .framework-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .framework-item { padding: 14px 16px; background: rgba(45,212,191,0.04);
+                    border: 1px solid rgba(45,212,191,0.18); border-radius: 10px; }
+  .framework-item .n { font-size: 13.5px; font-weight: 700; color: #2DD4BF; margin-bottom: 6px; }
+  .framework-item .d { font-size: 12px; color: #9aa3b2; line-height: 1.5; }
+  .standards-note { font-size: 12px; color: #8b949e; padding: 14px 18px;
+                    background: rgba(255,255,255,0.02); border-left: 3px solid #C9A961;
+                    border-radius: 4px; line-height: 1.6; margin-top: 14px; }
+
+  /* ------- KPI Definitions ------- */
+  .kpi-def { background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+             margin-bottom: 14px; overflow: hidden; }
+  .kpi-def-h { padding: 14px 22px; background: rgba(201,169,97,0.06);
+               border-bottom: 1px solid #30363d;
+               display: flex; align-items: center; gap: 14px; }
+  .kpi-def-id { font-size: 11px; letter-spacing: 0.2em; color: #C49A55;
+                font-weight: 800; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                padding: 4px 10px; background: rgba(201,169,97,0.15); border-radius: 6px; }
+  .kpi-def-name { font-size: 16px; color: #f0e4c9; font-weight: 700; }
+  .kpi-def-body { padding: 18px 22px; display: grid; grid-template-columns: 1fr 1fr;
+                  gap: 16px 24px; }
+  .kpi-def-block { font-size: 12.5px; color: #cfd6df; line-height: 1.55; }
+  .kpi-def-block .lbl { font-size: 10px; letter-spacing: 0.18em; color: #8b949e;
+                        text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+  .kpi-def-block.full { grid-column: 1 / -1; }
+  .kpi-def-block pre { white-space: pre-wrap; font-family: inherit; font-size: 12px;
+                       color: #cfd6df; }
+  .target-pill { display: inline-block; padding: 4px 10px;
+                 background: rgba(45,212,191,0.12); color: #2DD4BF;
+                 border-radius: 6px; font-weight: 700; font-size: 12px;
+                 font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* ------- Scoring Matrix ------- */
+  .scoring-table { width: 100%; border-collapse: collapse; font-size: 12px;
+                   background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+                   overflow: hidden; }
+  .scoring-table th, .scoring-table td { padding: 9px 12px;
+                                          border-bottom: 1px solid rgba(255,255,255,0.05);
+                                          text-align: left; }
+  .scoring-table th { background: rgba(255,255,255,0.03); font-size: 10px;
+                      letter-spacing: 0.12em; text-transform: uppercase; color: #8b949e;
+                      font-weight: 700; }
+  .scoring-table .kpi-cell { color: #f0e4c9; font-weight: 600; }
+  .scoring-table .weight-cell { font-family: ui-monospace,SFMono-Regular,Menlo,monospace; color: #C9A961; }
+  .scoring-table .band-cell { font-family: ui-monospace,SFMono-Regular,Menlo,monospace;
+                              font-size: 11.5px; text-align: center; }
+  .scoring-table .band-1 { background: rgba(228,116,128,0.08); color: #E47480; }
+  .scoring-table .band-2 { background: rgba(239,159,39,0.08);  color: #EF9F27; }
+  .scoring-table .band-3 { background: rgba(201,169,97,0.08); color: #C9A961; }
+  .scoring-table .band-4 { background: rgba(93,163,224,0.08); color: #5DA3E0; }
+  .scoring-table .band-5 { background: rgba(93,202,165,0.10); color: #5DCAA5; }
+  .scoring-table tbody tr:last-child td { border-bottom: 0; }
+  .composite-rating { display: grid; grid-template-columns: 130px 160px 1fr; gap: 12px 22px;
+                      padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+                      font-size: 12.5px; }
+  .composite-rating:last-child { border-bottom: 0; }
+  .composite-rating .r { font-family: ui-monospace,SFMono-Regular,Menlo,monospace;
+                          color: #C9A961; font-weight: 700; }
+  .composite-rating .rating-pill { display: inline-block; padding: 3px 10px;
+                                   border-radius: 8px; font-size: 11px; font-weight: 700;
+                                   letter-spacing: 0.05em; }
+  .composite-rating .interp { color: #9aa3b2; font-size: 12px; line-height: 1.5; }
+
+  .rating-Outstanding   { background: rgba(93,202,165,0.18); color: #5DCAA5; }
+  .rating-Exceeds       { background: rgba(93,163,224,0.18); color: #5DA3E0; }
+  .rating-Meets         { background: rgba(201,169,97,0.18); color: #C9A961; }
+  .rating-Below         { background: rgba(239,159,39,0.18); color: #EF9F27; }
+  .rating-Unsatisfactory{ background: rgba(228,116,128,0.18); color: #E47480; }
+
+  /* ------- Monthly Tracker ------- */
+  .composite-hero {
+    background: linear-gradient(135deg, rgba(45,212,191,0.12), rgba(45,212,191,0.04));
+    border: 1px solid rgba(45,212,191,0.30); border-radius: 14px;
+    padding: 24px 28px; margin-bottom: 20px;
+    display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center;
   }
-  .placeholder .ico {
-    width: 60px; height: 60px; border-radius: 14px;
-    background: rgba(45,212,191,0.10); border: 1px solid rgba(45,212,191,0.35);
-    color: #2DD4BF;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 18px;
-  }
-  .placeholder .ico svg { width: 30px; height: 30px; }
-  .placeholder h2 { font-size: 17px; color: #f0e4c9; margin: 0 0 8px; font-weight: 600; }
-  .placeholder p  { color: #8b949e; font-size: 13px; max-width: 520px; margin: 0 auto; line-height: 1.6; }
+  .composite-hero-h { font-size: 11px; letter-spacing: 0.18em; color: #2DD4BF;
+                      font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  .composite-hero-val { font-size: 54px; font-weight: 700; color: #f0e4c9;
+                         line-height: 1; letter-spacing: -0.02em; }
+  .composite-hero-rating { display: inline-block; padding: 6px 14px; border-radius: 999px;
+                            font-weight: 700; font-size: 12px; letter-spacing: 0.06em;
+                            text-transform: uppercase; margin-top: 8px; }
+  .composite-hero-breakdown { display: flex; gap: 24px; flex-wrap: wrap; }
+  .composite-hero-breakdown div { font-size: 11px; color: #8b949e; letter-spacing: 0.08em; }
+  .composite-hero-breakdown b { display: block; font-size: 16px; color: #f0e4c9;
+                                 margin-top: 4px; font-weight: 700; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+              margin-bottom: 20px; }
+  .kpi-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+              padding: 18px 20px; display: flex; flex-direction: column; }
+  .kpi-card .id { font-size: 10.5px; letter-spacing: 0.18em; font-weight: 700;
+                  text-transform: uppercase; }
+  .kpi-card h3 { font-size: 14px; color: #f0e4c9; margin: 4px 0 12px;
+                  font-weight: 600; line-height: 1.3; min-height: 36px; }
+  .kpi-card .vals { display: flex; gap: 18px; align-items: baseline; margin-bottom: 4px; }
+  .kpi-card .curr { font-size: 24px; font-weight: 700; color: #f0e4c9; }
+  .kpi-card .curr-lbl, .kpi-card .ytd-lbl {
+    font-size: 10px; color: #8b949e; letter-spacing: 0.12em; text-transform: uppercase; }
+  .kpi-card .ytd { font-size: 14px; color: #cfd6df; }
+  .kpi-card .target { font-size: 11px; color: #8b949e; margin-top: 4px; }
+  .kpi-card .spark { margin: 12px 0 8px; height: 38px; }
+  .kpi-card .foot { display: flex; align-items: center; justify-content: space-between;
+                     font-size: 11px; margin-top: auto; }
+  .kpi-card .score-badge { padding: 3px 10px; border-radius: 8px; font-weight: 700;
+                            font-size: 11px; }
+  .kpi-card.no-data { opacity: 0.7; }
+  .kpi-card.no-data h3 { color: #9aa3b2; }
+  .kpi-card .no-data-note { font-size: 11.5px; color: #8b949e; margin-top: 6px;
+                             line-height: 1.5; }
+
+  .score-1 { background: rgba(228,116,128,0.15); color: #E47480; }
+  .score-2 { background: rgba(239,159,39,0.15);  color: #EF9F27; }
+  .score-3 { background: rgba(201,169,97,0.15);  color: #C9A961; }
+  .score-4 { background: rgba(93,163,224,0.15);  color: #5DA3E0; }
+  .score-5 { background: rgba(93,202,165,0.18);  color: #5DCAA5; }
+  .score-na { background: rgba(108,117,137,0.18); color: #9aa3b2; }
+
+  .contrib-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .contrib-table th { text-align: left; padding: 8px 12px; font-size: 10.5px;
+                       letter-spacing: 0.1em; text-transform: uppercase; color: #8b949e;
+                       border-bottom: 1px solid #30363d; font-weight: 700; }
+  .contrib-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .contrib-table tbody tr.total td { border-bottom: 0; font-weight: 700;
+                                       color: #f0e4c9; background: rgba(45,212,191,0.04); }
+  .contrib-table .num { text-align: right;
+                         font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* ------- Data Sources ------- */
+  .ds-table { width: 100%; border-collapse: collapse; font-size: 12px;
+              background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+              overflow: hidden; margin-bottom: 14px; }
+  .ds-table th, .ds-table td { padding: 10px 12px; text-align: left;
+                                 border-bottom: 1px solid rgba(255,255,255,0.05);
+                                 vertical-align: top; }
+  .ds-table th { background: rgba(255,255,255,0.03); font-size: 10px;
+                  letter-spacing: 0.12em; text-transform: uppercase; color: #8b949e;
+                  font-weight: 700; }
+  .ds-table .id-cell { color: #C9A961; font-weight: 700; white-space: nowrap;
+                        font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .ds-table .kpi-cell { color: #f0e4c9; font-weight: 600; }
+  .ds-table tbody tr:last-child td { border-bottom: 0; }
+  .gov-grid { display: grid; grid-template-columns: 140px 1fr; gap: 12px 22px;
+              font-size: 12.5px; line-height: 1.55; }
+  .gov-grid .lbl { color: #C9A961; font-weight: 700; }
+  .gov-grid .txt { color: #cfd6df; }
 </style>
 <script src="_tracking.js"></script>
 </head>
 <body class="__gated">
 
 <div id="gate">
-  <h1>OPCO Portal — QA/QC KPIs</h1>
+  <h1>OPCO Portal — QA/QC Manager KPIs</h1>
   <p>This page is for the QA/QC team. Sign in to the portal with an authorized account, then come back here.</p>
   <a href="./">← Portal</a>
 </div>
 
-<main>
-  <div class="topbar">
-    <div>
-      <div class="eyebrow">QA/QC department</div>
-      <h1>Quality KPIs</h1>
-    </div>
-    <div class="who">
-      <span id="who-user">—</span> · <a href="./">← Portal</a>
-    </div>
-  </div>
-  <p class="lead">Departmental quality metrics &mdash; weekly RT performance, repair trends, welder qualifications, NDT throughput. Hooked up to live data once the source spreadsheet lands.</p>
+<!-- Top band -->
+<div class="band">
+  <a href="./" class="band-back">&larr; Portal</a>
+  <a class="band-tile" href="documents.html#view=qms"><span class="band-tile-dot" style="background:#C49A55"></span>QMS</a>
+  <a class="band-tile" href="documents.html#view=projects"><span class="band-tile-dot" style="background:#5DA3E0"></span>Project QC</a>
+  <a class="band-tile" href="projects.html"><span class="band-tile-dot" style="background:#5DCAA5"></span>Dashboard</a>
+  <a class="band-tile" href="toolkit.html"><span class="band-tile-dot" style="background:#EF9F27"></span>Toolkit</a>
+  <a class="band-tile" href="welders.html"><span class="band-tile-dot" style="background:#E47480"></span>Welders</a>
+  <a class="band-tile" href="documents.html#view=library"><span class="band-tile-dot" style="background:#A77CCB"></span>Library</a>
+  <a class="band-tile active" href="qaqc.html"><span class="band-tile-dot" style="background:#2DD4BF"></span>QA/QC</a>
+  <div class="band-spacer"></div>
+  <div class="band-user"><span id="band-user-name">—</span></div>
+</div>
 
-  <div class="placeholder">
-    <div class="ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <circle cx="12" cy="12" r="6"/>
-        <circle cx="12" cy="12" r="2"/>
-      </svg>
-    </div>
-    <h2>Data pipeline pending</h2>
-    <p>This dashboard is wired up and ready. As soon as the QA/QC KPI spreadsheet is delivered the same way HTU snapshots are (drop the xlsx and ping <code>QAQC &lt;path&gt;</code>), the panels here will populate.</p>
-  </div>
-</main>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="side-title">QA/QC Manager KPIs</div>
+    <a class="side-item" data-tab="cover">
+      <span class="side-icon" style="background:linear-gradient(135deg,#C9A961,#b89750);"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+      <span>Cover</span>
+    </a>
+    <a class="side-item" data-tab="defs">
+      <span class="side-icon" style="background:linear-gradient(135deg,#2B5797,#4a7ec1);"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <span>KPI Definitions</span>
+    </a>
+    <a class="side-item" data-tab="scoring">
+      <span class="side-icon" style="background:linear-gradient(135deg,#C2410C,#ea580c);"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span>Scoring Matrix</span>
+    </a>
+    <a class="side-item active" data-tab="tracker">
+      <span class="side-icon" style="background:linear-gradient(135deg,#1D7044,#2da66d);"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+      <span>Monthly Tracker</span>
+    </a>
+    <a class="side-item" data-tab="sources">
+      <span class="side-icon" style="background:linear-gradient(135deg,#6B4FA8,#8a6dc8);"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"/></svg></span>
+      <span>Data Sources</span>
+    </a>
+  </aside>
+
+  <main class="content">
+    <div class="view" id="view-cover"></div>
+    <div class="view" id="view-defs"></div>
+    <div class="view" id="view-scoring"></div>
+    <div class="view active" id="view-tracker"></div>
+    <div class="view" id="view-sources"></div>
+  </main>
+</div>
+
+<!-- Data + renderer -->
+<script id="qaqc-data" type="application/json">{"data_date": "2026-05-19", "source_file": "OPCO_QAQC_Manager_KPI_7.xlsx", "cover": {"title": "Key Performance Indicators — QA/QC Management", "company": "ORIENT PIPELINE CO.", "meta": {"position": "QA/QC Manager", "department": "Quality Assurance & Quality Control", "reporting_to": "Chief Executive Officer", "scope": "Company-wide — All Projects, ISO Management System, Internal & External Audits", "reporting_period": "Monthly (consolidated quarterly)", "review_cadence": "Monthly self-assessment / Quarterly management review", "doc_ref": "OPCO-QAQC-KPI-2026-01", "revision": "Rev. 0 — Initial Draft", "submission_date": "May 2026"}, "framework": [{"name": "1. KPI Definitions", "desc": "Description, calculation methodology, data source, and target for each of the 5 KPIs."}, {"name": "2. Scoring Matrix", "desc": "Banded scoring (1–5 scale) per KPI; weighted aggregation to a composite performance score."}, {"name": "3. Monthly Tracker", "desc": "Live data-entry sheet; auto-calculates monthly score, YTD performance, and trend indicators."}, {"name": "4. Data Sources & Governance", "desc": "Source-system mapping, data ownership, evidence retention, and audit-trail references."}], "standards": "ISO 9001:2015 Clause 9.1 (Monitoring, Measurement, Analysis & Evaluation) and Clause 9.3 (Management Review) · ASME B31.3 · ASME Section IX · API 1104 · API 5L · Company QMS"}, "kpi_definitions": [{"id": "KPI-1", "name": "Weld Quality Index (Repair Rate)", "description": "Direct measure of welding output quality across all projects. Lower repair rate indicates higher first-time-right performance, reduced rework cost, and stronger welder/WPS discipline. Tracked separately for Pipeline and Piping scopes due to different code requirements and production conditions.", "methodology": "Repair Rate (%) = (Total Repaired Welds ÷ Total Welds Inspected) × 100\n\nReported monthly per project, split between Pipeline (mainline) and Piping (process/station) scopes.", "unit": "%", "target": "Pipeline ≤ 2.0%\nPiping ≤ 5.0%", "data_source": "NDT Daily Reports · Joint History Log · RT/UT Reports"}, {"id": "KPI-2", "name": "NDT & Inspection Throughput vs. Plan", "description": "Measures the QA/QC department's ability to keep pace with production. Backlog directly delays hydrotest, mechanical completion, and handover milestones.", "methodology": "Throughput Compliance (%) = (Joints Inspected in Period ÷ Joints Planned for Inspection in Period) × 100\n\nAggregates RT, UT, MT, PT, and visual inspection.", "unit": "%", "target": "≥ 95.0%", "data_source": "Weekly Inspection Plan · ITP · NDT Subcontractor Reports"}, {"id": "KPI-3", "name": "Non-Conformance Closure Performance", "description": "Tracks the discipline of NCR lifecycle management — a core ISO 9001 Clause 10.2 (Nonconformity & Corrective Action) requirement and a key audit metric. Reflects effectiveness of corrective action system.", "methodology": "Avg. Closure Time (days) = Σ(NCR Close Date − NCR Issue Date) ÷ Total NCRs Closed in Period\n\nOverdue NCRs (>30d) tracked as secondary indicator.", "unit": "days", "target": "≤ 14 days", "data_source": "NCR Register · CAPA Log · QMS Database"}, {"id": "KPI-4", "name": "ISO 9001 Audit Performance", "description": "Composite indicator of management-system health combining internal audit execution and third-party (Bureau Veritas) surveillance audit results. Directly supports ISO 9001 certification maintenance and reflects the robustness of the QMS under independent scrutiny.", "methodology": "Audit Performance Score (%) = [(Internal Audits Completed ÷ Audits Planned) × 50%] + [BV Surveillance Audit Score × 50%]\n\nBV Score = 100% if zero Major NCs; −20% per Major NC; −5% per Minor NC (floor 0%).", "unit": "%", "target": "≥ 90.0%", "data_source": "Internal Audit Schedule · BV Surveillance Audit Reports"}, {"id": "KPI-5", "name": "Vendor Evaluation Turnaround Time", "description": "Measures the QA/QC department's responsiveness in completing vendor evaluations once requested by Procurement. Covers all evaluation types: Bid Evaluation, New Vendor Pre-Qualification, and Periodic Re-Evaluation. A short turnaround protects project schedule and demonstrates QA/QC service to internal stakeholders. Supports ISO 9001 Clause 8.4 (Control of Externally Provided Processes, Products & Services).", "methodology": "Avg. Turnaround Time (days) = Σ (Evaluation Submitted Date − Request Received Date) ÷ Total Evaluations Completed in Period\n\nMeasured in working days. Months with zero evaluation requests automatically score 5 (no demand to respond to).", "unit": "days", "target": "≤ 5 working days", "data_source": "Procurement Request Log · Vendor Evaluation Reports · Document Control Register"}], "scoring_matrix": {"kpis": [{"id": "KPI-1A", "name": "Weld Repair Rate — Pipeline (mainline)", "weight": 0.125, "bands": ["> 4.0%", "3.0% – 4.0%", "2.0% – 3.0%", "1.0% – 2.0%", "< 1.0%"]}, {"id": "KPI-1B", "name": "Weld Repair Rate — Piping (process)", "weight": 0.125, "bands": ["> 8.0%", "6.5% – 8.0%", "5.0% – 6.5%", "3.5% – 5.0%", "< 3.5%"]}, {"id": "KPI-2", "name": "NDT & Inspection Throughput vs. Plan", "weight": 0.2, "bands": ["< 75%", "75% – 85%", "85% – 95%", "95% – 100%", "1"]}, {"id": "KPI-3", "name": "NCR Closure Performance (avg. days)", "weight": 0.2, "bands": ["> 30", "21 – 30", "14 – 21", "7 – 14", "< 7"]}, {"id": "KPI-4", "name": "ISO 9001 Audit Performance (Internal+BV)", "weight": 0.2, "bands": ["< 60%", "60% – 75%", "75% – 90%", "90% – 98%", "≥ 98%"]}, {"id": "KPI-5", "name": "Vendor Evaluation Turnaround Time (avg days)", "weight": 0.15, "bands": ["> 12", "8 – 12", "5 – 8", "3 – 5", "< 3"]}], "composite": [{"range": "≥ 4.50", "rating": "Outstanding", "interpretation": "Exceptional performance — sustained outperformance across KPIs"}, {"range": "3.75 – 4.50", "rating": "Exceeds Target", "interpretation": "Consistently above target with strong management discipline"}, {"range": "2.75 – 3.75", "rating": "Meets Target", "interpretation": "Performance in line with company expectations"}, {"range": "1.75 – 2.75", "rating": "Below Target", "interpretation": "Improvement required — action plan to be presented"}, {"range": "< 1.75", "rating": "Unsatisfactory", "interpretation": "Immediate corrective action and management intervention"}]}, "monthly_tracker": {"year": 2026, "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], "metrics": [{"label": "KPI-1A · Weld Repair Rate — Pipeline (Mainline)", "role": "section"}, {"label": "Pipeline Welds Inspected", "unit": "joints", "months": [0, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 0, "target": "—", "score": null, "role": "metric"}, {"label": "Pipeline Repaired Welds", "unit": "joints", "months": [0, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 0, "target": "—", "score": null, "role": "metric"}, {"label": "→ Pipeline Repair Rate", "unit": "%", "months": [null, null, null, null, null, null, null, null, null, null, null, null], "ytd": null, "target": "≤ 2.0%", "score": null, "role": "metric"}, {"label": "KPI-1B · Weld Repair Rate — Piping (Process / Station)", "role": "section"}, {"label": "Piping Welds Inspected", "unit": "joints", "months": [180, 210, 245, 280, null, null, null, null, null, null, null, null], "ytd": 915, "target": "—", "score": null, "role": "metric"}, {"label": "Piping Repaired Welds", "unit": "joints", "months": [8, 9, 11, 13, null, null, null, null, null, null, null, null], "ytd": 41, "target": "—", "score": null, "role": "metric"}, {"label": "→ Piping Repair Rate", "unit": "%", "months": [0.044444444444444446, 0.04285714285714286, 0.044897959183673466, 0.04642857142857143, null, null, null, null, null, null, null, null], "ytd": 0.04480874316939891, "target": "≤ 5.0%", "score": 4, "role": "metric"}, {"label": "KPI-2 · NDT & Inspection Throughput vs. Plan", "role": "section"}, {"label": "Joints Planned for Inspection", "unit": "joints", "months": [200, 240, 275, 310, null, null, null, null, null, null, null, null], "ytd": 1025, "target": "—", "score": null, "role": "metric"}, {"label": "Joints Actually Inspected", "unit": "joints", "months": [195, 235, 270, 305, null, null, null, null, null, null, null, null], "ytd": 1005, "target": "—", "score": null, "role": "metric"}, {"label": "→ Throughput Compliance", "unit": "%", "months": [0.975, 0.9791666666666666, 0.9818181818181818, 0.9838709677419355, null, null, null, null, null, null, null, null], "ytd": 0.9804878048780488, "target": "≥ 95.0%", "score": 4, "role": "metric"}, {"label": "KPI-3 · Non-Conformance Closure Performance", "role": "section"}, {"label": "NCRs Closed (count)", "unit": "count", "months": [0, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 0, "target": "—", "score": null, "role": "metric"}, {"label": "Average Closure Time", "unit": "days", "months": [0, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": null, "target": "≤ 14 days", "score": null, "role": "metric"}, {"label": "→ NCR Performance Score (monthly)", "unit": "1-5", "months": [5, 5, 5, 5, null, null, null, null, null, null, null, null], "ytd": 5, "target": "≥ 4.00", "score": 5, "role": "metric"}, {"label": "Overdue NCRs (> 30 days)", "unit": "count", "months": [0, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 0, "target": "0", "score": null, "role": "metric"}, {"label": "KPI-4 · ISO 9001 Audit Performance  (Internal + BV Surveillance)", "role": "section"}, {"label": "Internal Audits Planned", "unit": "count", "months": [1, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 1, "target": "—", "score": null, "role": "metric"}, {"label": "Internal Audits Completed", "unit": "count", "months": [1, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 1, "target": "—", "score": null, "role": "metric"}, {"label": "BV Surveillance — Major NCs", "unit": "count", "months": [0, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 0, "target": "0", "score": null, "role": "metric"}, {"label": "BV Surveillance — Minor NCs", "unit": "count", "months": [0, 0, 0, 0, null, null, null, null, null, null, null, null], "ytd": 0, "target": "—", "score": null, "role": "metric"}, {"label": "→ Audit Performance Score", "unit": "%", "months": [1, null, null, null, null, null, null, null, null, null, null, null], "ytd": 1, "target": "≥ 90.0%", "score": 5, "role": "metric"}, {"label": "KPI-5 · Vendor Evaluation Turnaround Time  (Bid + Pre-Qual + Re-Eval)", "role": "section"}, {"label": "Evaluation Requests Received", "unit": "count", "months": [6, 0, 0, 7, null, null, null, null, null, null, null, null], "ytd": 13, "target": "—", "score": null, "role": "metric"}, {"label": "Avg. Turnaround Time", "unit": "days", "months": [4, 0, 0, 4, null, null, null, null, null, null, null, null], "ytd": 4, "target": "≤ 5 days", "score": null, "role": "metric"}, {"label": "→ Turnaround Performance Score (monthly)", "unit": "1-5", "months": [4, 5, 5, 4, null, null, null, null, null, null, null, null], "ytd": 4.5, "target": "≥ 4.00", "score": 4.5, "role": "metric"}], "composite_rows": [{"kpi": "KPI-1A · Weld Repair — Pipeline", "expr": "Weight × Score = 0.125 × R8", "weight": 0, "score": null, "weighted": null}, {"kpi": "KPI-1B · Weld Repair — Piping", "expr": "Weight × Score = 0.125 × R12", "weight": 0.25, "score": 4, "weighted": 1}, {"kpi": "KPI-2 · NDT Throughput", "expr": "Weight × Score = 0.20 × R17", "weight": 0.2, "score": 4, "weighted": 0.8}, {"kpi": "KPI-3 · NCR Closure", "expr": "Weight × Score = 0.20 × R22", "weight": 0.2, "score": 5, "weighted": 1}, {"kpi": "KPI-4 · ISO Audit (Internal+BV)", "expr": "Weight × Score = 0.20 × R29", "weight": 0.2, "score": 5, "weighted": 1}, {"kpi": "KPI-5 · Vendor Eval Turnaround", "expr": "Weight × Score = 0.15 × R34", "weight": 0.15, "score": 4.5, "weighted": 0.6749999999999999}], "composite_score": 4.475, "rating": "Exceeds Target"}, "data_sources": {"rows": [{"id": "KPI-1", "kpi": "Weld Quality Index", "source": "NDT Reports & Joint History Log", "system": "RT/UT/MT/PT Reports · OPCO Joint History Database", "owner": "Site QA/QC Engineer", "frequency": "Daily", "retention": "5 years"}, {"id": "KPI-2", "kpi": "NDT Throughput", "source": "Weekly Inspection Plan vs. Actual", "system": "ITP · NDT Subcontractor Daily Reports", "owner": "Site QA/QC Engineer", "frequency": "Weekly", "retention": "5 years"}, {"id": "KPI-3", "kpi": "NCR Closure", "source": "NCR Register & CAPA Log", "system": "OPCO QMS — NCR Module", "owner": "QA/QC Manager", "frequency": "Per event + monthly review", "retention": "Project life + 5 years"}, {"id": "KPI-4", "kpi": "ISO 9001 Audit", "source": "Internal Audit Programme + BV Surveillance Audit Reports", "system": "QMS Audit Schedule · Internal Audit Findings · BV Surveillance Reports", "owner": "QA/QC Manager", "frequency": "Monthly (internal) + Per BV cycle", "retention": "ISO certification cycle"}, {"id": "KPI-5", "kpi": "Vendor Evaluation Turnaround", "source": "Procurement Request Log & Evaluation Reports", "system": "Procurement Request Register · Vendor Evaluation Reports · Document Control Log", "owner": "QA/QC Manager", "frequency": "Per request + monthly review", "retention": "Per ISO 9001 (5 years min)"}], "governance": [{"label": "Verification", "text": "All input data referenced to primary source documents (NDT reports, NCRs, audit reports, WPQs). Random sample verification by QA/QC Manager during monthly review."}, {"label": "Traceability", "text": "Each KPI value traceable to a controlled record. Records retained per OPCO QMS Procedure for Control of Documented Information."}, {"label": "Independence", "text": "KPI-3 and KPI-4 results subject to independent verification through third-party audit (ISO 9001 surveillance)."}, {"label": "Reporting Line", "text": "Monthly KPI dashboard submitted to CEO. Material deviations escalated within 5 working days with corrective action plan."}, {"label": "Review Cycle", "text": "KPI definitions, targets, and weights reviewed annually at the Management Review Meeting per ISO 9001:2015 Clause 9.3 (Management Review)."}]}}</script>
 
 <script>
 (function () {
+  // === Auth gate ===
   var ALLOWED = ['o.cavdar', 'a.barazi', 'o.barazi', 'm.barazi'];
   function readSession() {
     try { var raw = localStorage.getItem('__opco_session_v1');
           return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
   }
   var sess = readSession();
-  if (!sess || ALLOWED.indexOf(sess.u) === -1) return; // stay gated
+  if (!sess || ALLOWED.indexOf(sess.u) === -1) return;
   document.body.classList.remove('__gated');
-  document.getElementById('who-user').textContent = sess.u;
+  document.getElementById('band-user-name').textContent = sess.u;
+
+  // === Load data ===
+  var DATA;
+  try { DATA = JSON.parse(document.getElementById('qaqc-data').textContent); }
+  catch (e) { DATA = null; }
+  if (!DATA) {
+    document.getElementById('view-tracker').innerHTML = '<p class="lead">Data file missing — refresh extract_qaqc.py and rebuild qaqc.html.</p>';
+    return;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function pct(v, digits) { return (v == null) ? '—' : (v * 100).toFixed(digits == null ? 1 : digits) + '%'; }
+  function num(v, digits) { return (v == null) ? '—' : Number(v).toFixed(digits == null ? 2 : digits); }
+  function n0(v) { return (v == null) ? '—' : Math.round(v).toLocaleString(); }
+
+  // === Cover view ===
+  function renderCover() {
+    var c = DATA.cover;
+    var html = '<div class="eyebrow">QA/QC department</div>';
+    html += '<h1 class="page-h">' + esc(c.title) + '</h1>';
+    html += '<p class="lead">' + esc(c.company) + ' &middot; departmental KPI framework. Below: ownership, framework structure, applicable standards.</p>';
+
+    html += '<div class="card">';
+    html += '<div class="card-h">Position &amp; Scope</div>';
+    html += '<div class="meta-grid">';
+    var labels = {
+      position: 'Position', department: 'Department', reporting_to: 'Reporting To',
+      scope: 'Scope of Authority', reporting_period: 'Reporting Period',
+      review_cadence: 'Review Cadence', doc_ref: 'Document Reference',
+      revision: 'Revision', submission_date: 'Submission Date',
+    };
+    Object.keys(labels).forEach(function (k) {
+      if (c.meta[k]) {
+        html += '<div class="lbl">' + esc(labels[k]) + '</div><div class="val">' + esc(c.meta[k]) + '</div>';
+      }
+    });
+    html += '</div></div>';
+
+    html += '<div class="card">';
+    html += '<div class="card-h">Document Framework</div>';
+    html += '<div class="card-sub">The 4 working sheets are linked from the sidebar.</div>';
+    html += '<div class="framework-grid">';
+    c.framework.forEach(function (f) {
+      html += '<div class="framework-item"><div class="n">' + esc(f.name) + '</div><div class="d">' + esc(f.desc) + '</div></div>';
+    });
+    html += '</div>';
+    if (c.standards) {
+      html += '<div class="standards-note"><b style="color:#C9A961;">Aligned with:</b> ' + esc(c.standards) + '</div>';
+    }
+    html += '</div>';
+    document.getElementById('view-cover').innerHTML = html;
+  }
+
+  // === KPI Definitions view ===
+  function renderDefinitions() {
+    var html = '<div class="eyebrow">QA/QC department</div>';
+    html += '<h1 class="page-h">KPI Definitions</h1>';
+    html += '<p class="lead">Each KPI&apos;s strategic purpose, calculation methodology, target, and data source. Five KPIs feed the weighted composite score on the Monthly Tracker.</p>';
+    DATA.kpi_definitions.forEach(function (k) {
+      html += '<div class="kpi-def">';
+      html += '<div class="kpi-def-h">';
+      html += '<div class="kpi-def-id">' + esc(k.id) + '</div>';
+      html += '<div class="kpi-def-name">' + esc(k.name) + '</div>';
+      html += '</div>';
+      html += '<div class="kpi-def-body">';
+      html += '<div class="kpi-def-block full"><div class="lbl">Description / Strategic Purpose</div>' + esc(k.description) + '</div>';
+      html += '<div class="kpi-def-block"><div class="lbl">Calculation Methodology</div><pre>' + esc(k.methodology) + '</pre></div>';
+      html += '<div class="kpi-def-block">';
+      html += '<div class="lbl">Target</div><div><span class="target-pill">' + esc(k.target) + '</span></div>';
+      html += '<div class="lbl" style="margin-top:14px;">Unit</div><div>' + esc(k.unit) + '</div>';
+      html += '<div class="lbl" style="margin-top:14px;">Data Source</div><div>' + esc(k.data_source) + '</div>';
+      html += '</div>';
+      html += '</div></div>';
+    });
+    document.getElementById('view-defs').innerHTML = html;
+  }
+
+  // === Scoring Matrix view ===
+  function renderScoring() {
+    var s = DATA.scoring_matrix;
+    var html = '<div class="eyebrow">QA/QC department</div>';
+    html += '<h1 class="page-h">Scoring Matrix</h1>';
+    html += '<p class="lead">Each KPI scored 1 (Unsatisfactory) to 5 (Outstanding). Weighted composite drives the overall performance rating.</p>';
+
+    html += '<div class="card" style="padding:0; overflow:hidden;">';
+    html += '<div style="padding:14px 20px; background:rgba(255,255,255,0.02); border-bottom:1px solid #30363d;"><div class="card-h">Score bands &middot; per KPI</div></div>';
+    html += '<table class="scoring-table" style="border:0; border-radius:0;">';
+    html += '<thead><tr><th>KPI</th><th>KPI Name</th><th>Weight</th>';
+    html += '<th class="band-cell">1 · Unsatisfactory</th><th class="band-cell">2 · Below</th>';
+    html += '<th class="band-cell">3 · Meets</th><th class="band-cell">4 · Exceeds</th>';
+    html += '<th class="band-cell">5 · Outstanding</th></tr></thead><tbody>';
+    s.kpis.forEach(function (k) {
+      html += '<tr>';
+      html += '<td class="kpi-cell">' + esc(k.id) + '</td>';
+      html += '<td>' + esc(k.name) + '</td>';
+      html += '<td class="weight-cell">' + (k.weight == null ? '—' : k.weight) + '</td>';
+      for (var i = 0; i < 5; i++) {
+        html += '<td class="band-cell band-' + (i+1) + '">' + esc(k.bands[i] || '') + '</td>';
+      }
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    html += '<div class="card">';
+    html += '<div class="card-h">Composite Performance Rating</div>';
+    html += '<div class="card-sub">Σ (weight × score) — final rating drives management review actions.</div>';
+    s.composite.forEach(function (c) {
+      var rating = (c.rating || '').split(' ')[0];
+      html += '<div class="composite-rating">';
+      html += '<div class="r">' + esc(c.range) + '</div>';
+      html += '<div><span class="rating-pill rating-' + esc(rating) + '">' + esc(c.rating) + '</span></div>';
+      html += '<div class="interp">' + esc(c.interpretation) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    document.getElementById('view-scoring').innerHTML = html;
+  }
+
+  // === Monthly Tracker view ===
+  function renderTracker() {
+    var t = DATA.monthly_tracker;
+    var html = '<div class="eyebrow">QA/QC department &middot; ' + t.year + '</div>';
+    html += '<h1 class="page-h">Monthly Tracker</h1>';
+    html += '<p class="lead">Weighted composite score across 5 KPIs. Targets per ISO 9001 / ASME standards. Live data pulled from <code>' + esc(DATA.source_file) + '</code>.</p>';
+
+    // Hero
+    var rating = (t.rating || '').split(' ')[0];
+    var bestKpiList = [];
+    t.composite_rows.forEach(function (r) {
+      if (r.score === 5) bestKpiList.push(r.kpi.split('·').pop().trim().split(' (')[0]);
+    });
+    var bestKpi = bestKpiList.slice(0,2).join(' + ') || '—';
+    var scored = t.composite_rows.filter(function (r) { return r.score != null; }).length;
+    var monthsScored = 0;
+    t.metrics.forEach(function (m) {
+      if (m.role === 'metric' && (m.label||'').indexOf('Piping Welds Inspected') === 0) {
+        m.months.forEach(function (v, i) { if (v != null && v !== 0) monthsScored = Math.max(monthsScored, i+1); });
+      }
+    });
+
+    html += '<div class="composite-hero">';
+    html += '<div>';
+    html += '<div class="composite-hero-h">Composite YTD</div>';
+    html += '<div class="composite-hero-val">' + num(t.composite_score, 2) + '</div>';
+    if (t.rating) html += '<span class="composite-hero-rating rating-' + esc(rating) + '">' + esc(t.rating) + '</span>';
+    html += '</div>';
+    html += '<div class="composite-hero-breakdown">';
+    html += '<div>SCORED<b>' + scored + ' / ' + t.composite_rows.length + '</b></div>';
+    html += '<div>YTD MONTHS<b>' + monthsScored + '</b></div>';
+    html += '<div>BEST KPIs<b>' + esc(bestKpi) + '</b></div>';
+    html += '</div>';
+    html += '</div>';
+
+    // KPI cards — build from the composite_rows + metrics
+    // Find the "→" row for each KPI to pull the headline value
+    function findResultRow(kpiId) {
+      var matchers = {
+        'KPI-1A': '→ Pipeline Repair Rate',
+        'KPI-1B': '→ Piping Repair Rate',
+        'KPI-2':  '→ Throughput Compliance',
+        'KPI-3':  '→ NCR Performance Score',
+        'KPI-4':  '→ Audit Performance Score',
+        'KPI-5':  '→ Turnaround Performance Score',
+      };
+      var label = matchers[kpiId];
+      if (!label) return null;
+      for (var i = 0; i < t.metrics.length; i++) {
+        if (t.metrics[i].label && t.metrics[i].label.indexOf(label) === 0) return t.metrics[i];
+      }
+      return null;
+    }
+    function lastNonNullIdx(arr) {
+      for (var i = arr.length - 1; i >= 0; i--) if (arr[i] != null) return i;
+      return -1;
+    }
+    function fmtVal(v, unit) {
+      if (v == null) return '—';
+      if (unit === '%') return (v * 100).toFixed(1) + '%';
+      if (unit === 'days') return Math.round(v) + ' d';
+      if (unit === '1-5')  return Number(v).toFixed(1);
+      return String(v);
+    }
+    function sparkSvg(series, color) {
+      var nonNull = series.filter(function (v) { return v != null; });
+      if (!nonNull.length) return '';
+      var maxv = Math.max.apply(null, nonNull);
+      var minv = Math.min.apply(null, nonNull);
+      if (maxv === minv) { maxv = maxv + 1; minv = minv - 1; }
+      var W = 200, H = 38, P = 4;
+      var idxs = [];
+      var pts = [];
+      series.forEach(function (v, i) {
+        if (v == null) return;
+        var x = P + (W - 2*P) * i / Math.max(series.length - 1, 1);
+        var y = H - P - (H - 2*P) * (v - minv) / (maxv - minv);
+        idxs.push(i);
+        pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+      });
+      var poly = pts.join(' ');
+      var last = pts[pts.length - 1].split(',');
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" style="width:100%; height:38px;">' +
+        '<polyline points="' + poly + '" fill="none" stroke="' + color + '" stroke-width="1.8"/>' +
+        '<polyline points="' + poly + ' ' + (W-P) + ',' + (H-P) + ' ' + P + ',' + (H-P) +
+          '" fill="' + color + '22"/>' +
+        '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="2.8" fill="' + color +
+        '" stroke="#161b22" stroke-width="1.2"/>' +
+        '</svg>';
+    }
+
+    var KPI_COLORS = {
+      'KPI-1A': '#5DA3E0', 'KPI-1B': '#5DA3E0',
+      'KPI-2':  '#5DCAA5', 'KPI-3':  '#C9A961',
+      'KPI-4':  '#A77CCB', 'KPI-5':  '#EF9F27',
+    };
+
+    html += '<div class="kpi-grid">';
+    DATA.kpi_definitions.forEach(function (def) {
+      // Pipeline 1A and Piping 1B both come from KPI-1
+      var subs = (def.id === 'KPI-1') ? ['KPI-1A', 'KPI-1B'] : [def.id];
+      subs.forEach(function (subId) {
+        var resRow = findResultRow(subId);
+        var color  = KPI_COLORS[subId] || '#2DD4BF';
+        var hasData = resRow && resRow.months && resRow.months.some(function (v) { return v != null; });
+        var subName = subId === 'KPI-1A' ? 'Weld Repair Rate — Pipeline'
+                    : subId === 'KPI-1B' ? 'Weld Repair Rate — Piping'
+                    : def.name;
+        if (!hasData) {
+          html += '<div class="kpi-card no-data">';
+          html += '<div class="id" style="color:' + color + ';">' + esc(subId) + '</div>';
+          html += '<h3>' + esc(subName) + '</h3>';
+          html += '<div class="no-data-note">No data this year — sub-scope not yet active.</div>';
+          html += '<div class="foot"><div class="target">Target: ' + esc(resRow ? resRow.target : '—') + '</div>';
+          html += '<span class="score-badge score-na">no data</span></div>';
+          html += '</div>';
+          return;
+        }
+        var lastIdx  = lastNonNullIdx(resRow.months);
+        var lastVal  = lastIdx >= 0 ? resRow.months[lastIdx] : null;
+        var lastMon  = lastIdx >= 0 ? t.months[lastIdx] : '';
+        var ytdLabel = (resRow.unit === '%' || resRow.unit === 'days' || resRow.unit === '1-5') ? 'YTD' : 'YTD';
+        var score    = resRow.score;
+        var scoreClass = score == null ? 'score-na' : 'score-' + Math.round(score);
+        var scoreText  = score == null ? '—' : 'score ' + score + ' / 5';
+
+        html += '<div class="kpi-card">';
+        html += '<div class="id" style="color:' + color + ';">' + esc(subId) + '</div>';
+        html += '<h3>' + esc(subName) + '</h3>';
+        html += '<div class="vals">';
+        html += '<div><div class="curr-lbl">' + esc(lastMon) + '</div><div class="curr">' + fmtVal(lastVal, resRow.unit) + '</div></div>';
+        html += '<div><div class="ytd-lbl">YTD</div><div class="ytd">' + fmtVal(resRow.ytd, resRow.unit) + '</div></div>';
+        html += '</div>';
+        html += '<div class="spark">' + sparkSvg(resRow.months, color) + '</div>';
+        html += '<div class="foot">';
+        html += '<div class="target">Target: ' + esc(resRow.target || '—') + '</div>';
+        html += '<span class="score-badge ' + scoreClass + '">' + scoreText + '</span>';
+        html += '</div>';
+        html += '</div>';
+      });
+    });
+    html += '</div>';
+
+    // Contribution table
+    html += '<div class="card">';
+    html += '<div class="card-h">Composite score &middot; weighted contribution (YTD)</div>';
+    html += '<table class="contrib-table"><thead><tr>';
+    html += '<th>KPI</th><th class="num">Weight</th><th class="num">YTD Score (1-5)</th><th class="num">Weighted contribution</th>';
+    html += '</tr></thead><tbody>';
+    var totalWeight = 0, totalWeighted = 0;
+    t.composite_rows.forEach(function (r) {
+      var w = (r.weight != null) ? r.weight : 0;
+      var s = (r.score != null) ? r.score.toFixed(1) : 'N/A';
+      var wt = (r.weighted != null) ? r.weighted.toFixed(3) : '0.000';
+      totalWeight += (r.weight != null ? r.weight : 0);
+      totalWeighted += (r.weighted != null ? r.weighted : 0);
+      html += '<tr><td>' + esc(r.kpi) + '</td>';
+      html += '<td class="num">' + (r.weight != null ? r.weight.toFixed(3) : '—') + '</td>';
+      html += '<td class="num">' + s + '</td>';
+      html += '<td class="num">' + wt + '</td></tr>';
+    });
+    html += '<tr class="total"><td>COMPOSITE SCORE</td>';
+    html += '<td class="num">' + (totalWeight ? totalWeight.toFixed(3) : '—') + '</td>';
+    html += '<td class="num">—</td>';
+    html += '<td class="num">' + totalWeighted.toFixed(3) + '</td></tr>';
+    html += '</tbody></table></div>';
+
+    document.getElementById('view-tracker').innerHTML = html;
+  }
+
+  // === Data Sources view ===
+  function renderSources() {
+    var d = DATA.data_sources;
+    var html = '<div class="eyebrow">QA/QC department</div>';
+    html += '<h1 class="page-h">Data Sources &amp; Governance</h1>';
+    html += '<p class="lead">Where each KPI&apos;s numbers come from, who owns the data, and how long evidence is retained.</p>';
+
+    html += '<div class="card" style="padding:0; overflow:hidden;">';
+    html += '<div style="padding:14px 20px; background:rgba(255,255,255,0.02); border-bottom:1px solid #30363d;"><div class="card-h">Source mapping</div></div>';
+    html += '<table class="ds-table" style="border:0; border-radius:0; margin:0;">';
+    html += '<thead><tr><th>KPI</th><th>KPI Name</th><th>Primary Source</th><th>System / Document</th><th>Owner</th><th>Frequency</th><th>Retention</th></tr></thead><tbody>';
+    d.rows.forEach(function (r) {
+      html += '<tr>';
+      html += '<td class="id-cell">' + esc(r.id) + '</td>';
+      html += '<td class="kpi-cell">' + esc(r.kpi) + '</td>';
+      html += '<td>' + esc(r.source) + '</td>';
+      html += '<td>' + esc(r.system) + '</td>';
+      html += '<td>' + esc(r.owner) + '</td>';
+      html += '<td>' + esc(r.frequency) + '</td>';
+      html += '<td>' + esc(r.retention) + '</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    html += '<div class="card">';
+    html += '<div class="card-h">Governance &amp; Control Principles</div>';
+    html += '<div class="gov-grid">';
+    d.governance.forEach(function (g) {
+      html += '<div class="lbl">' + esc(g.label) + '</div><div class="txt">' + esc(g.text) + '</div>';
+    });
+    html += '</div></div>';
+    document.getElementById('view-sources').innerHTML = html;
+  }
+
+  renderCover(); renderDefinitions(); renderScoring(); renderTracker(); renderSources();
+
+  // === Tab switching ===
+  function activate(tab) {
+    document.querySelectorAll('.side-item').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-tab') === tab);
+    });
+    document.querySelectorAll('.view').forEach(function (el) {
+      el.classList.toggle('active', el.id === 'view-' + tab);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try { history.replaceState(null, '', '#' + tab); } catch (e) {}
+    if (window.opcoTrack) try { window.opcoTrack('tab', 'qaqc:' + tab); } catch(e) {}
+  }
+  document.querySelectorAll('.side-item').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      activate(el.getAttribute('data-tab'));
+    });
+  });
+  // Read hash for deep linking
+  var initial = (location.hash || '').replace('#', '');
+  if (initial && document.getElementById('view-' + initial)) activate(initial);
 })();
 </script>
 </body>
