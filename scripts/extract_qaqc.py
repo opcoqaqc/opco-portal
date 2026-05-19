@@ -228,6 +228,10 @@ def extract_sources(sh):
         if in_gov:
             label = s(cell(row, 1))
             text  = s(cell(row, 3))
+            # Display override: KPI-3 is internal-only, not subject to
+            # third-party verification — drop it from the Independence note.
+            if label == 'Independence':
+                text = text.replace('KPI-3 and KPI-4', 'KPI-4')
             if label and text:
                 governance.append({'label': label, 'text': text})
             continue
