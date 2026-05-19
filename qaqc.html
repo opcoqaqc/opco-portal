@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPCO Portal — QA/QC KPIs</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%;
+               font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  body { background: #0d1117; color: #c9d1d9; font-size: 13px; }
+  body::before { content:''; position:fixed; top:0; left:0; right:0; height:4px;
+                 background:linear-gradient(90deg,#0A2540 0%,#C9A961 50%,#0A2540 100%); z-index:1001; }
+
+  /* Auth gate — page is hidden until we confirm one of the 4 allowed users */
+  body.__gated > main { display: none; }
+  #gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0d1117;
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 14px;
+    text-align: center; padding: 24px;
+  }
+  body.__gated #gate { display: flex; }
+  #gate h1 { font-size: 18px; color: #f0e4c9; font-weight: 600; }
+  #gate p  { color: #8b949e; max-width: 460px; line-height: 1.5; }
+  #gate a  { color: #2DD4BF; text-decoration: none; font-weight: 600;
+             padding: 8px 18px; border: 1px solid #2DD4BF; border-radius: 8px;
+             margin-top: 6px; }
+  #gate a:hover { background: rgba(45,212,191,0.10); }
+
+  main { padding: 36px 40px 48px; max-width: 1500px; margin: 0 auto; }
+  .topbar { display: flex; align-items: baseline; gap: 14px; margin-bottom: 4px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.3em; color: #2DD4BF; font-weight: 700; text-transform: uppercase; }
+  .topbar h1 { font-size: 28px; color: #f0e4c9; font-weight: 700; margin: 0; }
+  .topbar .who { margin-left: auto; font-size: 12px; color: #8b949e; }
+  .topbar .who a { color: #C9A961; text-decoration: none; }
+  .lead { color: #8b949e; margin: 4px 0 28px; font-size: 13px; }
+
+  .placeholder {
+    background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+    padding: 48px 32px; text-align: center;
+  }
+  .placeholder .ico {
+    width: 60px; height: 60px; border-radius: 14px;
+    background: rgba(45,212,191,0.10); border: 1px solid rgba(45,212,191,0.35);
+    color: #2DD4BF;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+  }
+  .placeholder .ico svg { width: 30px; height: 30px; }
+  .placeholder h2 { font-size: 17px; color: #f0e4c9; margin: 0 0 8px; font-weight: 600; }
+  .placeholder p  { color: #8b949e; font-size: 13px; max-width: 520px; margin: 0 auto; line-height: 1.6; }
+</style>
+<script src="_tracking.js"></script>
+</head>
+<body class="__gated">
+
+<div id="gate">
+  <h1>OPCO Portal — QA/QC KPIs</h1>
+  <p>This page is for the QA/QC team. Sign in to the portal with an authorized account, then come back here.</p>
+  <a href="./">← Portal</a>
+</div>
+
+<main>
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">QA/QC department</div>
+      <h1>Quality KPIs</h1>
+    </div>
+    <div class="who">
+      <span id="who-user">—</span> · <a href="./">← Portal</a>
+    </div>
+  </div>
+  <p class="lead">Departmental quality metrics &mdash; weekly RT performance, repair trends, welder qualifications, NDT throughput. Hooked up to live data once the source spreadsheet lands.</p>
+
+  <div class="placeholder">
+    <div class="ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="6"/>
+        <circle cx="12" cy="12" r="2"/>
+      </svg>
+    </div>
+    <h2>Data pipeline pending</h2>
+    <p>This dashboard is wired up and ready. As soon as the QA/QC KPI spreadsheet is delivered the same way HTU snapshots are (drop the xlsx and ping <code>QAQC &lt;path&gt;</code>), the panels here will populate.</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  var ALLOWED = ['o.cavdar', 'a.barazi', 'o.barazi', 'm.barazi'];
+  function readSession() {
+    try { var raw = localStorage.getItem('__opco_session_v1');
+          return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+  }
+  var sess = readSession();
+  if (!sess || ALLOWED.indexOf(sess.u) === -1) return; // stay gated
+  document.body.classList.remove('__gated');
+  document.getElementById('who-user').textContent = sess.u;
+})();
+</script>
+</body>
+</html>
