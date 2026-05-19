@@ -339,10 +339,11 @@
     grid-column: 2;
     grid-row: 3;
   }
-  /* When the 7th tile is shown, the rows expand to 3 — keep them sized
-     reasonably so the new row matches the others. */
+  /* When the 7th tile is shown, the rows expand to 3 — drop the 180px
+     min so the rows divide the available height instead of forcing the
+     grid past 100vh and clipping the bottom tile on shorter screens. */
   .portal-tiles:has(.portal-tile-restricted.allowed) {
-    grid-template-rows: repeat(3, minmax(180px, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
   }
   .portal-tile {
     background-color: #0a0a0a;
