@@ -98,6 +98,10 @@ jobs:
           if [ -f static/admin.html ]; then
             cp -v static/admin.html      deploy_pkg/admin.html
           fi
+          # QA/QC dashboard (restricted to a small allow-list of users)
+          if [ -f static/qaqc.html ]; then
+            cp -v static/qaqc.html       deploy_pkg/qaqc.html
+          fi
           # Static asset folders (images, fonts, etc.) — copy whole if present
           if [ -d static/img ]; then
             cp -rv static/img            deploy_pkg/img

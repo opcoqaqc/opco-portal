@@ -320,7 +320,9 @@
   body.dark .portal-hero-p { color: #9aa3b2; }
   .portal-sec-h { font-size: 11px; letter-spacing: 0.3em; color: #3a3a36; font-weight: 700; margin-bottom: 16px; }
   body.dark .portal-sec-h { color: #6c7589; }
-  /* photo-backdrop tiles (3x2 grid, fills remaining vertical space) */
+  /* photo-backdrop tiles (3x2 grid, fills remaining vertical space).
+     A 7th tile (.portal-tile-restricted.allowed) lands in row 3 col 1
+     by default — we pin it to col 2 so it sits centered when present. */
   .portal-tiles {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -328,6 +330,19 @@
     gap: 14px;
     flex: 1;
     min-height: 0;
+  }
+  /* Restricted tile: hidden by default, JS below adds .allowed for the
+     4 named users. When shown, it sits centered in a new row 3. */
+  .portal-tile-restricted { display: none !important; }
+  .portal-tile-restricted.allowed {
+    display: flex !important;
+    grid-column: 2;
+    grid-row: 3;
+  }
+  /* When the 7th tile is shown, the rows expand to 3 — keep them sized
+     reasonably so the new row matches the others. */
+  .portal-tiles:has(.portal-tile-restricted.allowed) {
+    grid-template-rows: repeat(3, minmax(180px, 1fr));
   }
   .portal-tile {
     background-color: #0a0a0a;
@@ -559,6 +574,15 @@
           <div class="portal-tile-name">Library</div>
           <div class="portal-tile-full">PQR, WPS &amp; WQT references</div>
         </a>
+        <!-- Restricted tile — only visible to the 4 users listed in
+             data-allowed-users. JS in <script> below toggles the class. -->
+        <a href="qaqc.html" class="portal-tile portal-tile-restricted"
+           data-allowed-users="o.cavdar,a.barazi,o.barazi,m.barazi"
+           style="--accent:#2DD4BF; --photo:url('img/tile-library.jpg'); view-transition-name: card-qaqc;">
+          <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+          <div class="portal-tile-name">QA/QC</div>
+          <div class="portal-tile-full">Department KPIs</div>
+        </a>
       </div>
     </section>
   </div>
@@ -637,6 +661,31 @@
     // — it tight-loops with the guard and stalls the page.)
     [0, 50, 150, 400, 1000].forEach(function(d){
       setTimeout(function(){ applyTheme(readTheme()); }, d);
+    });
+
+    // Restricted tiles: show only when the current session belongs to a
+    // user listed in data-allowed-users. Re-runs on the same staggered
+    // schedule because the session is only readable after the obfuscated
+    // auth guard has populated localStorage.
+    function readSessionUser() {
+      try {
+        var raw = localStorage.getItem('__opco_session_v1');
+        if (!raw) return '';
+        var s = JSON.parse(raw);
+        return (s && s.u) || '';
+      } catch (e) { return ''; }
+    }
+    function applyTileRestrictions() {
+      var user = readSessionUser();
+      document.querySelectorAll('.portal-tile-restricted').forEach(function(el) {
+        var raw = el.getAttribute('data-allowed-users') || '';
+        var allowed = raw.split(',').map(function(s){ return s.trim(); });
+        if (user && allowed.indexOf(user) !== -1) el.classList.add('allowed');
+        else                                       el.classList.remove('allowed');
+      });
+    }
+    [0, 50, 150, 400, 1000].forEach(function(d){
+      setTimeout(applyTileRestrictions, d);
     });
 
     function bindTheme() {
