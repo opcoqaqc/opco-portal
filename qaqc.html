@@ -103,9 +103,18 @@
 
   /* ------- Sidebar (matches Calculators 1:1) ------- */
   .sidebar { width: 280px; flex-shrink: 0; background: #161b22;
-             border-right: 1px solid #30363d; padding: 12px 0 60px; }
+             border-right: 1px solid #30363d; padding: 12px 0 16px;
+             display: flex; flex-direction: column; align-self: stretch; }
   .side-title { padding: 8px 18px 6px; font-size: 10.5px; letter-spacing: 1.2px;
                 color: #C9A961; font-weight: 700; text-transform: uppercase; opacity: 0.85; }
+  .side-footer { margin-top: auto; padding: 16px 22px 4px;
+                 border-top: 1px solid rgba(255,255,255,0.05);
+                 font-size: 10.5px; line-height: 1.55; color: #8b949e; }
+  .side-footer .lbl { display: block; margin-bottom: 4px;
+                       font-size: 9.5px; letter-spacing: 0.12em;
+                       text-transform: uppercase; font-weight: 700;
+                       color: #C9A961; }
+  .side-footer .txt { color: #8b949e; }
   .side-item { display: flex; align-items: center; padding: 10px 12px;
                margin: 6px 14px; border: 1px solid rgba(255,255,255,0.08);
                border-radius: 10px; font-size: 13.5px; font-weight: 700; color: #c9d1d9;
@@ -326,10 +335,6 @@
 <div class="shell">
   <aside class="sidebar">
     <div class="side-title">QA/QC Manager KPIs</div>
-    <a class="side-item" data-tab="cover">
-      <span class="side-icon" style="background:linear-gradient(135deg,#C9A961,#b89750);"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
-      <span>Cover</span>
-    </a>
     <a class="side-item" data-tab="defs">
       <span class="side-icon" style="background:linear-gradient(135deg,#2B5797,#4a7ec1);"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
       <span>KPI Definitions</span>
@@ -346,10 +351,10 @@
       <span class="side-icon" style="background:linear-gradient(135deg,#6B4FA8,#8a6dc8);"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"/></svg></span>
       <span>Data Sources</span>
     </a>
+    <div class="side-footer" id="side-footer"></div>
   </aside>
 
   <main class="content">
-    <div class="view" id="view-cover"></div>
     <div class="view" id="view-defs"></div>
     <div class="view" id="view-scoring"></div>
     <div class="view active" id="view-tracker"></div>
@@ -704,7 +709,17 @@
     document.getElementById('view-sources').innerHTML = html;
   }
 
-  renderCover(); renderDefinitions(); renderScoring(); renderTracker(); renderSources();
+  renderDefinitions(); renderScoring(); renderTracker(); renderSources();
+
+  // Sidebar footer — standards alignment line from cover data
+  (function () {
+    var footEl = document.getElementById('side-footer');
+    var std = DATA.cover && DATA.cover.standards;
+    if (footEl && std) {
+      footEl.innerHTML = '<span class="lbl">Aligned with</span>' +
+                         '<span class="txt">' + esc(std) + '</span>';
+    }
+  })();
 
   // === Tab switching ===
   function activate(tab) {
