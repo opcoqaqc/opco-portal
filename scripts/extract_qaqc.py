@@ -74,6 +74,13 @@ def extract_cover(sh):
         if v.startswith('Aligned with:'):
             standards = v.replace('Aligned with:', '').strip()
             break
+    # Display override: keep only the ISO 9001 reference in the sidebar
+    # footer; the trailing ASME / API / Company QMS list was visual noise.
+    for tail in (' · ASME B31.3 · ASME Section IX · API 1104 · API 5L · Company QMS',
+                 '· ASME B31.3 · ASME Section IX · API 1104 · API 5L · Company QMS'):
+        if standards.endswith(tail):
+            standards = standards[:-len(tail)].rstrip(' ·')
+            break
 
     return {
         'title': 'Key Performance Indicators — QA/QC Management',
