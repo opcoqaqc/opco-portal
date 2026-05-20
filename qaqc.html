@@ -108,6 +108,42 @@
              display: flex; flex-direction: column; align-self: stretch; }
   .side-title { padding: 8px 18px 6px; font-size: 10.5px; letter-spacing: 1.2px;
                 color: #C9A961; font-weight: 700; text-transform: uppercase; opacity: 0.85; }
+  /* Collapsible groups (SKG-style) */
+  .side-group { margin: 4px 0 6px; }
+  .side-group-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px 8px;
+    cursor: pointer; user-select: none;
+    transition: background .15s;
+  }
+  .side-group-header:hover { background: rgba(255,255,255,0.03); }
+  .side-group-arrow {
+    width: 12px; height: 12px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #C9A961;
+    transition: transform .18s ease;
+  }
+  .side-group-arrow svg { width: 100%; height: 100%; }
+  .side-group.expanded .side-group-arrow { transform: rotate(90deg); }
+  .side-group-name {
+    flex: 1; font-size: 10.5px; letter-spacing: 1.2px;
+    color: #C9A961; font-weight: 700; text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .side-group-count {
+    font-size: 10.5px; color: #6c7589; font-weight: 600;
+    padding: 1px 8px; border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    min-width: 22px; text-align: center;
+  }
+  .side-group-items { display: none; padding-top: 2px; }
+  .side-group.expanded > .side-group-items { display: block; }
+  .side-group-empty {
+    margin: 4px 18px 6px; padding: 10px 12px;
+    font-size: 11.5px; color: #6c7589; font-style: italic;
+    border: 1px dashed rgba(255,255,255,0.08); border-radius: 8px;
+    text-align: center;
+  }
   .side-footer { margin-top: auto; padding: 16px 22px 4px;
                  border-top: 1px solid rgba(255,255,255,0.05);
                  font-size: 10.5px; line-height: 1.55; color: #8b949e; }
@@ -358,23 +394,43 @@
 
 <div class="shell">
   <aside class="sidebar">
-    <div class="side-title" style="text-transform: none;">QA/QC MANAGER KPIs</div>
-    <a class="side-item active" data-tab="defs">
-      <span class="side-icon" style="background:linear-gradient(135deg,#2B5797,#4a7ec1);"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-      <span>KPI Definitions</span>
-    </a>
-    <a class="side-item" data-tab="scoring">
-      <span class="side-icon" style="background:linear-gradient(135deg,#C2410C,#ea580c);"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-      <span>Scoring Matrix</span>
-    </a>
-    <a class="side-item" data-tab="tracker">
-      <span class="side-icon" style="background:linear-gradient(135deg,#1D7044,#2da66d);"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-      <span>Monthly Tracker</span>
-    </a>
-    <a class="side-item" data-tab="sources">
-      <span class="side-icon" style="background:linear-gradient(135deg,#6B4FA8,#8a6dc8);"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"/></svg></span>
-      <span>Data Sources</span>
-    </a>
+    <div class="side-group expanded" data-group="manager">
+      <div class="side-group-header">
+        <span class="side-group-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        <span class="side-group-name" style="text-transform:none;">QA/QC Manager KPIs</span>
+        <span class="side-group-count">4</span>
+      </div>
+      <div class="side-group-items">
+        <a class="side-item active" data-tab="defs">
+          <span class="side-icon" style="background:linear-gradient(135deg,#2B5797,#4a7ec1);"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+          <span>KPI Definitions</span>
+        </a>
+        <a class="side-item" data-tab="scoring">
+          <span class="side-icon" style="background:linear-gradient(135deg,#C2410C,#ea580c);"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+          <span>Scoring Matrix</span>
+        </a>
+        <a class="side-item" data-tab="tracker">
+          <span class="side-icon" style="background:linear-gradient(135deg,#1D7044,#2da66d);"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+          <span>Monthly Tracker</span>
+        </a>
+        <a class="side-item" data-tab="sources">
+          <span class="side-icon" style="background:linear-gradient(135deg,#6B4FA8,#8a6dc8);"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"/></svg></span>
+          <span>Data Sources</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="side-group" data-group="team">
+      <div class="side-group-header">
+        <span class="side-group-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        <span class="side-group-name" style="text-transform:none;">QA/QC Team KPIs</span>
+        <span class="side-group-count">—</span>
+      </div>
+      <div class="side-group-items">
+        <div class="side-group-empty">Coming soon</div>
+      </div>
+    </div>
+
     <div class="side-footer" id="side-footer"></div>
   </aside>
 
@@ -771,6 +827,13 @@
                          '<span class="txt">' + esc(std) + '</span>';
     }
   })();
+
+  // Collapsible sidebar groups (SKG-style)
+  document.querySelectorAll('.side-group-header').forEach(function (h) {
+    h.addEventListener('click', function () {
+      h.parentElement.classList.toggle('expanded');
+    });
+  });
 
   // === Sparkline hover tooltip ===
   (function () {
