@@ -102,6 +102,10 @@ jobs:
           if [ -f static/qaqc.html ]; then
             cp -v static/qaqc.html       deploy_pkg/qaqc.html
           fi
+          # HSE dashboard (same restricted allow-list)
+          if [ -f static/hse.html ]; then
+            cp -v static/hse.html        deploy_pkg/hse.html
+          fi
           # Static asset folders (images, fonts, etc.) — copy whole if present
           if [ -d static/img ]; then
             cp -rv static/img            deploy_pkg/img
