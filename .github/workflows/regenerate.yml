@@ -106,6 +106,10 @@ jobs:
           if [ -f static/hse.html ]; then
             cp -v static/hse.html        deploy_pkg/hse.html
           fi
+          # Project Management KPI placeholder (same restricted allow-list)
+          if [ -f static/pm.html ]; then
+            cp -v static/pm.html         deploy_pkg/pm.html
+          fi
           # Static asset folders (images, fonts, etc.) — copy whole if present
           if [ -d static/img ]; then
             cp -rv static/img            deploy_pkg/img
