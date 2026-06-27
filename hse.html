@@ -706,11 +706,19 @@
     var pending = null;  // last seen "→" row in this section
     t.metrics.forEach(function (m) {
       if (m.role === 'section') {
-        if (curKpi && pending) cards.push({ kpi: curKpi, name: curName, row: pending });
         var match = (m.label || '').match(/^(KPI-[\dA-Z]+)\s*[·•-]\s*(.*)$/);
-        if (match) { curKpi = match[1]; curName = match[2]; pending = null; }
+        if (match) {
+          // Only flush + reset on a NEW main KPI section header. Sub-section
+          // headers (INCIDENTS, STATISTICS, EXPOSURE HOURS, etc.) stay inside
+          // the current KPI so they don't cause duplicate cards.
+          if (curKpi && pending) cards.push({ kpi: curKpi, name: curName, row: pending });
+          curKpi = match[1]; curName = match[2]; pending = null;
+        }
       } else if (m.role === 'metric' && curKpi) {
-        if ((m.label || '').indexOf('→') === 0 && m.score != null) pending = m;
+        // Result row = any metric with a score in this KPI's section.
+        // QA/QC marks them with "→" prefix; HSE workbooks use ":" suffix or no
+        // marker at all. The score field is the universal signal.
+        if (m.score != null) pending = m;
       }
     });
     if (curKpi && pending) cards.push({ kpi: curKpi, name: curName, row: pending });
