@@ -14,6 +14,7 @@
 <link rel="preload" as="image" href="img/tile-welders.jpg">
 <link rel="preload" as="image" href="img/tile-library.jpg">
 <link rel="preload" as="image" href="img/tile-qaqc.jpg">
+<link rel="preload" as="image" href="img/tile-hse.jpg">
 <link rel="preload" as="image" href="img/login-bg-3.jpg">
 <link rel="preload" as="image" href="img/login-bg-4.jpg">
 
@@ -332,17 +333,17 @@
     flex: 1;
     min-height: 0;
   }
-  /* Restricted tile: hidden by default, JS below adds .allowed for the
-     4 named users. When shown, it sits centered in a new row 3. */
+  /* Restricted tiles: hidden by default, JS below adds .allowed for the
+     4 named users. When shown, two tiles sit side-by-side in a new row 3. */
   .portal-tile-restricted { display: none !important; }
   .portal-tile-restricted.allowed {
     display: flex !important;
-    grid-column: 2;
-    grid-row: 3;
   }
-  /* When the 7th tile is shown, the rows expand to 3 — drop the 180px
+  .portal-tile-restricted[data-slot="left"].allowed  { grid-column: 1; grid-row: 3; }
+  .portal-tile-restricted[data-slot="right"].allowed { grid-column: 2; grid-row: 3; }
+  /* When the restricted tiles are shown, rows expand to 3 — drop the 180px
      min so the rows divide the available height instead of forcing the
-     grid past 100vh and clipping the bottom tile on shorter screens. */
+     grid past 100vh and clipping the bottom tiles on shorter screens. */
   .portal-tiles:has(.portal-tile-restricted.allowed) {
     grid-template-rows: repeat(3, minmax(0, 1fr));
   }
@@ -576,13 +577,23 @@
           <div class="portal-tile-name">Library</div>
           <div class="portal-tile-full">PQR, WPS &amp; WQT references</div>
         </a>
-        <!-- Restricted tile — only visible to the 4 users listed in
-             data-allowed-users. JS in <script> below toggles the class. -->
+        <!-- Restricted tiles — only visible to the 4 users listed in
+             data-allowed-users. JS in <script> below toggles the class.
+             Two tiles sit side-by-side in row 3: QA/QC left, HSE right. -->
         <a href="qaqc.html" class="portal-tile portal-tile-restricted"
+           data-slot="left"
            data-allowed-users="o.cavdar,a.barazi,o.barazi,m.barazi"
            style="--accent:#2DD4BF; --photo:url('img/tile-qaqc.jpg'); view-transition-name: card-qaqc;">
           <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-          <div class="portal-tile-name" style="font-size:18px; line-height:1.2;">Key Performance Indicators</div>
+          <div class="portal-tile-name" style="font-size:18px; line-height:1.2;">QA/QC Key Performance Indicators</div>
+          <div class="portal-tile-full">KPI</div>
+        </a>
+        <a href="hse.html" class="portal-tile portal-tile-restricted"
+           data-slot="right"
+           data-allowed-users="o.cavdar,a.barazi,o.barazi,m.barazi"
+           style="--accent:#16A34A; --photo:url('img/tile-hse.jpg'); view-transition-name: card-hse;">
+          <div class="portal-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="portal-tile-name" style="font-size:18px; line-height:1.2;">HSE Key Performance Indicators</div>
           <div class="portal-tile-full">KPI</div>
         </a>
       </div>
