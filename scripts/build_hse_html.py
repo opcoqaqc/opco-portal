@@ -368,7 +368,6 @@ SCRIPT_BODY = r"""
       html += '<div><span class="composite-hero-rating rating-' + esc(rating) + '">' + esc(t.rating) + '</span></div>';
       html += '</div>';
       html += '<div class="composite-hero-breakdown">';
-      html += '<div>SCORED<b>' + scored + ' / ' + t.composite_rows.length + '</b></div>';
       html += '<div>YTD MONTHS<b>' + monthsScored + '</b></div>';
       html += '</div>';
       html += '</div>';
