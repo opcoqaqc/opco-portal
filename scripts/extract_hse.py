@@ -97,6 +97,19 @@ def extract_cover(sh):
     }
 
 
+# Display-time KPI exclusions. Some HSE workbooks carry duplicate or
+# placeholder KPI rows that the dashboard should hide. Match by name.
+EXCLUDED_KPI_NAMES = {
+    'Frequency of Site Absence',
+}
+
+
+def _is_excluded(name):
+    if not name:
+        return False
+    return name.strip() in EXCLUDED_KPI_NAMES
+
+
 # --- KPI Definitions ---------------------------------------------------
 def extract_definitions(sh):
     rows = list(sh.iter_rows(values_only=True))
@@ -104,6 +117,9 @@ def extract_definitions(sh):
     for row in rows:
         kpi_id = s(cell(row, 1))
         if not kpi_id.startswith('KPI-'):
+            continue
+        name = s(cell(row, 2))
+        if _is_excluded(name):
             continue
         items.append({
             'id':           kpi_id,
@@ -124,6 +140,9 @@ def extract_scoring(sh):
     for row in rows:
         kpi_id = s(cell(row, 1))
         if not kpi_id.startswith('KPI-'):
+            continue
+        name = s(cell(row, 2))
+        if _is_excluded(name):
             continue
         kpis.append({
             'id':        kpi_id,
@@ -239,9 +258,12 @@ def extract_sources(sh):
                 governance.append({'label': label, 'text': text})
             continue
         if kpi_id.startswith('KPI-'):
+            name = s(cell(row, 2))
+            if _is_excluded(name):
+                continue
             items.append({
                 'id':         kpi_id,
-                'kpi':        s(cell(row, 2)),
+                'kpi':        name,
                 'source':     s(cell(row, 3)),
                 'system':     s(cell(row, 4)),
                 'owner':      s(cell(row, 5)),
