@@ -20,7 +20,7 @@ from pathlib import Path
 
 import openpyxl
 
-XLSX = r"C:\Users\Msi\Desktop\UR-OSBL-WPR-23.xlsx"
+XLSX = r"C:\Users\Msi\Desktop\UR-OSBL-WPR-24.xlsx"
 
 ZONE_ROWS = range(10, 20)  # rows 10..19 inclusive
 COL_NAME      = 1   # B
