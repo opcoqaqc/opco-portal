@@ -260,10 +260,11 @@ def extract_sources(sh):
 
 
 def main():
-    wb = openpyxl.load_workbook(XLSX, data_only=True, read_only=True)
+    xlsx = sys.argv[1] if len(sys.argv) > 1 else XLSX
+    wb = openpyxl.load_workbook(xlsx, data_only=True, read_only=True)
     out = {
         'data_date':       datetime.now().strftime("%Y-%m-%d"),
-        'source_file':     XLSX.split('\\')[-1],
+        'source_file':     xlsx.split('\\')[-1],
         'cover':           extract_cover(wb['Cover']),
         'kpi_definitions': extract_definitions(wb['KPI Definitions']),
         'scoring_matrix':  extract_scoring(wb['Scoring Matrix']),
