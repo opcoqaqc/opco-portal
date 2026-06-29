@@ -745,20 +745,15 @@
     var t = data.monthly_tracker;
     var html = '<div class="eyebrow">' + esc(label) + ' &middot; ' + t.year + '</div>';
     html += '<h1 class="page-h">Monthly Tracker</h1>';
-    html += '<p class="lead">Weighted composite score across 5 KPIs. Targets per ISO 9001 / ASME standards.</p>';
+    html += '<p class="lead">Weighted composite score across the KPIs. Per-month entries with YTD rollup.</p>';
 
-    // Hero
+    // Hero — find last filled month across ALL metric rows (not just one
+    // hardcoded label, so member workbooks with their own metric labels work).
     var rating = (t.rating || '').split(' ')[0];
-    var bestKpiList = [];
-    t.composite_rows.forEach(function (r) {
-      if (r.score === 5) bestKpiList.push(r.kpi.split('·').pop().trim().split(' (')[0]);
-    });
-    var bestKpi = bestKpiList.slice(0,2).join(' + ') || '—';
-    var scored = t.composite_rows.filter(function (r) { return r.score != null; }).length;
     var monthsScored = 0;
     t.metrics.forEach(function (m) {
-      if (m.role === 'metric' && (m.label||'').indexOf('Piping Welds Inspected') === 0) {
-        m.months.forEach(function (v, i) { if (v != null && v !== 0) monthsScored = Math.max(monthsScored, i+1); });
+      if (m.role === 'metric' && m.months) {
+        m.months.forEach(function (v, i) { if (v != null) monthsScored = Math.max(monthsScored, i + 1); });
       }
     });
 
@@ -773,75 +768,61 @@
     html += '</div>';
     html += '</div>';
 
-    // KPI cards — build from the composite_rows + metrics
-    // Find the "→" row for each KPI to pull the headline value
-    function findResultRow(kpiId) {
-      var matchers = {
-        'KPI-1A': '→ Pipeline Repair Rate',
-        'KPI-1B': '→ Piping Repair Rate',
-        'KPI-2':  '→ Throughput Compliance',
-        'KPI-3':  '→ NCR Performance Score',
-        'KPI-4':  '→ Audit Performance Score',
-        'KPI-5':  '→ Turnaround Performance Score',
-      };
-      var label = matchers[kpiId];
-      if (!label) return null;
-      for (var i = 0; i < t.metrics.length; i++) {
-        if (t.metrics[i].label && t.metrics[i].label.indexOf(label) === 0) return t.metrics[i];
+    // Per-KPI cards — generic walk of section + "→" result rows. Works for
+    // both manager-style (KPI-1A/B/2..5) and team-member style (TKPI-1..5).
+    var KPI_COLORS = ['#5DA3E0','#5DCAA5','#C9A961','#A77CCB','#EF9F27','#E47480','#2DD4BF','#16A34A'];
+    var cards = [];
+    var curKpi = null, curName = '', pending = null;
+    t.metrics.forEach(function (m) {
+      if (m.role === 'section') {
+        var match = (m.label || '').match(/^(T?KPI-[\dA-Z]+)\s*[·•\-—]\s*(.*)$/);
+        if (match) {
+          if (curKpi && pending) cards.push({ kpi: curKpi, name: curName, row: pending });
+          curKpi = match[1]; curName = match[2]; pending = null;
+        }
+      } else if (m.role === 'metric' && curKpi) {
+        // Result row: any metric with a non-null score, or a "→"-prefixed row.
+        // The "→" rows are how QA/QC workbooks mark per-KPI summary lines.
+        if (m.score != null) pending = m;
+        else if ((m.label || '').indexOf('→') === 0 && !pending) pending = m;
       }
-      return null;
-    }
-    // fmtVal, sparkSvg, lastNonNullIdx moved to outer IIFE scope so team views can share them.
-
-    var KPI_COLORS = {
-      'KPI-1A': '#5DA3E0', 'KPI-1B': '#5DA3E0',
-      'KPI-2':  '#5DCAA5', 'KPI-3':  '#C9A961',
-      'KPI-4':  '#A77CCB', 'KPI-5':  '#EF9F27',
-    };
+    });
+    if (curKpi && pending) cards.push({ kpi: curKpi, name: curName, row: pending });
 
     html += '<div class="kpi-grid">';
-    data.kpi_definitions.forEach(function (def) {
-      // Pipeline 1A and Piping 1B both come from KPI-1
-      var subs = (def.id === 'KPI-1') ? ['KPI-1A', 'KPI-1B'] : [def.id];
-      subs.forEach(function (subId) {
-        var resRow = findResultRow(subId);
-        var color  = KPI_COLORS[subId] || '#2DD4BF';
-        var hasData = resRow && resRow.months && resRow.months.some(function (v) { return v != null; });
-        var subName = subId === 'KPI-1A' ? 'Weld Repair Rate — Pipeline'
-                    : subId === 'KPI-1B' ? 'Weld Repair Rate — Piping'
-                    : def.name;
-        if (!hasData) {
-          html += '<div class="kpi-card no-data">';
-          html += '<div class="id" style="color:' + color + ';">' + esc(subId) + '</div>';
-          html += '<h3>' + esc(subName) + '</h3>';
-          html += '<div class="no-data-note">No data this year — sub-scope not yet active.</div>';
-          html += '<div class="foot"><div class="target">Target: ' + esc(resRow ? resRow.target : '—') + '</div>';
-          html += '<span class="score-badge score-na">no data</span></div>';
-          html += '</div>';
-          return;
-        }
-        var lastIdx  = lastNonNullIdx(resRow.months);
-        var lastVal  = lastIdx >= 0 ? resRow.months[lastIdx] : null;
-        var lastMon  = lastIdx >= 0 ? t.months[lastIdx] : '';
-        var ytdLabel = (resRow.unit === '%' || resRow.unit === 'days' || resRow.unit === '1-5') ? 'YTD' : 'YTD';
-        var score    = resRow.score;
-        var scoreClass = score == null ? 'score-na' : 'score-' + Math.round(score);
-        var scoreText  = score == null ? '—' : 'score ' + score + ' / 5';
-
-        html += '<div class="kpi-card">';
-        html += '<div class="id" style="color:' + color + ';">' + esc(subId) + '</div>';
-        html += '<h3>' + esc(subName) + '</h3>';
-        html += '<div class="vals">';
-        html += '<div><div class="curr-lbl">' + esc(lastMon) + '</div><div class="curr">' + fmtVal(lastVal, resRow.unit) + '</div></div>';
-        html += '<div><div class="ytd-lbl">YTD</div><div class="ytd">' + fmtVal(resRow.ytd, resRow.unit) + '</div></div>';
+    cards.forEach(function (c, idx) {
+      var color = KPI_COLORS[idx % KPI_COLORS.length];
+      var row = c.row;
+      var hasData = row.months && row.months.some(function (v) { return v != null; });
+      if (!hasData) {
+        html += '<div class="kpi-card no-data">';
+        html += '<div class="id" style="color:' + color + ';">' + esc(c.kpi) + '</div>';
+        html += '<h3>' + esc(c.name) + '</h3>';
+        html += '<div class="no-data-note">No data this year — sub-scope not yet active.</div>';
+        html += '<div class="foot"><div class="target">Target: ' + esc(row.target || '—') + '</div>';
+        html += '<span class="score-badge score-na">no data</span></div>';
         html += '</div>';
-        html += '<div class="spark">' + sparkSvg(resRow.months, color, t.months, resRow.unit) + '</div>';
-        html += '<div class="foot">';
-        html += '<div class="target">Target: ' + esc(resRow.target || '—') + '</div>';
-        html += '<span class="score-badge ' + scoreClass + '">' + scoreText + '</span>';
-        html += '</div>';
-        html += '</div>';
-      });
+        return;
+      }
+      var lastIdx = lastNonNullIdx(row.months);
+      var lastVal = lastIdx >= 0 ? row.months[lastIdx] : null;
+      var lastMon = lastIdx >= 0 ? t.months[lastIdx] : '';
+      var scoreClass = row.score == null ? 'score-na' : 'score-' + Math.round(row.score);
+      var scoreText  = row.score == null ? '—' : 'score ' + Number(row.score).toFixed(2) + ' / 5';
+      var nameClean = (row.label || '').replace(/^→\s*/, '');
+      html += '<div class="kpi-card">';
+      html += '<div class="id" style="color:' + color + ';">' + esc(c.kpi) + '</div>';
+      html += '<h3>' + esc(c.name || nameClean) + '</h3>';
+      html += '<div class="vals">';
+      html += '<div><div class="curr-lbl">' + esc(lastMon) + '</div><div class="curr">' + fmtVal(lastVal, row.unit) + '</div></div>';
+      html += '<div><div class="ytd-lbl">YTD</div><div class="ytd">' + fmtVal(row.ytd, row.unit) + '</div></div>';
+      html += '</div>';
+      html += '<div class="spark">' + sparkSvg(row.months, color, t.months, row.unit) + '</div>';
+      html += '<div class="foot">';
+      html += '<div class="target">Target: ' + esc(row.target || '—') + '</div>';
+      html += '<span class="score-badge ' + scoreClass + '">' + scoreText + '</span>';
+      html += '</div>';
+      html += '</div>';
     });
     html += '</div>';
 
