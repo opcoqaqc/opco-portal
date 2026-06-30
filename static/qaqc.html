@@ -549,26 +549,105 @@
     body > *:not(#report-modal) { display: none !important; }
     #report-modal { position: static; background: #fff; padding: 0; overflow: visible; }
     .report-actions { display: none !important; }
+
+    /* ===== Single-page A4 fit — every block trimmed for height ===== */
     .report {
       background: #fff !important; color: #111 !important;
       border: 0; box-shadow: none; max-width: 100%;
-      margin: 0;
-      padding: 12mm 14mm;     /* visual page margin, replaces @page margin */
+      margin: 0; padding: 9mm 11mm;
+      page-break-inside: avoid;
     }
+    .report-head { padding-bottom: 10px; border-bottom-width: 1.5px; }
+    .report-head h1 { font-size: 18px; }
+    .report-head .brand { font-size: 9.5px; margin-bottom: 3px; }
+    .report-head .meta { font-size: 10px; line-height: 1.5; }
+
+    .r-subject { padding: 10px 0 12px; }
+    .r-subject .who { font-size: 16px; }
+    .r-subject .role { font-size: 11px; margin-top: 2px; }
+    .r-subject .period { font-size: 9.5px; }
+    .r-subject .period b { font-size: 12px; margin-top: 2px; }
+
+    .r-hero { padding: 10px 16px; margin-top: 10px; gap: 18px; }
+    .r-hero .h { font-size: 9px; margin-bottom: 2px; }
+    .r-hero .val { font-size: 28px; }
+    .r-hero .rating { font-size: 9.5px; padding: 3px 10px; margin-top: 5px; }
+    .r-hero .delta-h { font-size: 8px; margin-bottom: 2px; }
+    .r-hero .delta-v { font-size: 12px; }
+
+    .r-section-h { margin: 12px 0 4px; font-size: 9px; }
+
+    .r-kpi { font-size: 10px; }
+    .r-kpi th { padding: 5px 5px; font-size: 8.5px; }
+    .r-kpi td { padding: 5px 5px; }
+    .r-scr { padding: 2px 7px; font-size: 9.5px; }
+
+    .r-sparks { gap: 7px; margin-top: 4px; }
+    .r-spark-box { padding: 6px 9px 5px; }
+    .r-spark-box .id { font-size: 8.5px; }
+    .r-spark-box .nm { font-size: 9.5px; margin: 1px 0 3px; min-height: 22px; line-height: 1.15; }
+    .r-spark-box .v .big { font-size: 12px; }
+    .r-spark-box .v .small { font-size: 9px; }
+    .r-spark-box svg { height: 24px !important; }
+
+    .r-insights { gap: 10px; margin-top: 6px; }
+    .r-ins-card { padding: 8px 10px; }
+    .r-ins-h { font-size: 8.5px; margin-bottom: 5px; }
+    .r-ins-table { font-size: 9px; }
+    .r-ins-table td { padding: 2px 3px; }
+    .r-ins-list li { font-size: 9.5px; line-height: 1.35; padding: 2px 0 2px 14px; }
+    .r-ins-list li::before { width: 5px; height: 5px; top: 7px; left: 3px; }
+
+    .r-bottom { gap: 12px; padding-top: 10px; }
+    .r-remarks { font-size: 10px; line-height: 1.4; padding-top: 5px; }
+    .r-remarks-h { font-size: 8.5px; margin-bottom: 4px; }
+    .r-sign-line { font-size: 9px; padding-top: 4px; }
+    .r-signs { gap: 8px; }
+    .r-footer { font-size: 8.5px; padding-top: 6px; margin-top: 10px; }
+
+    /* ===== Print colour palette — high-contrast on light cream ===== */
     .r-subject .who, .r-hero .val, .report-head h1,
     .r-kpi td.name, .r-kpi td.qavg, .r-ins-list b, .r-sign-line b,
-    .r-spark-box .v .big { color: #111 !important; }
+    .r-spark-box .v .big, .r-spark-box .nm,
+    .r-ins-table td.k { color: #111 !important; }
+
     .r-section-h, .r-ins-h, .report-head .brand, .r-hero .h,
-    .r-subject .period, .r-kpi td.id, .r-remarks-h, .r-spark-box .id { color: #8a6f1a !important; }
+    .r-subject .period, .r-kpi td.id, .r-remarks-h, .r-spark-box .id,
+    .r-ins-h.up   /* strengths header — keep gold tone */ ,
+    .r-ins-h.down /* watch header — keep gold tone */ { color: #6a4f08 !important; }
+    .r-ins-h.up   { color: #195d36 !important; }   /* green for strengths */
+    .r-ins-h.down { color: #8a4a0a !important; }   /* amber for watch */
+
+    /* Numbers, units, secondary text — dark enough to read */
     .r-kpi td.num, .r-spark-box .v .small, .r-ins-table td.q,
     .r-subject .role, .r-hero .delta-h, .r-kpi th, .r-remarks,
-    .r-sign-line, .r-footer { color: #555 !important; }
-    .r-hero, .r-spark-box, .r-ins-card, .r-kpi th {
-      background: #f3efe1 !important; border-color: #d6cd9f !important;
-    }
-    .r-scr-4 { background: #d6e3f0 !important; color: #2c5d8f !important; }
-    .r-scr-5 { background: #d8efe1 !important; color: #1d7044 !important; }
-    .r-scr-3 { background: #efe5c9 !important; color: #6d5417 !important; }
+    .r-sign-line, .r-footer, .r-kpi td.tgt,
+    .r-ins-list li, .r-ins-list li::before /* keep bullets visible too */,
+    .report-head .meta { color: #333 !important; }
+    .report-head .meta b { color: #111 !important; }
+    .r-ins-list li::before { background: #6a4f08 !important; }
+    .r-ins-list.watch li::before { background: #8a4a0a !important; }
+
+    /* Delta arrows — clear up/down colours */
+    .r-hero .delta-v.up,   .r-ins-table td.d.up   { color: #157a45 !important; }
+    .r-hero .delta-v.down, .r-ins-table td.d.down { color: #b62a37 !important; }
+    .r-ins-table td.d.flat { color: #555 !important; }
+
+    .r-hero { background: #f7f3e3 !important; border-color: #c9bd87 !important; }
+    .r-spark-box, .r-ins-card { background: #faf7ec !important; border-color: #d6cd9f !important; }
+    .r-kpi th { background: #efe9d2 !important; }
+
+    /* Rating pill on the hero */
+    .r-hero .rating.rating-Outstanding   { background: #d8efe1 !important; color: #195d36 !important; }
+    .r-hero .rating.rating-Exceeds       { background: #d6e3f0 !important; color: #1f4a7a !important; }
+    .r-hero .rating.rating-Meets         { background: #efe5c9 !important; color: #6a4f08 !important; }
+    .r-hero .rating.rating-Below         { background: #f6e0c1 !important; color: #8a4a0a !important; }
+    .r-hero .rating.rating-Unsatisfactory{ background: #f3d4d7 !important; color: #8a2a35 !important; }
+
+    /* Score pills */
+    .r-scr-4 { background: #d6e3f0 !important; color: #1f4a7a !important; }
+    .r-scr-5 { background: #d8efe1 !important; color: #195d36 !important; }
+    .r-scr-3 { background: #efe5c9 !important; color: #6a4f08 !important; }
     .r-scr-2 { background: #f6e0c1 !important; color: #8a4a0a !important; }
     .r-scr-1 { background: #f3d4d7 !important; color: #8a2a35 !important; }
   }
