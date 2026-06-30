@@ -361,6 +361,207 @@
               font-size: 12.5px; line-height: 1.55; }
   .gov-grid .lbl { color: #C9A961; font-weight: 700; }
   .gov-grid .txt { color: #cfd6df; }
+
+  /* ===== Quarterly Report — button on tracker + modal overlay ===== */
+  .gen-report-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; font-size: 12px; font-weight: 600;
+    border-radius: 8px; cursor: pointer;
+    background: rgba(45,212,191,0.12); color: #2DD4BF;
+    border: 1px solid rgba(45,212,191,0.35);
+    transition: background .15s;
+    font-family: inherit;
+  }
+  .gen-report-btn:hover { background: rgba(45,212,191,0.20); }
+  .gen-report-btn svg { width: 14px; height: 14px; }
+
+  #report-modal {
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(10,12,17,0.92);
+    display: none; overflow-y: auto;
+    padding: 28px 24px;
+  }
+  #report-modal.open { display: block; }
+  .report-actions {
+    max-width: 880px; margin: 0 auto 18px;
+    display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;
+  }
+  .report-actions .rbtn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; font-size: 12px; font-weight: 600;
+    border-radius: 8px; cursor: pointer;
+    background: rgba(45,212,191,0.12); color: #2DD4BF;
+    border: 1px solid rgba(45,212,191,0.35);
+    text-decoration: none; font-family: inherit;
+  }
+  .report-actions .rbtn:hover { background: rgba(45,212,191,0.20); }
+  .report-actions .rbtn.secondary {
+    background: rgba(255,255,255,0.04); color: #b0b8c4;
+    border-color: rgba(255,255,255,0.10);
+  }
+  .report-actions .rbtn svg { width: 14px; height: 14px; }
+
+  .report {
+    max-width: 880px; margin: 0 auto;
+    background: linear-gradient(180deg, #11141c 0%, #0e1118 100%);
+    border: 1px solid #30363d; border-radius: 14px;
+    padding: 44px 48px 36px;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.5);
+    display: flex; flex-direction: column;
+  }
+  .report-head { display: flex; justify-content: space-between; align-items: flex-start;
+                  gap: 16px; border-bottom: 2px solid #C9A961; padding-bottom: 18px; }
+  .report-head .brand { font-size: 11px; letter-spacing: 0.3em; color: #C9A961;
+                         font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  .report-head h1 { font-size: 22px; color: #f0e4c9; font-weight: 700; line-height: 1.15;
+                     letter-spacing: -0.01em; }
+  .report-head .meta { text-align: right; font-size: 11px; color: #8b949e; line-height: 1.7; }
+  .report-head .meta b { color: #cfd6df; font-weight: 600; }
+
+  .r-subject { display: flex; justify-content: space-between; align-items: center;
+                padding: 16px 0 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .r-subject .who { font-size: 18px; color: #f0e4c9; font-weight: 700; }
+  .r-subject .role { font-size: 12.5px; color: #8b949e; margin-top: 3px; letter-spacing: 0.04em; }
+  .r-subject .period { font-size: 11px; letter-spacing: 0.18em; color: #C9A961;
+                        font-weight: 700; text-transform: uppercase; text-align: right; }
+  .r-subject .period b { display: block; font-size: 14px; color: #f0e4c9;
+                          letter-spacing: 0; margin-top: 4px; font-weight: 700; }
+
+  .r-hero { display: grid; grid-template-columns: 1fr auto auto; gap: 24px;
+             padding: 18px 22px; margin: 18px 0 0;
+             background: linear-gradient(135deg, rgba(45,212,191,0.10), rgba(45,212,191,0.02));
+             border: 1px solid rgba(45,212,191,0.28); border-radius: 12px;
+             align-items: center; }
+  .r-hero .h { font-size: 10px; letter-spacing: 0.22em; color: #2DD4BF;
+                font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+  .r-hero .val { font-size: 38px; font-weight: 700; color: #f0e4c9;
+                  line-height: 1; letter-spacing: -0.02em; }
+  .r-hero .rating { display: inline-block; padding: 5px 12px; border-radius: 999px;
+                     font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+                     text-transform: uppercase; margin-top: 8px; }
+  .r-hero .delta { text-align: center; }
+  .r-hero .delta-h { font-size: 9px; letter-spacing: 0.2em; color: #8b949e;
+                      font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+  .r-hero .delta-v { font-size: 14px; color: #cfd6df; font-weight: 700; }
+  .r-hero .delta-v.up   { color: #5DCAA5; }
+  .r-hero .delta-v.down { color: #E47480; }
+
+  .r-section-h { margin: 20px 0 8px;
+                  font-size: 10px; letter-spacing: 0.22em; color: #C9A961;
+                  font-weight: 700; text-transform: uppercase; }
+
+  table.r-kpi { width: 100%; border-collapse: collapse; font-size: 11px;
+                 table-layout: fixed; }
+  .r-kpi th { padding: 8px 6px; text-align: center; background: rgba(255,255,255,0.03);
+               font-size: 9.5px; letter-spacing: 0.10em; text-transform: uppercase;
+               color: #8b949e; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.10); }
+  .r-kpi th.l { text-align: left; padding-left: 10px; }
+  .r-kpi td { padding: 9px 6px; text-align: center; vertical-align: middle;
+               border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .r-kpi td.l { text-align: left; padding-left: 10px; }
+  .r-kpi td.id { color: #C9A961; font-weight: 700;
+                  font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .r-kpi td.name { color: #f0e4c9; font-weight: 600; }
+  .r-kpi td.num { color: #cfd6df; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .r-kpi td.qavg { color: #f0e4c9; font-weight: 700;
+                    font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .r-kpi td.tgt { font-size: 10px; color: #8b949e; }
+  .r-scr { display: inline-block; padding: 3px 9px; border-radius: 6px;
+            font-size: 10.5px; font-weight: 700;
+            font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .r-scr-1 { background: rgba(228,116,128,0.16); color: #E47480; }
+  .r-scr-2 { background: rgba(239,159,39,0.16);  color: #EF9F27; }
+  .r-scr-3 { background: rgba(201,169,97,0.16);  color: #C9A961; }
+  .r-scr-4 { background: rgba(93,163,224,0.16);  color: #5DA3E0; }
+  .r-scr-5 { background: rgba(93,202,165,0.18);  color: #5DCAA5; }
+
+  .r-sparks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 8px; }
+  .r-spark-box { padding: 10px 12px 8px;
+                  background: rgba(255,255,255,0.02);
+                  border: 1px solid rgba(255,255,255,0.06);
+                  border-radius: 8px; }
+  .r-spark-box .id { font-size: 9px; letter-spacing: 0.15em; color: #C9A961;
+                      font-weight: 700; text-transform: uppercase; }
+  .r-spark-box .nm { font-size: 10.5px; color: #cfd6df; font-weight: 600;
+                      margin: 2px 0 6px; line-height: 1.2; min-height: 26px;
+                      overflow: hidden; }
+  .r-spark-box .v { display: flex; gap: 6px; align-items: baseline;
+                     font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .r-spark-box .v .big { font-size: 14px; color: #f0e4c9; font-weight: 700; }
+  .r-spark-box .v .small { font-size: 10px; color: #8b949e; }
+
+  .r-insights { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .r-ins-card { padding: 12px 14px; background: rgba(255,255,255,0.02);
+                 border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;
+                 display: flex; flex-direction: column; }
+  .r-ins-h { font-size: 9.5px; letter-spacing: 0.18em; color: #C9A961;
+              font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+  .r-ins-h.up   { color: #5DCAA5; }
+  .r-ins-h.down { color: #EF9F27; }
+  .r-ins-table { width: 100%; border-collapse: collapse; font-size: 10px;
+                  font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .r-ins-table td { padding: 3px 4px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .r-ins-table tr:last-child td { border-bottom: 0; }
+  .r-ins-table td.k { color: #cfd6df; font-family: inherit; font-weight: 600; }
+  .r-ins-table td.q { color: #8b949e; text-align: right; }
+  .r-ins-table td.d { text-align: right; font-weight: 700; }
+  .r-ins-table td.d.up   { color: #5DCAA5; }
+  .r-ins-table td.d.down { color: #E47480; }
+  .r-ins-table td.d.flat { color: #8b949e; }
+  .r-ins-list { list-style: none; padding: 0; margin: 0; }
+  .r-ins-list li { font-size: 10.5px; line-height: 1.45; color: #cfd6df;
+                    padding: 4px 0 4px 18px; position: relative; }
+  .r-ins-list li::before { content: ''; position: absolute; left: 4px; top: 9px;
+                            width: 6px; height: 6px; border-radius: 50%; background: #5DCAA5; }
+  .r-ins-list.watch li::before { background: #EF9F27; }
+  .r-ins-list b { color: #f0e4c9; font-weight: 600; }
+
+  .r-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+               margin-top: auto; padding-top: 16px; }
+  .r-remarks { border-top: 1px solid rgba(255,255,255,0.18);
+                padding: 6px 0 0;
+                font-size: 10.5px; color: #8b949e; font-style: italic; line-height: 1.5; }
+  .r-remarks-h { font-size: 9.5px; letter-spacing: 0.18em; color: #C9A961;
+                  font-weight: 700; text-transform: uppercase; margin-bottom: 6px; font-style: normal; }
+  .r-signs { display: grid; grid-template-rows: 1fr 1fr; gap: 12px; }
+  .r-sign-line { border-top: 1px solid rgba(255,255,255,0.18); padding-top: 6px;
+                  font-size: 10px; color: #8b949e; letter-spacing: 0.04em; line-height: 1.4;
+                  display: flex; justify-content: space-between; }
+  .r-sign-line b { color: #cfd6df; font-weight: 700; }
+
+  .r-footer { display: flex; justify-content: space-between; align-items: center;
+               margin-top: 16px; padding-top: 10px;
+               border-top: 1px solid rgba(255,255,255,0.06);
+               font-size: 9.5px; letter-spacing: 0.1em; color: #6c7589;
+               text-transform: uppercase; }
+
+  /* Print rules — strip everything except the report */
+  @media print {
+    body { background: #fff !important; }
+    body > *:not(#report-modal) { display: none !important; }
+    #report-modal { position: static; background: #fff; padding: 0; overflow: visible; }
+    .report-actions { display: none !important; }
+    .report {
+      background: #fff !important; color: #111 !important;
+      border: 0; box-shadow: none; max-width: 100%; padding: 24px 32px;
+    }
+    .r-subject .who, .r-hero .val, .report-head h1,
+    .r-kpi td.name, .r-kpi td.qavg, .r-ins-list b, .r-sign-line b,
+    .r-spark-box .v .big { color: #111 !important; }
+    .r-section-h, .r-ins-h, .report-head .brand, .r-hero .h,
+    .r-subject .period, .r-kpi td.id, .r-remarks-h, .r-spark-box .id { color: #8a6f1a !important; }
+    .r-kpi td.num, .r-spark-box .v .small, .r-ins-table td.q,
+    .r-subject .role, .r-hero .delta-h, .r-kpi th, .r-remarks,
+    .r-sign-line, .r-footer { color: #555 !important; }
+    .r-hero, .r-spark-box, .r-ins-card, .r-kpi th {
+      background: #f3efe1 !important; border-color: #d6cd9f !important;
+    }
+    .r-scr-4 { background: #d6e3f0 !important; color: #2c5d8f !important; }
+    .r-scr-5 { background: #d8efe1 !important; color: #1d7044 !important; }
+    .r-scr-3 { background: #efe5c9 !important; color: #6d5417 !important; }
+    .r-scr-2 { background: #f6e0c1 !important; color: #8a4a0a !important; }
+    .r-scr-1 { background: #f3d4d7 !important; color: #8a2a35 !important; }
+  }
 </style>
 <script src="_tracking.js"></script>
 </head>
@@ -743,12 +944,36 @@
   // === Monthly Tracker view ===
   function renderTracker(data, label, viewId) {
     var t = data.monthly_tracker;
-    var html = '<div class="eyebrow">' + esc(label) + ' &middot; ' + t.year + '</div>';
-    html += '<h1 class="page-h">Monthly Tracker</h1>';
-    html += '<p class="lead">Weighted composite score across the KPIs. Per-month entries with YTD rollup.</p>';
+    // Extract group key from viewId so the report button knows which dataset
+    // it belongs to (viewId = "view-<key>-tracker").
+    var groupKey = (viewId || '').replace(/^view-/, '').replace(/-tracker$/, '');
 
-    // Hero — find last filled month across ALL metric rows (not just one
-    // hardcoded label, so member workbooks with their own metric labels work).
+    var html = '<div class="eyebrow">' + esc(label) + ' &middot; ' + t.year + '</div>';
+    // Page header row — title on the left, "Generate Report" button on the right
+    html += '<div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:6px;">';
+    html += '<div>';
+    html += '<h1 class="page-h" style="margin-bottom:6px;">Monthly Tracker</h1>';
+    html += '<p class="lead" style="margin-bottom:0;">Weighted composite score across the KPIs. Per-month entries with YTD rollup.</p>';
+    html += '</div>';
+    // Compute the last-completed quarter for the button label
+    (function () {
+      var lastIdx = -1;
+      t.metrics.forEach(function (m) {
+        if (m.role === 'metric' && m.months) {
+          m.months.forEach(function (v, i) { if (v != null) lastIdx = Math.max(lastIdx, i); });
+        }
+      });
+      var qIdx = Math.floor((lastIdx + 1) / 3) - 1;
+      if (qIdx < 0) qIdx = 0;
+      var qLabel = ['Q1','Q2','Q3','Q4'][qIdx] || 'Q?';
+      html += '<button class="gen-report-btn" data-group="' + esc(groupKey) + '">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+      html += 'Generate ' + qLabel + ' Report</button>';
+    })();
+    html += '</div>';
+    html += '<div style="margin-bottom:22px;"></div>';
+
+    // Hero — find last filled month across ALL metric rows
     var rating = (t.rating || '').split(' ')[0];
     var monthsScored = 0;
     t.metrics.forEach(function (m) {
@@ -986,7 +1211,441 @@
   // Read hash for deep linking
   var initial = (location.hash || '').replace('#', '');
   if (initial && document.getElementById('view-' + initial)) activate(initial);
+
+  // ============================================================
+  // === Quarterly Report — button on tracker + modal overlay ===
+  // ============================================================
+  function detectLastQuarter(t) {
+    // Find the last month with any data
+    var lastIdx = -1;
+    (t.metrics || []).forEach(function (m) {
+      if (m.role === 'metric' && m.months) {
+        m.months.forEach(function (v, i) { if (v != null) lastIdx = Math.max(lastIdx, i); });
+      }
+    });
+    if (lastIdx < 0) return null;
+    // Quarter index 0..3 for the LAST completed quarter (rounded down)
+    // If lastIdx = 5 (Jun, last of Q2) → q=1 (Q2 just finished)
+    // If lastIdx = 4 (May, mid Q2) → q=0 (latest completed is Q1)
+    var qIdx;
+    if      (lastIdx >= 11) qIdx = 3;          // Dec → Q4
+    else if (lastIdx >= 8 && lastIdx <= 10) qIdx = lastIdx === 8 ? 2 : (lastIdx === 11 ? 3 : 2);
+    // Simpler: completed quarters only — last completed q is floor((lastIdx+1)/3) - 1
+    qIdx = Math.floor((lastIdx + 1) / 3) - 1;
+    if (qIdx < 0) qIdx = 0;     // not even one quarter complete — show Q1 anyway
+    return qIdx;
+  }
+  function quarterLabel(q) { return ['Q1','Q2','Q3','Q4'][q] || 'Q?'; }
+  function quarterMonths(q) {
+    return [['Jan','Feb','Mar'],['Apr','May','Jun'],['Jul','Aug','Sep'],['Oct','Nov','Dec']][q] || [];
+  }
+  function quarterPeriod(q, year) {
+    var spans = [
+      ['Jan 1', 'Mar 31'],['Apr 1','Jun 30'],['Jul 1','Sep 30'],['Oct 1','Dec 31']
+    ];
+    var s = spans[q] || ['',''];
+    return s[0] + ' – ' + s[1] + ', ' + year;
+  }
+  function avg(arr) {
+    var vals = (arr || []).filter(function (v) { return v != null; });
+    if (!vals.length) return null;
+    return vals.reduce(function(a,b){return a+b;}, 0) / vals.length;
+  }
+  function fmtAvg(v, unit) {
+    if (v == null) return '—';
+    if (unit === '%') return (v * 100).toFixed(1) + '%';
+    if (unit === 'days') return v.toFixed(1) + ' d';
+    if (unit === 'count') return v.toFixed(1) + ' / mo';
+    if (unit === '1-5')  return v.toFixed(2);
+    return Number(v).toFixed(2);
+  }
+  function fmtMonth(v, unit) {
+    if (v == null) return '—';
+    if (unit === '%') return (v * 100).toFixed(1) + '%';
+    if (unit === 'days') return Math.round(v) + 'd';
+    if (unit === 'count') return Math.round(v).toString();
+    if (unit === '1-5')  return Number(v).toFixed(1);
+    return String(v);
+  }
+  function makeSparkSvg(months, qStart, color) {
+    var pts = [];
+    for (var k = 0; k < 3; k++) {
+      var v = months[qStart + k];
+      if (v == null) continue;
+      pts.push({ k: k, v: v });
+    }
+    if (!pts.length) return '';
+    var vals = pts.map(function (p) { return p.v; });
+    var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+    if (mn === mx) { mn -= 1; mx += 1; }
+    var W = 100, H = 32, P = 6;
+    var coords = pts.map(function (p) {
+      var x = P + (W - 2*P) * p.k / 2;
+      var y = H - P - (H - 2*P) * (p.v - mn) / (mx - mn);
+      return { x: x.toFixed(1), y: y.toFixed(1) };
+    });
+    var poly = coords.map(function (c) { return c.x + ',' + c.y; }).join(' ');
+    var dots = coords.map(function (c, i) {
+      var r = i === coords.length - 1 ? 2.5 : 2;
+      return '<circle cx="' + c.x + '" cy="' + c.y + '" r="' + r + '" fill="' + color + '"/>';
+    }).join('');
+    var area = poly + ' ' + (W-P) + ',' + (H-P) + ' ' + P + ',' + (H-P);
+    return '<svg viewBox="0 0 100 32" preserveAspectRatio="none" style="width:100%;height:30px;">' +
+           '<polyline points="' + area + '" fill="' + color + '22"/>' +
+           '<polyline points="' + poly + '" fill="none" stroke="' + color + '" stroke-width="1.8"/>' +
+           dots + '</svg>';
+  }
+  function walkCards(t) {
+    // Same logic as renderTracker — find KPI sections + result rows
+    var cards = [], curKpi = null, curName = '', pending = null;
+    (t.metrics || []).forEach(function (m) {
+      if (m.role === 'section') {
+        var match = (m.label || '').match(/^(T?KPI-[\dA-Z]+)\s*[·•\-—]\s*(.*)$/);
+        if (match) {
+          if (curKpi && pending) cards.push({ kpi: curKpi, name: curName, row: pending });
+          curKpi = match[1]; curName = match[2]; pending = null;
+        }
+      } else if (m.role === 'metric' && curKpi) {
+        if (m.score != null) pending = m;
+        else if ((m.label || '').indexOf('→') === 0 && !pending) pending = m;
+      }
+    });
+    if (curKpi && pending) cards.push({ kpi: curKpi, name: curName, row: pending });
+    return cards;
+  }
+
+  function buildAndOpenReport(data, label, role, qIdx) {
+    var t = data.monthly_tracker;
+    var year = t.year || 2026;
+    var qName = quarterLabel(qIdx);
+    var qMonths = quarterMonths(qIdx);
+    var period = quarterPeriod(qIdx, year);
+    var qStart = qIdx * 3;
+    var prevStart = qStart - 3;
+    var hasPrev = prevStart >= 0;
+
+    var cards = walkCards(t);
+    var KPI_COLORS = ['#5DA3E0','#5DCAA5','#C9A961','#A77CCB','#EF9F27','#E47480','#2DD4BF','#16A34A'];
+
+    // Per-KPI Q averages + Q-prev averages
+    var rows = cards.map(function (c, idx) {
+      var months = c.row.months || [];
+      var qVals = months.slice(qStart, qStart + 3);
+      var pVals = hasPrev ? months.slice(prevStart, prevStart + 3) : [];
+      return {
+        kpi:      c.kpi,
+        name:     c.name || (c.row.label || '').replace(/^→\s*/, ''),
+        unit:     c.row.unit,
+        target:   c.row.target,
+        score:    c.row.score,
+        weight:   null,  // filled from composite_rows if matched
+        months:   qVals,
+        qAvg:     avg(qVals),
+        pAvg:     avg(pVals),
+        color:    KPI_COLORS[idx % KPI_COLORS.length],
+        rowAll:   c.row,
+      };
+    });
+
+    // Merge composite_rows for weights and to enrich quarter delta
+    (t.composite_rows || []).forEach(function (cr, i) {
+      // Match composite_rows to cards by KPI prefix
+      var crKpi = (cr.kpi || '').match(/^(T?KPI-[\dA-Z]+)/);
+      if (!crKpi) return;
+      var match = rows.filter(function (r) { return r.kpi === crKpi[1]; })[0]
+                  || rows[i];
+      if (match) match.weight = cr.weight;
+    });
+
+    // Hero composite Q vs prev — use the per-KPI YTD score is approximation
+    // Better: weighted avg of qAvg scores. But we use composite_rows YTD as
+    // headline + show qIdx month count.
+    var composite = t.composite_score;
+    var rating = t.rating || '';
+    var ratingKey = (rating || '').split(' ')[0];
+
+    // Estimate Q-specific composite by averaging the result row's monthly
+    // values when the unit is "1-5" (Excel only stores score this way for
+    // some KPIs). Fallback: just show composite_score (YTD).
+    function scoreFromVal(row, v) {
+      // For "1-5"-unit rows, value IS the score. Else use the row's score field as proxy.
+      if (row && row.unit === '1-5' && v != null) return v;
+      if (row && row.score != null) return row.score;
+      return null;
+    }
+    var weightedQ = 0, weightSum = 0, weightedP = 0;
+    rows.forEach(function (r) {
+      if (r.weight == null) return;
+      var qMonthScores = r.months.map(function (v) { return scoreFromVal(r.rowAll, v); }).filter(function (v) { return v != null; });
+      if (!qMonthScores.length) return;
+      var qScore = qMonthScores.reduce(function(a,b){return a+b;},0) / qMonthScores.length;
+      weightedQ += r.weight * qScore;
+      weightSum += r.weight;
+      if (hasPrev) {
+        var pMonths = (r.rowAll.months || []).slice(prevStart, prevStart + 3);
+        var pMonthScores = pMonths.map(function (v) { return scoreFromVal(r.rowAll, v); }).filter(function (v) { return v != null; });
+        if (pMonthScores.length) {
+          weightedP += r.weight * (pMonthScores.reduce(function(a,b){return a+b;},0) / pMonthScores.length);
+        }
+      }
+    });
+    var qComposite = weightSum > 0 ? weightedQ / weightSum : composite;
+    var pComposite = weightSum > 0 && hasPrev ? weightedP / weightSum : null;
+    var compDelta = (pComposite != null) ? qComposite - pComposite : null;
+
+    // Months scored in the quarter
+    var monthsScored = 0;
+    rows.forEach(function (r) {
+      r.months.forEach(function (v, i) { if (v != null) monthsScored = Math.max(monthsScored, i+1); });
+    });
+
+    // Auto-generated insights
+    var strengths = [], watch = [];
+    rows.forEach(function (r) {
+      var dStr = '';
+      var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
+      var dir = (delta == null) ? null : (delta >= 0 ? 'up' : 'down');
+      // For strengths: improved by ≥ 5% (in % terms) OR score ≥ 4 with positive delta
+      var isStrength = false, isWatch = false;
+      if (delta != null) {
+        if (r.unit === '%') {
+          if (delta >= 0.03 || (r.qAvg >= 0.95 && delta >= 0)) isStrength = true;
+          if (delta < -0.03) isWatch = true;
+        } else {
+          if (delta >= 0.3 || (r.score != null && r.score >= 4 && delta >= 0)) isStrength = true;
+          if (delta < -0.3) isWatch = true;
+        }
+      }
+      if (r.score != null && r.score < 3) isWatch = true;
+      if (isStrength) strengths.push(r);
+      if (isWatch) watch.push(r);
+    });
+    // Cap to 3 each, pick by absolute delta size
+    function topByAbsDelta(arr) {
+      return arr.sort(function(a,b){
+        var da = Math.abs((a.qAvg||0) - (a.pAvg||0));
+        var db = Math.abs((b.qAvg||0) - (b.pAvg||0));
+        return db - da;
+      }).slice(0, 3);
+    }
+    strengths = topByAbsDelta(strengths);
+    watch     = topByAbsDelta(watch);
+
+    function strengthBullet(r) {
+      var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
+      var qStr = fmtAvg(r.qAvg, r.unit);
+      var dStr = '';
+      if (delta != null) {
+        if (r.unit === '%') dStr = (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp vs ' + quarterLabel(qIdx-1);
+        else dStr = (delta >= 0 ? '+' : '') + delta.toFixed(2) + ' vs ' + quarterLabel(qIdx-1);
+      }
+      return '<b>' + esc(r.kpi) + ' ' + esc(r.name) + '</b> at <b>' + qStr + '</b>' + (dStr ? ' (' + dStr + ')' : '') + '.';
+    }
+    function watchBullet(r) {
+      var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
+      var qStr = fmtAvg(r.qAvg, r.unit);
+      var dStr = '';
+      if (delta != null) {
+        if (r.unit === '%') dStr = (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp vs ' + quarterLabel(qIdx-1);
+        else dStr = (delta >= 0 ? '+' : '') + delta.toFixed(2) + ' vs ' + quarterLabel(qIdx-1);
+      }
+      var tgt = r.target ? ' — target ' + esc(r.target) : '';
+      return '<b>' + esc(r.kpi) + ' ' + esc(r.name) + '</b> at <b>' + qStr + '</b>' + (dStr ? ' (' + dStr + ')' : '') + tgt + '.';
+    }
+
+    // ============== Build HTML ==============
+    var html = '';
+    html += '<div class="report-actions">';
+    html += '<button class="rbtn secondary" data-act="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Close</button>';
+    html += '<button class="rbtn" data-act="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print / Save PDF</button>';
+    html += '</div>';
+
+    html += '<div class="report">';
+
+    html += '<div class="report-head">';
+    html += '<div><div class="brand">ORIENT PIPELINE CO. &middot; QA/QC TEAM</div>';
+    html += '<h1>' + esc(qName) + ' ' + year + ' Performance Report</h1></div>';
+    var now = new Date();
+    var stamp = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    html += '<div class="meta">';
+    html += '<div><b>Document</b> &middot; OPCO-QAQC-' + esc((label||'').split(' ').pop().slice(0,3).toUpperCase()) + '-' + qName + '-' + year + '</div>';
+    html += '<div><b>Period</b> &middot; ' + esc(period) + '</div>';
+    html += '<div><b>Generated</b> &middot; ' + esc(stamp) + '</div>';
+    html += '</div></div>';
+
+    html += '<div class="r-subject">';
+    html += '<div><div class="who">' + esc(label) + '</div>';
+    if (role) html += '<div class="role">' + esc(role) + ' &middot; Reports to QA/QC Manager</div>';
+    html += '</div>';
+    html += '<div class="period">Period<b>' + esc(qMonths.join(' · ')) + '</b></div>';
+    html += '</div>';
+
+    html += '<div class="r-hero">';
+    html += '<div>';
+    html += '<div class="h">' + esc(qName) + ' Composite Score</div>';
+    html += '<div class="val">' + Number(qComposite).toFixed(2) + '</div>';
+    if (rating) html += '<span class="rating rating-' + esc(ratingKey) + '">' + esc(rating) + '</span>';
+    html += '</div>';
+    if (compDelta != null) {
+      var dCls = compDelta >= 0 ? 'up' : 'down';
+      var sign = compDelta >= 0 ? '+' : '';
+      html += '<div class="delta"><div class="delta-h">vs ' + esc(quarterLabel(qIdx-1)) + '</div><div class="delta-v ' + dCls + '">' + sign + compDelta.toFixed(2) + '</div></div>';
+    }
+    html += '<div class="delta"><div class="delta-h">Months Scored</div><div class="delta-v">' + monthsScored + ' / 3</div></div>';
+    html += '</div>';
+
+    html += '<div class="r-section-h">KPI Breakdown — ' + esc(qName) + ' (' + esc(qMonths.join(' · ')) + ')</div>';
+    html += '<table class="r-kpi"><thead><tr>';
+    html += '<th style="width:7%">' + (rows[0] && rows[0].kpi.indexOf('TKPI') === 0 ? 'TKPI' : 'KPI') + '</th>';
+    html += '<th class="l" style="width:28%">KPI Name</th>';
+    html += '<th style="width:7%">Wt</th>';
+    html += '<th style="width:9%">' + esc(qMonths[0]) + '</th>';
+    html += '<th style="width:9%">' + esc(qMonths[1]) + '</th>';
+    html += '<th style="width:9%">' + esc(qMonths[2]) + '</th>';
+    html += '<th style="width:10%">' + esc(qName) + ' avg</th>';
+    html += '<th style="width:12%">Target</th>';
+    html += '<th style="width:9%">Score</th>';
+    html += '</tr></thead><tbody>';
+    rows.forEach(function (r) {
+      html += '<tr>';
+      html += '<td class="id">' + esc(r.kpi) + '</td>';
+      html += '<td class="l name">' + esc(r.name) + '</td>';
+      html += '<td class="num">' + (r.weight != null ? r.weight.toFixed(2) : '—') + '</td>';
+      html += '<td class="num">' + esc(fmtMonth(r.months[0], r.unit)) + '</td>';
+      html += '<td class="num">' + esc(fmtMonth(r.months[1], r.unit)) + '</td>';
+      html += '<td class="num">' + esc(fmtMonth(r.months[2], r.unit)) + '</td>';
+      html += '<td class="qavg">' + esc(fmtAvg(r.qAvg, r.unit)) + '</td>';
+      html += '<td class="tgt">' + esc(r.target || '—') + '</td>';
+      var scrCls = r.score == null ? '' : 'r-scr-' + Math.round(r.score);
+      var scrTxt = r.score == null ? '—' : Number(r.score).toFixed(2);
+      html += '<td><span class="r-scr ' + scrCls + '">' + scrTxt + '</span></td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+
+    html += '<div class="r-section-h">' + esc(qName) + ' Trend — Monthly Values</div>';
+    html += '<div class="r-sparks">';
+    rows.slice(0, 5).forEach(function (r) {
+      html += '<div class="r-spark-box">';
+      html += '<div class="id">' + esc(r.kpi) + '</div>';
+      html += '<div class="nm">' + esc(r.name.split('(')[0].trim()) + '</div>';
+      html += makeSparkSvg(r.rowAll.months || [], qStart, r.color);
+      html += '<div class="v"><span class="big">' + (r.score != null ? Number(r.score).toFixed(2) : '—') + '</span><span class="small">/ 5</span></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    html += '<div class="r-section-h">Quarter-over-Quarter Insights</div>';
+    html += '<div class="r-insights">';
+    // Column 1 — Q vs Q-prev comparison table
+    html += '<div class="r-ins-card">';
+    html += '<div class="r-ins-h">' + esc(quarterLabel(qIdx-1)) + ' → ' + esc(qName) + ' Comparison</div>';
+    html += '<table class="r-ins-table"><tbody>';
+    rows.forEach(function (r) {
+      var pStr = fmtAvg(r.pAvg, r.unit);
+      var qStr = fmtAvg(r.qAvg, r.unit);
+      var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
+      var dCls = 'flat', dStr = '—';
+      if (delta != null) {
+        if (r.unit === '%') {
+          dCls = delta > 0.001 ? 'up' : (delta < -0.001 ? 'down' : 'flat');
+          dStr = (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp';
+        } else {
+          dCls = delta > 0.05 ? 'up' : (delta < -0.05 ? 'down' : 'flat');
+          dStr = (delta >= 0 ? '+' : '') + delta.toFixed(2);
+        }
+        if (dCls === 'up')   dStr += ' ↑';
+        if (dCls === 'down') dStr += ' ↓';
+      }
+      var short = r.kpi + ' ' + r.name.split('(')[0].trim();
+      if (short.length > 24) short = short.slice(0, 22) + '…';
+      html += '<tr><td class="k">' + esc(short) + '</td><td class="q">' + esc(pStr) + ' → ' + esc(qStr) + '</td><td class="d ' + dCls + '">' + esc(dStr) + '</td></tr>';
+    });
+    if (pComposite != null) {
+      var dC = qComposite - pComposite;
+      var dCcls = dC > 0.05 ? 'up' : (dC < -0.05 ? 'down' : 'flat');
+      var dCsign = dC >= 0 ? '+' : '';
+      html += '<tr><td class="k" style="color:#f0e4c9;">Composite</td><td class="q" style="color:#cfd6df;">' + pComposite.toFixed(2) + ' → ' + qComposite.toFixed(2) + '</td><td class="d ' + dCcls + '">' + dCsign + dC.toFixed(2) + (dCcls === 'up' ? ' ↑' : (dCcls === 'down' ? ' ↓' : '')) + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+
+    // Column 2 — Strengths
+    html += '<div class="r-ins-card">';
+    html += '<div class="r-ins-h up">Strengths</div>';
+    html += '<ul class="r-ins-list">';
+    if (strengths.length) {
+      strengths.forEach(function (r) { html += '<li>' + strengthBullet(r) + '</li>'; });
+    } else {
+      html += '<li style="color:#8b949e; font-style:italic;">No standout improvements vs prior quarter.</li>';
+    }
+    html += '</ul></div>';
+
+    // Column 3 — Areas to Watch
+    html += '<div class="r-ins-card">';
+    html += '<div class="r-ins-h down">Areas to Watch</div>';
+    html += '<ul class="r-ins-list watch">';
+    if (watch.length) {
+      watch.forEach(function (r) { html += '<li>' + watchBullet(r) + '</li>'; });
+    } else {
+      html += '<li style="color:#8b949e; font-style:italic;">No KPIs below target or trending down.</li>';
+    }
+    html += '</ul></div>';
+
+    html += '</div>'; // /r-insights
+
+    html += '<div class="r-bottom">';
+    html += '<div class="r-remarks"><div class="r-remarks-h">Manager Remarks</div>';
+    html += 'Auto-generated quarterly summary. The QA/QC Manager may add free-form context here before signing off.';
+    html += '</div>';
+    html += '<div class="r-signs">';
+    html += '<div class="r-sign-line"><span>Reviewed by <b>QA/QC Manager</b></span><span>Date &middot; _____________</span></div>';
+    html += '<div class="r-sign-line"><span>Approved by <b>Technical Director</b></span><span>Date &middot; _____________</span></div>';
+    html += '</div></div>';
+
+    html += '<div class="r-footer"><span>OPCO Portal · QA/QC Performance Reporting</span><span>Confidential · Internal Use Only</span></div>';
+
+    html += '</div>'; // /report
+
+    var modal = document.getElementById('report-modal');
+    modal.innerHTML = html;
+    modal.classList.add('open');
+    modal.scrollTop = 0;
+    if (window.opcoTrack) try { window.opcoTrack('report', label + ':' + qName); } catch(e) {}
+  }
+
+  // Close handler — Esc + button delegation
+  document.addEventListener('click', function (e) {
+    var act = e.target.closest && e.target.closest('[data-act]');
+    if (!act) return;
+    var a = act.getAttribute('data-act');
+    if (a === 'close') document.getElementById('report-modal').classList.remove('open');
+    if (a === 'print') window.print();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.getElementById('report-modal').classList.remove('open');
+  });
+
+  // Wire up "Generate Report" button click via event delegation
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('.gen-report-btn');
+    if (!btn) return;
+    var groupKey = btn.getAttribute('data-group');
+    var g = GROUPS[groupKey];
+    if (!g || !g.data) return;
+    var qIdx = detectLastQuarter(g.data.monthly_tracker);
+    if (qIdx == null) {
+      alert('No data yet — fill in the Monthly Tracker first.');
+      return;
+    }
+    var role = '';
+    if (g.data.cover && g.data.cover.meta) role = g.data.cover.meta.role || g.data.cover.meta.position || '';
+    buildAndOpenReport(g.data, g.label.replace(/^QA\/QC (Manager|Team — )/, ''), role, qIdx);
+  });
 })();
 </script>
+
+<!-- Quarterly report modal — populated dynamically by buildAndOpenReport() -->
+<div id="report-modal"></div>
+
 </body>
 </html>
