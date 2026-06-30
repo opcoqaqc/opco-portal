@@ -1090,10 +1090,13 @@
       }
     });
 
+    // Composite is on a 1–5 scale → show as a % of the max (5) in the hero
+    // for at-a-glance reading, matching the printable quarterly report.
+    var compositePct = (Number(t.composite_score) / 5) * 100;
     html += '<div class="composite-hero">';
     html += '<div>';
     html += '<div class="composite-hero-h">Composite YTD</div>';
-    html += '<div class="composite-hero-val">' + num(t.composite_score, 2) + '</div>';
+    html += '<div class="composite-hero-val">' + compositePct.toFixed(1) + '%</div>';
     if (t.rating) html += '<span class="composite-hero-rating rating-' + esc(rating) + '">' + esc(t.rating) + '</span>';
     html += '</div>';
     html += '<div class="composite-hero-breakdown">';
