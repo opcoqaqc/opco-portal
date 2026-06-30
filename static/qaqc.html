@@ -1399,58 +1399,223 @@
       r.months.forEach(function (v, i) { if (v != null) monthsScored = Math.max(monthsScored, i+1); });
     });
 
-    // Auto-generated insights
+    // ============== Smart insight detection ==============
+    // Parse a target string like "≥ 95%" / "≤ 2 / month" / "≥ 4.00" into
+    // {op: '>='|'<='|'==', value: number, unit?: '%'|...}.
+    function parseTarget(s) {
+      if (!s) return null;
+      var txt = String(s).replace(/\s+/g, '').replace(/—/g, '-');
+      var m = txt.match(/(>=|<=|≥|≤|>|<|=)?(-?\d+\.?\d*)(%)?/);
+      if (!m) return null;
+      var op = m[1] || '==';
+      if (op === '≥') op = '>=';
+      if (op === '≤') op = '<=';
+      var val = parseFloat(m[2]);
+      if (m[3] === '%') val = val / 100;
+      return { op: op, value: val };
+    }
+    function meetsTarget(qAvg, tgt) {
+      if (qAvg == null || !tgt) return null;
+      if (tgt.op === '>=') return qAvg >= tgt.value;
+      if (tgt.op === '<=') return qAvg <= tgt.value;
+      if (tgt.op === '>')  return qAvg >  tgt.value;
+      if (tgt.op === '<')  return qAvg <  tgt.value;
+      return qAvg === tgt.value;
+    }
+    function gapToTarget(qAvg, tgt) {
+      if (qAvg == null || !tgt) return null;
+      // Signed gap in the "miss" direction (negative = missed target)
+      if (tgt.op === '>=' || tgt.op === '>') return qAvg - tgt.value;  // negative = below
+      if (tgt.op === '<=' || tgt.op === '<') return tgt.value - qAvg;  // negative = above limit
+      return 0;
+    }
+
     var strengths = [], watch = [];
     rows.forEach(function (r) {
-      var dStr = '';
+      var tgt = parseTarget(r.target);
+      var meets = meetsTarget(r.qAvg, tgt);
+      var gap = gapToTarget(r.qAvg, tgt);
       var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
-      var dir = (delta == null) ? null : (delta >= 0 ? 'up' : 'down');
-      // For strengths: improved by ≥ 5% (in % terms) OR score ≥ 4 with positive delta
-      var isStrength = false, isWatch = false;
-      if (delta != null) {
-        if (r.unit === '%') {
-          if (delta >= 0.03 || (r.qAvg >= 0.95 && delta >= 0)) isStrength = true;
-          if (delta < -0.03) isWatch = true;
-        } else {
-          if (delta >= 0.3 || (r.score != null && r.score >= 4 && delta >= 0)) isStrength = true;
-          if (delta < -0.3) isWatch = true;
-        }
+      // Within-quarter trend: positive if last month > first month of quarter
+      var first = r.months[0], last = r.months[r.months.length - 1];
+      var trend = (first != null && last != null) ? (last - first) : null;
+      // Stash for later use
+      r._meets = meets; r._gap = gap; r._trend = trend; r._delta = delta;
+
+      // Strength rules: meaningful positive delta vs prev OR comfortably above target
+      var isStrength = false;
+      if (delta != null && delta > 0) {
+        if (r.unit === '%' && delta >= 0.02) isStrength = true;
+        else if (r.unit !== '%' && delta >= 0.3) isStrength = true;
       }
-      if (r.score != null && r.score < 3) isWatch = true;
-      if (isStrength) strengths.push(r);
+      if (meets === true && r.score != null && r.score >= 4 && (delta == null || delta >= 0)) isStrength = true;
+
+      // Watch rules: missed target OR within 5% of missing it OR trending down within quarter
+      var isWatch = false;
+      if (meets === false) isWatch = true;
+      else if (tgt && r.qAvg != null) {
+        // Margin check — for ≥ targets, flag if within 5% (or 0.2 in absolute terms)
+        var margin = (r.unit === '%') ? 0.02 : 0.2;
+        if ((tgt.op === '>=' || tgt.op === '>') && (r.qAvg - tgt.value) < margin) isWatch = true;
+        if ((tgt.op === '<=' || tgt.op === '<') && (tgt.value - r.qAvg) < margin) isWatch = true;
+      }
+      if (delta != null && delta < (r.unit === '%' ? -0.02 : -0.2)) isWatch = true;
+      if (trend != null && trend < (r.unit === '%' ? -0.03 : -0.3)) isWatch = true;
+      if (r.score != null && r.score < 3.5) isWatch = true;
+
+      if (isStrength && !isWatch) strengths.push(r);
       if (isWatch) watch.push(r);
     });
-    // Cap to 3 each, pick by absolute delta size
-    function topByAbsDelta(arr) {
-      return arr.sort(function(a,b){
-        var da = Math.abs((a.qAvg||0) - (a.pAvg||0));
-        var db = Math.abs((b.qAvg||0) - (b.pAvg||0));
-        return db - da;
-      }).slice(0, 3);
-    }
-    strengths = topByAbsDelta(strengths);
-    watch     = topByAbsDelta(watch);
 
+    // Always surface at least one "monitor" item — the lowest scoring KPI
+    // even if everything passes target. Quarter reports always have something
+    // worth keeping an eye on.
+    if (watch.length === 0) {
+      var lowest = rows.slice().filter(function (r) { return r.score != null; })
+                         .sort(function (a, b) { return a.score - b.score; })[0];
+      if (lowest) { lowest._monitor = true; watch.push(lowest); }
+    }
+
+    // Rank: watch by severity (most negative gap, then largest decline)
+    watch.sort(function (a, b) {
+      var ga = a._gap == null ? 1 : a._gap;
+      var gb = b._gap == null ? 1 : b._gap;
+      if (Math.abs(ga - gb) > 0.001) return ga - gb;     // smaller (more negative) first
+      var da = a._delta == null ? 0 : a._delta;
+      var db = b._delta == null ? 0 : b._delta;
+      return da - db;
+    });
+    strengths.sort(function (a, b) {
+      var da = a._delta == null ? 0 : a._delta;
+      var db = b._delta == null ? 0 : b._delta;
+      return db - da;
+    });
+    strengths = strengths.slice(0, 3);
+    watch     = watch.slice(0, 3);
+
+    function fmtDelta(delta, unit) {
+      if (delta == null) return '';
+      if (unit === '%') return (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp';
+      return (delta >= 0 ? '+' : '') + delta.toFixed(2);
+    }
     function strengthBullet(r) {
-      var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
       var qStr = fmtAvg(r.qAvg, r.unit);
-      var dStr = '';
-      if (delta != null) {
-        if (r.unit === '%') dStr = (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp vs ' + quarterLabel(qIdx-1);
-        else dStr = (delta >= 0 ? '+' : '') + delta.toFixed(2) + ' vs ' + quarterLabel(qIdx-1);
+      var parts = ['<b>' + esc(r.kpi) + ' ' + esc(r.name) + '</b> held at <b>' + qStr + '</b>'];
+      // Q-vs-prev delta
+      if (r._delta != null && Math.abs(r._delta) >= (r.unit === '%' ? 0.005 : 0.05)) {
+        parts.push(fmtDelta(r._delta, r.unit) + ' vs ' + quarterLabel(qIdx-1));
       }
-      return '<b>' + esc(r.kpi) + ' ' + esc(r.name) + '</b> at <b>' + qStr + '</b>' + (dStr ? ' (' + dStr + ')' : '') + '.';
+      // Within-quarter trend
+      if (r._trend != null && r._trend > (r.unit === '%' ? 0.02 : 0.2)) {
+        parts.push('rising through the quarter');
+      }
+      // Target comfort
+      if (r._meets === true && r.target) {
+        parts.push('well past target ' + esc(r.target));
+      }
+      return parts.join(', ') + '.';
     }
     function watchBullet(r) {
-      var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
       var qStr = fmtAvg(r.qAvg, r.unit);
-      var dStr = '';
-      if (delta != null) {
-        if (r.unit === '%') dStr = (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp vs ' + quarterLabel(qIdx-1);
-        else dStr = (delta >= 0 ? '+' : '') + delta.toFixed(2) + ' vs ' + quarterLabel(qIdx-1);
+      var lead = '<b>' + esc(r.kpi) + ' ' + esc(r.name) + '</b>';
+      var clauses = [];
+      // Q value vs target
+      if (r._meets === false && r.target) {
+        clauses.push('came in at <b>' + qStr + '</b> against target ' + esc(r.target));
+      } else if (r._monitor) {
+        clauses.push('is the lowest-scoring KPI this quarter at <b>' + qStr + '</b>');
+      } else if (r.target) {
+        clauses.push('sits at <b>' + qStr + '</b>, narrowly above target ' + esc(r.target));
+      } else {
+        clauses.push('at <b>' + qStr + '</b>');
       }
-      var tgt = r.target ? ' — target ' + esc(r.target) : '';
-      return '<b>' + esc(r.kpi) + ' ' + esc(r.name) + '</b> at <b>' + qStr + '</b>' + (dStr ? ' (' + dStr + ')' : '') + tgt + '.';
+      // Within-quarter decline
+      if (r._trend != null && r._trend < (r.unit === '%' ? -0.02 : -0.2)) {
+        var firstStr = fmtMonth(r.months[0], r.unit);
+        var lastStr  = fmtMonth(r.months[r.months.length-1], r.unit);
+        clauses.push('trended down within the quarter (' + firstStr + ' → ' + lastStr + ')');
+      }
+      // Q vs prev delta
+      if (r._delta != null && r._delta < (r.unit === '%' ? -0.01 : -0.1)) {
+        clauses.push(fmtDelta(r._delta, r.unit) + ' vs ' + quarterLabel(qIdx-1));
+      }
+      return lead + ' ' + clauses.join('; ') + '.';
+    }
+
+    // ============== Manager Remarks generator ==============
+    // Writes a 2–4 sentence narrative summary: composite stance, headline
+    // strength, top concern, one-line recommendation.
+    function nextQuarterLabel(q) {
+      if (q < 3) return ['Q1','Q2','Q3','Q4'][q + 1];
+      return 'Q1';
+    }
+    function generateRemarks() {
+      var name = (label || '').split('—').pop().trim() || label || 'The team member';
+      // Whole-label fallback for empty-after-trim cases (e.g. manager group)
+      if (!name || name === 'The team member') name = label || 'The QA/QC Manager';
+      var qPrev = qIdx > 0 ? quarterLabel(qIdx - 1) : null;
+      var qNext = nextQuarterLabel(qIdx);
+      var s = [];
+
+      // 1. Composite stance
+      var stance = esc(name) + ' closed ' + qName + ' with a composite of <b>' + Number(qComposite).toFixed(2) + '</b>';
+      if (rating) stance += ', within the <b>' + esc(rating) + '</b> band';
+      if (qPrev && compDelta != null) {
+        var dAbs = Math.abs(compDelta).toFixed(2);
+        if (compDelta > 0.05)      stance += ', up ' + dAbs + ' on ' + qPrev;
+        else if (compDelta < -0.05) stance += ', down ' + dAbs + ' from ' + qPrev;
+        else                        stance += ', essentially flat vs ' + qPrev;
+      } else if (!qPrev) {
+        stance += ' — the first reporting quarter of the year';
+      }
+      s.push(stance + '.');
+
+      // 2. Headline strength
+      if (strengths.length) {
+        var st = strengths[0];
+        var stTxt = 'Headline strength is <b>' + esc(st.kpi) + ' ' + esc(st.name) + '</b> at ' +
+                    fmtAvg(st.qAvg, st.unit);
+        if (st._delta != null && Math.abs(st._delta) >= (st.unit === '%' ? 0.01 : 0.1)) {
+          stTxt += ' (' + fmtDelta(st._delta, st.unit) + ' vs ' + qPrev + ')';
+        }
+        if (strengths.length > 1) {
+          stTxt += '; <b>' + esc(strengths[1].kpi) + '</b> also tracked well at ' +
+                   fmtAvg(strengths[1].qAvg, strengths[1].unit);
+        }
+        s.push(stTxt + '.');
+      }
+
+      // 3. Top concern + 4. Recommendation rolled together
+      if (watch.length) {
+        var w = watch[0];
+        var wTxt = '';
+        if (w._meets === false && w.target) {
+          wTxt = 'Main concern is <b>' + esc(w.kpi) + ' ' + esc(w.name) + '</b> at ' +
+                 fmtAvg(w.qAvg, w.unit) + ' — below the ' + esc(w.target) + ' target';
+        } else if (w._trend != null && w._trend < 0) {
+          var firstStr = fmtMonth(w.months[0], w.unit);
+          var lastStr  = fmtMonth(w.months[w.months.length-1], w.unit);
+          wTxt = '<b>' + esc(w.kpi) + ' ' + esc(w.name) + '</b> drifted within the quarter (' +
+                 firstStr + ' → ' + lastStr + ')';
+        } else {
+          wTxt = '<b>' + esc(w.kpi) + ' ' + esc(w.name) + '</b> is the lowest scoring KPI at ' +
+                 fmtAvg(w.qAvg, w.unit);
+        }
+        // Lightweight recommendation tied to the concern category
+        var rec = '';
+        var kpiText = ((w.kpi || '') + ' ' + (w.name || '')).toLowerCase();
+        if (/throughput|review/.test(kpiText))      rec = 'Tighten the assignment-vs-completion cadence';
+        else if (/accuracy|missed|quality/.test(kpiText)) rec = 'Add a second-pair review pass on the items most often missed';
+        else if (/reporting|discipline/.test(kpiText))    rec = 'Lock the report submission window in the first week of each month';
+        else if (/ncr|capa|engagement/.test(kpiText))     rec = 'Surface every NCR-eligible event proactively to hit the monthly threshold';
+        else if (/training|behavioral|hse/.test(kpiText)) rec = 'Schedule the remaining training modules + manager 1:1 check-ins';
+        else if (/audit/.test(kpiText))                   rec = 'Prep the audit programme one cycle ahead to avoid last-minute slippage';
+        else if (/vendor/.test(kpiText))                  rec = 'Triage the open evaluation backlog before the next request batch arrives';
+        else                                              rec = 'Set a specific recovery target for ' + qNext + ' and review at the next 1:1';
+        s.push(wTxt + '. <b>' + qNext + ' focus:</b> ' + rec + '.');
+      }
+
+      return s.join(' ');
     }
 
     // ============== Build HTML ==============
@@ -1475,7 +1640,12 @@
 
     html += '<div class="r-subject">';
     html += '<div><div class="who">' + esc(label) + '</div>';
-    if (role) html += '<div class="role">' + esc(role) + ' &middot; Reports to QA/QC Manager</div>';
+    if (role) {
+      // Manager reports to the Technical Director; team members report to the manager.
+      var reportsTo = /manager/i.test(role) ? 'Reports to Technical Director'
+                                            : 'Reports to QA/QC Manager';
+      html += '<div class="role">' + esc(role) + ' &middot; ' + reportsTo + '</div>';
+    }
     html += '</div>';
     html += '<div class="period">Period<b>' + esc(qMonths.join(' · ')) + '</b></div>';
     html += '</div>';
@@ -1537,37 +1707,68 @@
 
     html += '<div class="r-section-h">Quarter-over-Quarter Insights</div>';
     html += '<div class="r-insights">';
-    // Column 1 — Q vs Q-prev comparison table
+    // Column 1 — Q vs Q-prev comparison table (or in-quarter trend for Q1)
     html += '<div class="r-ins-card">';
-    html += '<div class="r-ins-h">' + esc(quarterLabel(qIdx-1)) + ' → ' + esc(qName) + ' Comparison</div>';
-    html += '<table class="r-ins-table"><tbody>';
-    rows.forEach(function (r) {
-      var pStr = fmtAvg(r.pAvg, r.unit);
-      var qStr = fmtAvg(r.qAvg, r.unit);
-      var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
-      var dCls = 'flat', dStr = '—';
-      if (delta != null) {
-        if (r.unit === '%') {
-          dCls = delta > 0.001 ? 'up' : (delta < -0.001 ? 'down' : 'flat');
-          dStr = (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp';
-        } else {
-          dCls = delta > 0.05 ? 'up' : (delta < -0.05 ? 'down' : 'flat');
-          dStr = (delta >= 0 ? '+' : '') + delta.toFixed(2);
+    if (hasPrev) {
+      html += '<div class="r-ins-h">' + esc(quarterLabel(qIdx-1)) + ' → ' + esc(qName) + ' Comparison</div>';
+      html += '<table class="r-ins-table"><tbody>';
+      rows.forEach(function (r) {
+        var pStr = fmtAvg(r.pAvg, r.unit);
+        var qStr = fmtAvg(r.qAvg, r.unit);
+        var delta = (r.qAvg != null && r.pAvg != null) ? (r.qAvg - r.pAvg) : null;
+        var dCls = 'flat', dStr = '—';
+        if (delta != null) {
+          if (r.unit === '%') {
+            dCls = delta > 0.001 ? 'up' : (delta < -0.001 ? 'down' : 'flat');
+            dStr = (delta >= 0 ? '+' : '') + (delta * 100).toFixed(1) + 'pp';
+          } else {
+            dCls = delta > 0.05 ? 'up' : (delta < -0.05 ? 'down' : 'flat');
+            dStr = (delta >= 0 ? '+' : '') + delta.toFixed(2);
+          }
+          if (dCls === 'up')   dStr += ' ↑';
+          if (dCls === 'down') dStr += ' ↓';
         }
-        if (dCls === 'up')   dStr += ' ↑';
-        if (dCls === 'down') dStr += ' ↓';
+        var short = r.kpi + ' ' + r.name.split('(')[0].trim();
+        if (short.length > 24) short = short.slice(0, 22) + '…';
+        html += '<tr><td class="k">' + esc(short) + '</td><td class="q">' + esc(pStr) + ' → ' + esc(qStr) + '</td><td class="d ' + dCls + '">' + esc(dStr) + '</td></tr>';
+      });
+      if (pComposite != null) {
+        var dC = qComposite - pComposite;
+        var dCcls = dC > 0.05 ? 'up' : (dC < -0.05 ? 'down' : 'flat');
+        var dCsign = dC >= 0 ? '+' : '';
+        html += '<tr><td class="k" style="color:#f0e4c9;">Composite</td><td class="q" style="color:#cfd6df;">' + pComposite.toFixed(2) + ' → ' + qComposite.toFixed(2) + '</td><td class="d ' + dCcls + '">' + dCsign + dC.toFixed(2) + (dCcls === 'up' ? ' ↑' : (dCcls === 'down' ? ' ↓' : '')) + '</td></tr>';
       }
-      var short = r.kpi + ' ' + r.name.split('(')[0].trim();
-      if (short.length > 24) short = short.slice(0, 22) + '…';
-      html += '<tr><td class="k">' + esc(short) + '</td><td class="q">' + esc(pStr) + ' → ' + esc(qStr) + '</td><td class="d ' + dCls + '">' + esc(dStr) + '</td></tr>';
-    });
-    if (pComposite != null) {
-      var dC = qComposite - pComposite;
-      var dCcls = dC > 0.05 ? 'up' : (dC < -0.05 ? 'down' : 'flat');
-      var dCsign = dC >= 0 ? '+' : '';
-      html += '<tr><td class="k" style="color:#f0e4c9;">Composite</td><td class="q" style="color:#cfd6df;">' + pComposite.toFixed(2) + ' → ' + qComposite.toFixed(2) + '</td><td class="d ' + dCcls + '">' + dCsign + dC.toFixed(2) + (dCcls === 'up' ? ' ↑' : (dCcls === 'down' ? ' ↓' : '')) + '</td></tr>';
+      html += '</tbody></table>';
+    } else {
+      // Q1 has no preceding quarter — show in-quarter trend (first → last
+      // month of the quarter) instead so the column still earns its space.
+      html += '<div class="r-ins-h">' + esc(qName) + ' In-Quarter Trend</div>';
+      html += '<table class="r-ins-table"><tbody>';
+      rows.forEach(function (r) {
+        var first = r.months[0], last = r.months[r.months.length-1];
+        var trend = (first != null && last != null) ? (last - first) : null;
+        var dCls = 'flat', dStr = '—';
+        if (trend != null) {
+          if (r.unit === '%') {
+            dCls = trend > 0.001 ? 'up' : (trend < -0.001 ? 'down' : 'flat');
+            dStr = (trend >= 0 ? '+' : '') + (trend * 100).toFixed(1) + 'pp';
+          } else {
+            dCls = trend > 0.05 ? 'up' : (trend < -0.05 ? 'down' : 'flat');
+            dStr = (trend >= 0 ? '+' : '') + trend.toFixed(2);
+          }
+          if (dCls === 'up')   dStr += ' ↑';
+          if (dCls === 'down') dStr += ' ↓';
+        }
+        var short = r.kpi + ' ' + r.name.split('(')[0].trim();
+        if (short.length > 24) short = short.slice(0, 22) + '…';
+        var arrow = (first != null && last != null)
+          ? (fmtMonth(first, r.unit) + ' → ' + fmtMonth(last, r.unit))
+          : '— → —';
+        html += '<tr><td class="k">' + esc(short) + '</td><td class="q">' + esc(arrow) + '</td><td class="d ' + dCls + '">' + esc(dStr) + '</td></tr>';
+      });
+      html += '</tbody></table>';
     }
-    html += '</tbody></table></div>';
+    html += '</div>';
 
     // Column 2 — Strengths
     html += '<div class="r-ins-card">';
@@ -1594,8 +1795,8 @@
     html += '</div>'; // /r-insights
 
     html += '<div class="r-bottom">';
-    html += '<div class="r-remarks"><div class="r-remarks-h">Manager Remarks</div>';
-    html += 'Auto-generated quarterly summary. The QA/QC Manager may add free-form context here before signing off.';
+    html += '<div class="r-remarks" style="font-style:normal;"><div class="r-remarks-h">Manager Remarks</div>';
+    html += generateRemarks();
     html += '</div>';
     html += '<div class="r-signs">';
     html += '<div class="r-sign-line"><span>Reviewed by <b>QA/QC Manager</b></span><span>Date &middot; _____________</span></div>';
