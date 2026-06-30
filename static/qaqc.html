@@ -556,7 +556,16 @@
       border: 0; box-shadow: none; max-width: 100%;
       margin: 0; padding: 9mm 11mm;
       page-break-inside: avoid;
+      /* A4 = 297mm tall; padding 9 + 9 = 18mm. Filling the remaining
+         279mm lets the flex column's margin-top:auto on .r-bottom
+         actually push Manager Remarks + Sign-offs to the bottom of
+         the sheet, so the report doesn't sit jammed at the top with
+         a big empty strip below. */
+      min-height: 279mm;
     }
+    /* Push the sign-off block to the bottom of the page and give it a
+       generous gap from the insights row above. */
+    .r-bottom { margin-top: auto !important; padding-top: 14mm !important; }
     .report-head { padding-bottom: 10px; border-bottom-width: 1.5px; }
     .report-head h1 { font-size: 18px; }
     .report-head .brand { font-size: 9.5px; margin-bottom: 3px; }
@@ -1817,8 +1826,9 @@
           if (dCls === 'up')   dStr += ' ↑';
           if (dCls === 'down') dStr += ' ↓';
         }
-        var short = r.kpi + ' ' + r.name.split('(')[0].trim();
-        if (short.length > 24) short = short.slice(0, 22) + '…';
+        // Keep the row to one line — just the KPI id; the long name is
+        // already shown above in the breakdown table and the sparkline cards.
+        var short = r.kpi;
         html += '<tr><td class="k">' + esc(short) + '</td><td class="q">' + esc(pStr) + ' → ' + esc(qStr) + '</td><td class="d ' + dCls + '">' + esc(dStr) + '</td></tr>';
       });
       if (pComposite != null) {
@@ -1848,8 +1858,9 @@
           if (dCls === 'up')   dStr += ' ↑';
           if (dCls === 'down') dStr += ' ↓';
         }
-        var short = r.kpi + ' ' + r.name.split('(')[0].trim();
-        if (short.length > 24) short = short.slice(0, 22) + '…';
+        // Keep the row to one line — just the KPI id; the long name is
+        // already shown above in the breakdown table and the sparkline cards.
+        var short = r.kpi;
         var arrow = (first != null && last != null)
           ? (fmtMonth(first, r.unit) + ' → ' + fmtMonth(last, r.unit))
           : '— → —';
