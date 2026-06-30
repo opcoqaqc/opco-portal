@@ -536,14 +536,24 @@
                text-transform: uppercase; }
 
   /* Print rules — strip everything except the report */
+  @page {
+    /* Zero page margin → browser has no room for its auto-injected
+       header (URL/title/date) and footer (page X of Y). Visual margins
+       are provided by the .report card's own padding below. */
+    size: A4 portrait;
+    margin: 0;
+  }
   @media print {
-    body { background: #fff !important; }
+    html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+    body::before { display: none !important; }
     body > *:not(#report-modal) { display: none !important; }
     #report-modal { position: static; background: #fff; padding: 0; overflow: visible; }
     .report-actions { display: none !important; }
     .report {
       background: #fff !important; color: #111 !important;
-      border: 0; box-shadow: none; max-width: 100%; padding: 24px 32px;
+      border: 0; box-shadow: none; max-width: 100%;
+      margin: 0;
+      padding: 12mm 14mm;     /* visual page margin, replaces @page margin */
     }
     .r-subject .who, .r-hero .val, .report-head h1,
     .r-kpi td.name, .r-kpi td.qavg, .r-ins-list b, .r-sign-line b,
