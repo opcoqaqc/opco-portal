@@ -1758,16 +1758,22 @@
     html += '<div class="period">Period<b>' + esc(qMonths.join(' · ')) + '</b></div>';
     html += '</div>';
 
+    // Score is on a 1–5 scale → show as a % of the maximum (5) in the hero
+    // for at-a-glance reading. Composite stance text below still uses the
+    // raw score for KPI-level math.
+    var qCompositePct = (Number(qComposite) / 5) * 100;
     html += '<div class="r-hero">';
     html += '<div>';
     html += '<div class="h">' + esc(qName) + ' Composite Score</div>';
-    html += '<div class="val">' + Number(qComposite).toFixed(2) + '</div>';
+    html += '<div class="val">' + qCompositePct.toFixed(1) + '%</div>';
     if (rating) html += '<span class="rating rating-' + esc(ratingKey) + '">' + esc(rating) + '</span>';
     html += '</div>';
     if (compDelta != null) {
       var dCls = compDelta >= 0 ? 'up' : 'down';
       var sign = compDelta >= 0 ? '+' : '';
-      html += '<div class="delta"><div class="delta-h">vs ' + esc(quarterLabel(qIdx-1)) + '</div><div class="delta-v ' + dCls + '">' + sign + compDelta.toFixed(2) + '</div></div>';
+      // Composite delta in pp (percentage-points), matching the hero %
+      var compDeltaPct = (compDelta / 5) * 100;
+      html += '<div class="delta"><div class="delta-h">vs ' + esc(quarterLabel(qIdx-1)) + '</div><div class="delta-v ' + dCls + '">' + sign + compDeltaPct.toFixed(1) + 'pp</div></div>';
     }
     html += '</div>';
 
