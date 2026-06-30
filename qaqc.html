@@ -1058,21 +1058,26 @@
     html += '<h1 class="page-h" style="margin-bottom:6px;">Monthly Tracker</h1>';
     html += '<p class="lead" style="margin-bottom:0;">Weighted composite score across the KPIs. Per-month entries with YTD rollup.</p>';
     html += '</div>';
-    // Compute the last-completed quarter for the button label
-    (function () {
-      var lastIdx = -1;
-      t.metrics.forEach(function (m) {
-        if (m.role === 'metric' && m.months) {
-          m.months.forEach(function (v, i) { if (v != null) lastIdx = Math.max(lastIdx, i); });
-        }
-      });
-      var qIdx = Math.floor((lastIdx + 1) / 3) - 1;
-      if (qIdx < 0) qIdx = 0;
-      var qLabel = ['Q1','Q2','Q3','Q4'][qIdx] || 'Q?';
-      html += '<button class="gen-report-btn" data-group="' + esc(groupKey) + '">';
-      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
-      html += 'Generate ' + qLabel + ' Report</button>';
-    })();
+    // Compute the last-completed quarter for the button label.
+    // Button is only shown to o.cavdar (manager) — other allowed users
+    // (a.barazi, o.barazi, m.barazi) see the dashboard but not the report
+    // generator.
+    if (sess && sess.u === 'o.cavdar') {
+      (function () {
+        var lastIdx = -1;
+        t.metrics.forEach(function (m) {
+          if (m.role === 'metric' && m.months) {
+            m.months.forEach(function (v, i) { if (v != null) lastIdx = Math.max(lastIdx, i); });
+          }
+        });
+        var qIdx = Math.floor((lastIdx + 1) / 3) - 1;
+        if (qIdx < 0) qIdx = 0;
+        var qLabel = ['Q1','Q2','Q3','Q4'][qIdx] || 'Q?';
+        html += '<button class="gen-report-btn" data-group="' + esc(groupKey) + '">';
+        html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+        html += 'Generate ' + qLabel + ' Report</button>';
+      })();
+    }
     html += '</div>';
     html += '<div style="margin-bottom:22px;"></div>';
 
