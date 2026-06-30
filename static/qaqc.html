@@ -516,18 +516,20 @@
   .r-ins-list.watch li::before { background: #EF9F27; }
   .r-ins-list b { color: #f0e4c9; font-weight: 600; }
 
-  .r-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-               margin-top: auto; padding-top: 16px; }
-  .r-remarks { border-top: 1px solid rgba(255,255,255,0.18);
-                padding: 6px 0 0;
-                font-size: 10.5px; color: #8b949e; font-style: italic; line-height: 1.5; }
+  /* Manager Remarks sits full-width above the signature row */
+  .r-remarks-full { margin-top: 14px; padding-top: 6px;
+                     border-top: 1px solid rgba(255,255,255,0.18);
+                     font-size: 10.5px; color: #cfd6df; line-height: 1.55; }
   .r-remarks-h { font-size: 9.5px; letter-spacing: 0.18em; color: #C9A961;
-                  font-weight: 700; text-transform: uppercase; margin-bottom: 6px; font-style: normal; }
-  .r-signs { display: grid; grid-template-rows: 1fr 1fr; gap: 12px; }
-  .r-sign-line { border-top: 1px solid rgba(255,255,255,0.18); padding-top: 6px;
-                  font-size: 10px; color: #8b949e; letter-spacing: 0.04em; line-height: 1.4;
-                  display: flex; justify-content: space-between; }
-  .r-sign-line b { color: #cfd6df; font-weight: 700; }
+                  font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  /* Signature row is pushed to the very bottom of the report card */
+  .r-signs-row { display: grid; grid-template-columns: 1fr 1fr;
+                  gap: 56px; margin-top: auto; padding-top: 14px; }
+  .r-sign-col { border-top: 1px solid rgba(255,255,255,0.18); padding-top: 6px;
+                 font-size: 11px; color: #8b949e; letter-spacing: 0.04em; line-height: 1.5; }
+  .r-sign-col b { color: #cfd6df; font-weight: 700; }
+  .r-sign-date { margin-top: 6px; font-size: 10px; color: #6c7589;
+                  font-family: ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing: 0.02em; }
 
   .r-footer { display: flex; justify-content: space-between; align-items: center;
                margin-top: 16px; padding-top: 10px;
@@ -557,15 +559,14 @@
       margin: 0; padding: 9mm 11mm;
       page-break-inside: avoid;
       /* A4 = 297mm tall; padding 9 + 9 = 18mm. Filling the remaining
-         279mm lets the flex column's margin-top:auto on .r-bottom
-         actually push Manager Remarks + Sign-offs to the bottom of
-         the sheet, so the report doesn't sit jammed at the top with
-         a big empty strip below. */
+         279mm lets the flex column's margin-top:auto on .r-signs-row
+         actually push the signature row to the bottom of the sheet
+         so the report doesn't sit jammed at the top with a big empty
+         strip below. */
       min-height: 279mm;
     }
-    /* Push the sign-off block to the bottom of the page and give it a
-       generous gap from the insights row above. */
-    .r-bottom { margin-top: auto !important; padding-top: 14mm !important; }
+    /* Pin the signature row to the bottom of the page */
+    .r-signs-row { margin-top: auto !important; padding-top: 12mm !important; }
     .report-head { padding-bottom: 10px; border-bottom-width: 1.5px; }
     .report-head h1 { font-size: 18px; }
     .report-head .brand { font-size: 9.5px; margin-bottom: 3px; }
@@ -607,16 +608,18 @@
     .r-ins-list li { font-size: 9.5px; line-height: 1.35; padding: 2px 0 2px 14px; }
     .r-ins-list li::before { width: 5px; height: 5px; top: 7px; left: 3px; }
 
-    .r-bottom { gap: 12px; padding-top: 10px; }
-    .r-remarks { font-size: 10px; line-height: 1.4; padding-top: 5px; }
+    .r-remarks-full { margin-top: 10px; padding-top: 5px;
+                       font-size: 10px; line-height: 1.4; }
     .r-remarks-h { font-size: 8.5px; margin-bottom: 4px; }
-    .r-sign-line { font-size: 9px; padding-top: 4px; }
-    .r-signs { gap: 8px; }
+    .r-signs-row { gap: 40px; padding-top: 14px; }
+    .r-sign-col { font-size: 10px; padding-top: 5px; line-height: 1.4; }
+    .r-sign-date { font-size: 9.5px; margin-top: 4px; }
     .r-footer { font-size: 8.5px; padding-top: 6px; margin-top: 10px; }
 
     /* ===== Print colour palette — high-contrast on light cream ===== */
     .r-subject .who, .r-hero .val, .report-head h1,
-    .r-kpi td.name, .r-kpi td.qavg, .r-ins-list b, .r-sign-line b,
+    .r-kpi td.name, .r-kpi td.qavg, .r-ins-list b,
+    .r-sign-col b, .r-remarks-full,
     .r-spark-box .v .big, .r-spark-box .nm,
     .r-ins-table td.k { color: #111 !important; }
 
@@ -629,8 +632,8 @@
 
     /* Numbers, units, secondary text — dark enough to read */
     .r-kpi td.num, .r-spark-box .v .small, .r-ins-table td.q,
-    .r-subject .role, .r-hero .delta-h, .r-kpi th, .r-remarks,
-    .r-sign-line, .r-footer, .r-kpi td.tgt,
+    .r-subject .role, .r-hero .delta-h, .r-kpi th,
+    .r-sign-col, .r-sign-date, .r-footer, .r-kpi td.tgt,
     .r-ins-list li, .r-ins-list li::before /* keep bullets visible too */,
     .report-head .meta { color: #333 !important; }
     .report-head .meta b { color: #111 !important; }
@@ -1894,14 +1897,17 @@
 
     html += '</div>'; // /r-insights
 
-    html += '<div class="r-bottom">';
-    html += '<div class="r-remarks" style="font-style:normal;"><div class="r-remarks-h">Manager Remarks</div>';
+    // Manager Remarks — full width
+    html += '<div class="r-remarks-full">';
+    html += '<div class="r-remarks-h">Manager Remarks</div>';
     html += generateRemarks();
     html += '</div>';
-    html += '<div class="r-signs">';
-    html += '<div class="r-sign-line"><span>Reviewed by <b>QA/QC Manager</b></span><span>Date &middot; _____________</span></div>';
-    html += '<div class="r-sign-line"><span>Approved by <b>Technical Director</b></span><span>Date &middot; _____________</span></div>';
-    html += '</div></div>';
+
+    // Signature row — pinned to the bottom of the page; left = reviewed, right = approved
+    html += '<div class="r-signs-row">';
+    html += '<div class="r-sign-col"><div>Reviewed by <b>QA/QC Manager</b></div><div class="r-sign-date">Date · ____________________</div></div>';
+    html += '<div class="r-sign-col"><div>Approved by <b>Technical Director</b></div><div class="r-sign-date">Date · ____________________</div></div>';
+    html += '</div>';
 
     html += '<div class="r-footer"><span>OPCO Portal · QA/QC Performance Reporting</span><span>Confidential · Internal Use Only</span></div>';
 
