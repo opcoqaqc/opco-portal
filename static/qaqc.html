@@ -621,7 +621,9 @@
     .r-kpi td.name, .r-kpi td.qavg, .r-ins-list b,
     .r-sign-col b, .r-remarks-full,
     .r-spark-box .v .big, .r-spark-box .nm,
+    .r-subject .period b /* the JAN · FEB · MAR text — needs darkening on cream */,
     .r-ins-table td.k { color: #111 !important; }
+    .r-subject .period b { font-weight: 700 !important; }
 
     .r-section-h, .r-ins-h, .report-head .brand, .r-hero .h,
     .r-subject .period, .r-kpi td.id, .r-remarks-h, .r-spark-box .id,
@@ -1433,9 +1435,14 @@
       var months = c.row.months || [];
       var qVals = months.slice(qStart, qStart + 3);
       var pVals = hasPrev ? months.slice(prevStart, prevStart + 3) : [];
+      // Strip "(...)" content from the KPI name so long names like
+      // "Behavioral / HSE / Training (Manager Assessment)" fit on one line
+      // in the breakdown table.
+      var rawName = c.name || (c.row.label || '').replace(/^→\s*/, '');
+      var cleanName = rawName.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
       return {
         kpi:      c.kpi,
-        name:     c.name || (c.row.label || '').replace(/^→\s*/, ''),
+        name:     cleanName,
         unit:     c.row.unit,
         target:   c.row.target,
         score:    c.row.score,
@@ -1762,7 +1769,6 @@
       var sign = compDelta >= 0 ? '+' : '';
       html += '<div class="delta"><div class="delta-h">vs ' + esc(quarterLabel(qIdx-1)) + '</div><div class="delta-v ' + dCls + '">' + sign + compDelta.toFixed(2) + '</div></div>';
     }
-    html += '<div class="delta"><div class="delta-h">Months Scored</div><div class="delta-v">' + monthsScored + ' / 3</div></div>';
     html += '</div>';
 
     html += '<div class="r-section-h">KPI Breakdown — ' + esc(qName) + ' (' + esc(qMonths.join(' · ')) + ')</div>';
@@ -1909,7 +1915,6 @@
     html += '<div class="r-sign-col"><div>Approved by <b>Technical Director</b></div><div class="r-sign-date">Date · ____________________</div></div>';
     html += '</div>';
 
-    html += '<div class="r-footer"><span>OPCO Portal · QA/QC Performance Reporting</span><span>Confidential · Internal Use Only</span></div>';
 
     html += '</div>'; // /report
 
