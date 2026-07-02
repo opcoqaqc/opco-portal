@@ -251,6 +251,27 @@
   body.light .scoring-table th, body.light .scoring-table td {
     border-bottom-color: rgba(0,0,0,0.06) !important;
   }
+
+  /* --- Round 5: Data Sources table --- */
+  body.light .ds-table {
+    background: #ffffff !important; border-color: rgba(0,0,0,0.10) !important;
+  }
+  body.light .ds-table th {
+    background: rgba(0,0,0,0.03); color: #5f5e5a;
+    border-bottom-color: rgba(0,0,0,0.10);
+  }
+  body.light .ds-table td {
+    color: #2c2c2a; border-bottom-color: rgba(0,0,0,0.06);
+  }
+  body.light .ds-table .id-cell { color: #b8860b; }
+  body.light .ds-table .kpi-cell { color: #2c2c2a; }
+  /* The header pill above the table (renderSources inlines
+     background rgba(255,255,255,0.02) + border-bottom #30363d) —
+     flatten those in light mode. */
+  body.light .card > div[style*="background:rgba(255,255,255,0.02)"] {
+    background: rgba(0,0,0,0.02) !important;
+    border-bottom-color: rgba(0,0,0,0.08) !important;
+  }
 </style>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
