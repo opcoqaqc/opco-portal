@@ -133,25 +133,29 @@
     background: #ffffff; border-color: rgba(0,0,0,0.08);
     box-shadow: 0 1px 3px rgba(0,0,0,0.03);
   }
-  body.light .dash-hm th { color: #5f5e5a; }
-  body.light .dash-hm th.cmp, body.light .dash-hm th.rat { color: #0d9488; }
-  body.light .dash-hm .wn { color: #2c2c2a; }
-  body.light .dash-hm .wr { color: #5f5e5a; }
-  body.light .dash-hm td.na .v { color: #a8a8a4; }
+  body.light .drow.drow-h .dwho,
+  body.light .drow.drow-h .dcell-h { color: #5f5e5a; }
+  body.light .drow.drow-h .dcmp-h,
+  body.light .drow.drow-h .drat-h { color: #0d9488; }
+  body.light .dwho { background: #faf7ec; }
+  body.light .dwn { color: #2c2c2a; }
+  body.light .dwr { color: #5f5e5a; }
+  body.light .dk-id { color: #888780; }
+  body.light .dk-nm { color: #2c2c2a; }
   body.light .dash-legend { color: #5f5e5a; }
 
   /* Score-band cell tints — swap the translucent-white overlays for
      matching translucent tints that read on a cream/white surface */
-  body.light .dash-hm td.cell[style*="93,202,165"],
-  body.light .dash-hm td.cell[style*="rgba(93,202,165"] { background: #d8efe1 !important; }
-  body.light .dash-hm td.cell[style*="93,163,224"],
-  body.light .dash-hm td.cell[style*="rgba(93,163,224"] { background: #d6e3f0 !important; }
-  body.light .dash-hm td.cell[style*="201,169,97"],
-  body.light .dash-hm td.cell[style*="rgba(201,169,97"] { background: #efe5c9 !important; }
-  body.light .dash-hm td.cell[style*="239,159,39"],
-  body.light .dash-hm td.cell[style*="rgba(239,159,39"] { background: #f6e0c1 !important; }
-  body.light .dash-hm td.cell[style*="228,116,128"],
-  body.light .dash-hm td.cell[style*="rgba(228,116,128"] { background: #f3d4d7 !important; }
+  body.light .dcell[style*="93,202,165"],
+  body.light .dcell[style*="rgba(93,202,165"] { background: #d8efe1 !important; }
+  body.light .dcell[style*="93,163,224"],
+  body.light .dcell[style*="rgba(93,163,224"] { background: #d6e3f0 !important; }
+  body.light .dcell[style*="201,169,97"],
+  body.light .dcell[style*="rgba(201,169,97"] { background: #efe5c9 !important; }
+  body.light .dcell[style*="239,159,39"],
+  body.light .dcell[style*="rgba(239,159,39"] { background: #f6e0c1 !important; }
+  body.light .dcell[style*="228,116,128"],
+  body.light .dcell[style*="rgba(228,116,128"] { background: #f3d4d7 !important; }
 
   /* Generate Report button — gold-on-cream reads better than teal-on-cream here */
   body.light .gen-report-btn {
@@ -429,29 +433,44 @@
   }
   .side-item-standalone:hover { background: rgba(45,212,191,0.10); color: #2DD4BF; }
 
-  /* Team-summary heatmap dashboard */
+  /* Team-summary dashboard — inline-name cells (each cell carries its own KPI id+name)
+     so Manager KPI-1 (Weld Repair) and Team TKPI-1 (Productivity) don't get read
+     as the same measure just because they share slot #1. */
   .dash-wrap { background: linear-gradient(180deg,#161b26,#101420);
                 border: 1px solid #21283a; border-radius: 12px;
-                padding: 18px 20px; margin-top: 14px; }
-  .dash-hm { width: 100%; border-collapse: separate; border-spacing: 6px; }
-  .dash-hm th { text-align: center; font-size: 10px; letter-spacing: 0.18em;
-                color: #8b949e; font-weight: 700; text-transform: uppercase;
-                padding: 6px 8px; font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
-  .dash-hm th.who-col { width: 200px; }
-  .dash-hm th.cmp, .dash-hm th.rat { color: #2DD4BF; }
-  .dash-hm td.who { padding: 10px 14px; }
-  .dash-hm .wn { font-size: 14.5px; font-weight: 700; color: #f0e4c9; }
-  .dash-hm .wr { font-size: 11px; color: #8b949e; margin-top: 2px; letter-spacing: 0.03em; }
-  .dash-hm td.cell { padding: 16px 10px; border-radius: 8px; text-align: center;
-                     min-width: 86px; vertical-align: middle; }
-  .dash-hm td.cell .v { font-size: 19px; font-weight: 800;
-                        font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
-  .dash-hm td.na .v { color: #4a5566; }
-  .dash-hm td.cmp-cell { font-size: 22px; font-weight: 800; text-align: center;
-                         font-family: ui-monospace,SFMono-Regular,Menlo,monospace;
-                         padding: 0 14px; letter-spacing: -0.01em; }
-  .dash-hm td.rat-cell { font-size: 11px; font-weight: 700; text-transform: uppercase;
-                         letter-spacing: 0.08em; text-align: center; padding: 0 12px; }
+                padding: 14px 16px; margin-top: 14px; }
+  .drow { display: grid;
+          grid-template-columns: 240px repeat(5, 1fr) 130px 150px;
+          gap: 6px; align-items: stretch; margin-bottom: 6px; }
+  .drow.drow-h .dwho, .drow.drow-h .dcell-h,
+  .drow.drow-h .dcmp-h, .drow.drow-h .drat-h {
+    background: transparent; padding: 4px 10px;
+    font-size: 10px; letter-spacing: 0.18em;
+    color: #8b949e; text-transform: uppercase; font-weight: 700;
+    font-family: ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  .drow.drow-h .dcmp-h, .drow.drow-h .drat-h { color: #2DD4BF; text-align: center; }
+  .dwho { padding: 10px 14px; background: rgba(255,255,255,0.02);
+           border-radius: 8px; position: relative; }
+  .dwn { font-size: 14px; font-weight: 700; color: #f0e4c9; }
+  .dwr { font-size: 11px; color: #8b949e; margin-top: 2px; }
+  .drow-tag { position: absolute; top: 9px; right: 10px;
+              padding: 2px 8px; border-radius: 999px;
+              font-size: 9px; letter-spacing: 0.12em; font-weight: 700;
+              text-transform: uppercase; border: 1px solid; }
+  .dcell { padding: 10px 12px; border-radius: 8px; text-align: left; }
+  .dk-id { font-size: 9px; letter-spacing: 0.16em; color: #8b949e;
+            font-weight: 700; text-transform: uppercase;
+            font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .dk-nm { font-size: 11px; color: #cfd6df; margin: 2px 0 6px;
+            font-weight: 600; line-height: 1.15; min-height: 26px; }
+  .dk-v { font-size: 18px; font-weight: 800;
+           font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .dcmp { padding: 12px 10px; text-align: center; font-size: 22px; font-weight: 800;
+           font-family: ui-monospace,SFMono-Regular,Menlo,monospace;
+           align-self: center; letter-spacing: -0.01em; }
+  .drat { padding: 12px 10px; text-align: center; font-size: 11px; font-weight: 700;
+           text-transform: uppercase; letter-spacing: 0.08em; align-self: center; }
   .dash-legend { display: flex; gap: 20px; margin-top: 14px; font-size: 11.5px;
                   color: #8b949e; letter-spacing: 0.04em; flex-wrap: wrap; }
   .dash-legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
@@ -1575,22 +1594,39 @@
     return null;
   }
 
-  function rowFromGroup(key, data) {
-    // Return 5 KPI slots [#1..#5] aligned across all 4 groups.
+  // KPI id → short display name. Each person's row shows its own labels
+  // in-cell so no two rows are conflated by column position (Manager's
+  // KPI-1 is Weld Repair while the team's TKPI-1 is Productivity — very
+  // different measures that happen to share slot #1).
+  var MGR_KPI_NAMES = {
+    'KPI-1':  'Weld Repair Rate',
+    'KPI-2':  'NDT Throughput',
+    'KPI-3':  'NCR Closure',
+    'KPI-4':  'ISO Audit',
+    'KPI-5':  'Vendor Eval'
+  };
+  var TEAM_KPI_NAMES = {
+    'TKPI-1': 'Productivity',
+    'TKPI-2': 'Accuracy',
+    'TKPI-3': 'Reporting',
+    'TKPI-4': 'NCR / CAPA',
+    'TKPI-5': 'Behavioral / HSE'
+  };
+
+  function slotsFromGroup(key, data) {
     var rows = (data.monthly_tracker || {}).composite_rows || [];
     if (key === 'mgr') {
-      // Manager: [KPI-1 (merged from 1A+1B), KPI-2, KPI-3, KPI-4, KPI-5]
-      var slots = [ mergeMgrKpi1(rows) ];
-      ['KPI-2','KPI-3','KPI-4','KPI-5'].forEach(function (id) {
-        var m = rows.filter(function (r) { return (r.kpi || '').indexOf(id) === 0; })[0];
-        slots.push(m ? m.score : null);
+      var IDS = ['KPI-1','KPI-2','KPI-3','KPI-4','KPI-5'];
+      return IDS.map(function (id) {
+        var score = (id === 'KPI-1')
+          ? mergeMgrKpi1(rows)
+          : (rows.filter(function (r) { return (r.kpi || '').indexOf(id) === 0; })[0] || {}).score;
+        return { id: id, name: MGR_KPI_NAMES[id], score: (score == null ? null : score) };
       });
-      return slots;
     }
-    // Team members: TKPI-1..5 straight
     return ['TKPI-1','TKPI-2','TKPI-3','TKPI-4','TKPI-5'].map(function (id) {
       var m = rows.filter(function (r) { return (r.kpi || '').indexOf(id) === 0; })[0];
-      return m ? m.score : null;
+      return { id: id, name: TEAM_KPI_NAMES[id], score: (m ? m.score : null) };
     });
   }
 
@@ -1598,50 +1634,55 @@
     var el = document.getElementById('view-dashboard');
     if (!el) return;
     var PEOPLE = [
-      { key: 'mgr', name: (GROUPS.mgr.data.cover.meta.member || GROUPS.mgr.label), role: (GROUPS.mgr.data.cover.meta.position || 'QA/QC Manager') },
-      { key: 'ahm', name: (GROUPS.ahm.data.cover.meta.member || 'Ahmed Dlshad'),   role: (GROUPS.ahm.data.cover.meta.role || 'QC Engineer') },
-      { key: 'ers', name: (GROUPS.ers.data.cover.meta.member || 'Ersel Saday'),    role: (GROUPS.ers.data.cover.meta.role || 'QC Inspector') },
-      { key: 'yas', name: (GROUPS.yas.data.cover.meta.member || 'Yasin Ramadhan'), role: (GROUPS.yas.data.cover.meta.role || 'QC Inspector') }
+      { key: 'mgr', name: 'Ogulcan Cavdar', role: 'QA/QC Manager', tag: 'Manager', tagColor: '#2DD4BF' },
+      { key: 'ahm', name: (GROUPS.ahm.data.cover.meta.member || 'Ahmed Dlshad'),   role: (GROUPS.ahm.data.cover.meta.role || 'QC Engineer'),  tag: 'Team', tagColor: '#C9A961' },
+      { key: 'ers', name: (GROUPS.ers.data.cover.meta.member || 'Ersel Saday'),    role: (GROUPS.ers.data.cover.meta.role || 'QC Inspector'), tag: 'Team', tagColor: '#C9A961' },
+      { key: 'yas', name: (GROUPS.yas.data.cover.meta.member || 'Yasin Ramadhan'), role: (GROUPS.yas.data.cover.meta.role || 'QC Inspector'), tag: 'Team', tagColor: '#C9A961' }
     ];
     var html = '';
     html += '<div class="eyebrow">QA/QC KPI Dashboard &middot; Team Summary</div>';
     html += '<h1 class="page-h">KPI Heatmap — Team View</h1>';
-    html += '<p class="lead">Score matrix across every KPI &middot; Manager: KPI-1..5 (Weld Repair 1A + 1B merged) &middot; Team: TKPI-1..5 &middot; ' +
+    html += '<p class="lead">Every cell shows its own KPI name — no shared column headers, so the Manager KPI-1 (Weld Repair) and the team TKPI-1 (Productivity) never look like the same thing. Data date &middot; ' +
              esc((GROUPS.mgr.data.data_date || '').split('T')[0]) + '</p>';
 
-    html += '<div class="dash-wrap"><table class="dash-hm"><thead><tr>';
-    html += '<th class="who-col"></th>';
-    ['KPI-1','KPI-2','KPI-3','KPI-4','KPI-5'].forEach(function (h) {
-      html += '<th>' + h + '</th>';
-    });
-    html += '<th class="cmp">Composite YTD</th><th class="rat">Rating</th>';
-    html += '</tr></thead><tbody>';
+    html += '<div class="dash-wrap">';
+    // Header labels row
+    html += '<div class="drow drow-h">';
+    html += '<div class="dwho">Person</div>';
+    for (var i = 1; i <= 5; i++) html += '<div class="dcell dcell-h">Slot ' + i + '</div>';
+    html += '<div class="dcmp dcmp-h">Composite YTD</div>';
+    html += '<div class="drat drat-h">Rating</div>';
+    html += '</div>';
 
     PEOPLE.forEach(function (p) {
       var g = GROUPS[p.key];
       if (!g || !g.data) return;
-      var slots = rowFromGroup(p.key, g.data);
+      var slots = slotsFromGroup(p.key, g.data);
       var comp = (g.data.monthly_tracker || {}).composite_score;
       var rating = (g.data.monthly_tracker || {}).rating || '';
       var cb = scoreBand(comp);
-
-      html += '<tr>';
-      html += '<td class="who"><div class="wn">' + esc(p.name) + '</div><div class="wr">' + esc(p.role) + '</div></td>';
+      html += '<div class="drow">';
+      html += '<div class="dwho">';
+      html += '<div class="dwn">' + esc(p.name) + '</div>';
+      html += '<div class="dwr">' + esc(p.role) + '</div>';
+      html += '<span class="drow-tag" style="background:' + p.tagColor + '20; color:' + p.tagColor + '; border-color:' + p.tagColor + '44;">' + p.tag + '</span>';
+      html += '</div>';
       slots.forEach(function (s) {
-        var sb = scoreBand(s);
-        if (s == null) {
-          html += '<td class="cell na"><span class="v">—</span></td>';
-        } else {
-          html += '<td class="cell" style="background:' + sb.bg + ';"><span class="v" style="color:' + sb.color + ';">' + s.toFixed(2) + '</span></td>';
-        }
+        var sb = scoreBand(s.score);
+        var v = (s.score == null) ? '—' : Number(s.score).toFixed(2);
+        html += '<div class="dcell" style="background:' + sb.bg + ';">';
+        html += '<div class="dk-id">' + esc(s.id) + '</div>';
+        html += '<div class="dk-nm">' + esc(s.name) + '</div>';
+        html += '<div class="dk-v" style="color:' + sb.color + ';">' + v + '</div>';
+        html += '</div>';
       });
       var compPct = comp != null ? (comp / 5 * 100).toFixed(1) + '%' : '—';
-      html += '<td class="cmp-cell" style="color:' + cb.color + ';">' + compPct + '</td>';
-      html += '<td class="rat-cell" style="color:' + cb.color + ';">' + esc(rating) + '</td>';
-      html += '</tr>';
+      html += '<div class="dcmp" style="color:' + cb.color + ';">' + compPct + '</div>';
+      html += '<div class="drat" style="color:' + cb.color + ';">' + esc(rating) + '</div>';
+      html += '</div>';
     });
+    html += '</div>';
 
-    html += '</tbody></table></div>';
     html += '<div class="dash-legend">' +
              '<div><span class="dot" style="background:#5DCAA5;"></span>≥ 4.5 Outstanding</div>' +
              '<div><span class="dot" style="background:#5DA3E0;"></span>4.0 – 4.5 Exceeds Target</div>' +
