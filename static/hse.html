@@ -735,12 +735,22 @@
 
     // Composite hero
     var rating = (t.rating || '').split(' ')[0];
+    // A month counts as "scored" only if the majority of metric rows have
+    // data for it — one outlier row that pre-fills all 12 months (e.g. the
+    // Corporate tracker's annual "Mandatory Trainings Due" plan) would
+    // otherwise inflate the YTD-months figure to 12 in July.
     var monthsScored = 0;
-    t.metrics.forEach(function (m) {
-      if (m.role === 'metric' && m.months) {
-        m.months.forEach(function (v, i) { if (v != null) monthsScored = Math.max(monthsScored, i+1); });
-      }
+    var metricRows = t.metrics.filter(function (m) {
+      return m.role === 'metric' && m.months;
     });
+    var quorum = Math.max(2, Math.ceil(metricRows.length / 2));
+    for (var mi = 11; mi >= 0; mi--) {
+      var filled = 0;
+      for (var mr = 0; mr < metricRows.length; mr++) {
+        if (metricRows[mr].months[mi] != null) filled++;
+      }
+      if (filled >= quorum) { monthsScored = mi + 1; break; }
+    }
     var scored = t.composite_rows.filter(function (r) { return r.score != null; }).length;
 
     if (t.composite_score != null) {
