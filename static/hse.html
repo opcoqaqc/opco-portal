@@ -475,6 +475,12 @@
   .r-scr-5 { background: rgba(93,202,165,0.18);  color: #5DCAA5; }
 
   .r-sparks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 8px; }
+  /* Supervisor report — 7 KPIs across one row */
+  .r-sparks.r-sparks-7 { grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .r-sparks.r-sparks-7 .r-spark-box { padding: 8px 8px 6px; }
+  .r-sparks.r-sparks-7 .r-spark-box .id { font-size: 8.5px; letter-spacing: 0.12em; }
+  .r-sparks.r-sparks-7 .r-spark-box .nm { font-size: 9.5px; line-height: 1.15; min-height: 22px; margin: 2px 0 4px; }
+  .r-sparks.r-sparks-7 .r-spark-box .v .big { font-size: 12.5px; }
   .r-spark-box { padding: 10px 12px 8px;
                   background: rgba(255,255,255,0.02);
                   border: 1px solid rgba(255,255,255,0.06);
@@ -598,6 +604,14 @@
     .r-spark-box .v .big { font-size: 12px; }
     .r-spark-box .v .small { font-size: 9px; }
     .r-spark-box svg { height: 24px !important; }
+    /* Supervisor report — 7 KPIs fit only if we tighten padding + type */
+    .r-sparks.r-sparks-7 { gap: 4px; margin-top: 4px; }
+    .r-sparks.r-sparks-7 .r-spark-box { padding: 5px 6px 4px; }
+    .r-sparks.r-sparks-7 .r-spark-box .id { font-size: 7.5px; }
+    .r-sparks.r-sparks-7 .r-spark-box .nm { font-size: 8.5px; min-height: 20px; margin: 1px 0 2px; line-height: 1.1; }
+    .r-sparks.r-sparks-7 .r-spark-box .v .big { font-size: 10.5px; }
+    .r-sparks.r-sparks-7 .r-spark-box .v .small { font-size: 8px; }
+    .r-sparks.r-sparks-7 .r-spark-box svg { height: 20px !important; }
 
     .r-insights { gap: 10px; margin-top: 6px; }
     .r-ins-card { padding: 8px 10px; }
@@ -1831,13 +1845,18 @@
     html += '</tbody></table>';
 
     html += '<div class="r-section-h">' + esc(qName) + ' Trend — Monthly Values</div>';
-    html += '<div class="r-sparks">';
+    // Supervisor reports carry 7 KPIs; Manager reports carry 5. Widen the
+    // strip to fit all 7 when the dataset has that many, otherwise keep the
+    // roomier 5-across layout.
+    html += '<div class="r-sparks r-sparks-' + (rows.length >= 7 ? '7' : '5') + '">';
     // Only sparkline KPIs that actually have monthly data — KPIs with an
     // all-null series (e.g. Manager KPI-1A Pipeline when no mainline welds
     // exist) would render as a blank box and waste a card slot.
-    var sparkRows = rows.filter(function (r) {
+    var _allRows = rows.filter(function (r) {
       return (r.rowAll.months || []).some(function (v) { return v != null; });
-    }).slice(0, 5);
+    });
+    var _sparksCount = _allRows.length >= 7 ? 7 : 5;
+    var sparkRows = _allRows.slice(0, _sparksCount);
     sparkRows.forEach(function (r) {
       html += '<div class="r-spark-box">';
       html += '<div class="id">' + esc(r.kpi) + '</div>';
