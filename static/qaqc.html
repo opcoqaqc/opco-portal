@@ -1648,13 +1648,6 @@
              esc((GROUPS.mgr.data.data_date || '').split('T')[0]) + '</div>';
 
     html += '<div class="dash-wrap">';
-    // Header labels row
-    html += '<div class="drow drow-h">';
-    html += '<div class="dwho">Person</div>';
-    for (var i = 1; i <= 5; i++) html += '<div class="dcell dcell-h">Slot ' + i + '</div>';
-    html += '<div class="dcmp dcmp-h">Composite YTD</div>';
-    html += '<div class="drat drat-h">Rating</div>';
-    html += '</div>';
 
     PEOPLE.forEach(function (p) {
       var g = GROUPS[p.key];
