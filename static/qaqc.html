@@ -1667,9 +1667,37 @@
       { key: 'ers', name: (GROUPS.ers.data.cover.meta.member || 'Ersel Saday'),    role: (GROUPS.ers.data.cover.meta.role || 'QC Inspector'), tag: 'Team', tagColor: '#C9A961' },
       { key: 'yas', name: (GROUPS.yas.data.cover.meta.member || 'Yasin Ramadhan'), role: (GROUPS.yas.data.cover.meta.role || 'QC Inspector'), tag: 'Team', tagColor: '#C9A961' }
     ];
+    // Show the latest month for which the majority of metric rows are
+    // filled — mirrors the tracker view's YTD-months rule so a workbook
+    // uploaded on July 15 with only June data reports "as of June 2026",
+    // not "2026-07-15".
+    function lastFilledMonth(t) {
+      var metricRows = (t.metrics || []).filter(function (m) { return m.role === 'metric' && m.months; });
+      if (!metricRows.length) return -1;
+      var quorum = Math.max(2, Math.ceil(metricRows.length / 2));
+      for (var i = 11; i >= 0; i--) {
+        var filled = 0;
+        for (var j = 0; j < metricRows.length; j++) if (metricRows[j].months[i] != null) filled++;
+        if (filled >= quorum) return i;
+      }
+      return -1;
+    }
+    var MONTHS = ['January','February','March','April','May','June',
+                   'July','August','September','October','November','December'];
+    var lastIdx = -1, year = 2026;
+    Object.keys(GROUPS).forEach(function (k) {
+      var g = GROUPS[k]; if (!g || !g.data) return;
+      var t = g.data.monthly_tracker || {};
+      var idx = lastFilledMonth(t);
+      if (idx > lastIdx) { lastIdx = idx; year = t.year || year; }
+    });
+    var periodStr = (lastIdx >= 0)
+      ? ('as of ' + MONTHS[lastIdx] + ' ' + year)
+      : ((GROUPS.mgr.data.data_date || '').split('T')[0]);
+
     var html = '';
     html += '<div class="eyebrow">QA/QC KPI Dashboard &middot; Team Summary &middot; ' +
-             esc((GROUPS.mgr.data.data_date || '').split('T')[0]) + '</div>';
+             esc(periodStr) + '</div>';
 
     html += '<div class="dash-wrap">';
 
