@@ -466,7 +466,7 @@
   .drow { display: grid;
           /* minmax(0, 1fr) prevents long KPI names from forcing individual
              cells wider than their fair share. */
-          grid-template-columns: 240px repeat(5, minmax(0, 1fr)) 90px 120px;
+          grid-template-columns: 200px repeat(5, minmax(0, 1fr)) 90px 120px;
           gap: 6px; align-items: stretch; margin-bottom: 6px; }
   .drow.drow-h .dwho, .drow.drow-h .dcell-h,
   .drow.drow-h .dcmp-h, .drow.drow-h .drat-h {
@@ -1712,7 +1712,6 @@
       html += '<div class="dwho">';
       html += '<div class="dwn">' + esc(p.name) + '</div>';
       html += '<div class="dwr">' + esc(p.role) + '</div>';
-      html += '<span class="drow-tag" style="background:' + p.tagColor + '20; color:' + p.tagColor + '; border-color:' + p.tagColor + '44;">' + p.tag + '</span>';
       html += '</div>';
       slots.forEach(function (s) {
         var sb = scoreBand(s.score);
