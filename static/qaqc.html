@@ -1640,10 +1640,8 @@
       { key: 'yas', name: (GROUPS.yas.data.cover.meta.member || 'Yasin Ramadhan'), role: (GROUPS.yas.data.cover.meta.role || 'QC Inspector'), tag: 'Team', tagColor: '#C9A961' }
     ];
     var html = '';
-    html += '<div class="eyebrow">QA/QC KPI Dashboard &middot; Team Summary</div>';
-    html += '<h1 class="page-h">KPI Heatmap — Team View</h1>';
-    html += '<p class="lead">Every cell shows its own KPI name — no shared column headers, so the Manager KPI-1 (Weld Repair) and the team TKPI-1 (Productivity) never look like the same thing. Data date &middot; ' +
-             esc((GROUPS.mgr.data.data_date || '').split('T')[0]) + '</p>';
+    html += '<div class="eyebrow">QA/QC KPI Dashboard &middot; Team Summary &middot; ' +
+             esc((GROUPS.mgr.data.data_date || '').split('T')[0]) + '</div>';
 
     html += '<div class="dash-wrap">';
     // Header labels row
