@@ -464,7 +464,9 @@
                 border: 1px solid #21283a; border-radius: 12px;
                 padding: 14px 16px; margin-top: 14px; }
   .drow { display: grid;
-          grid-template-columns: 240px repeat(5, 1fr) 130px 150px;
+          /* minmax(0, 1fr) prevents long KPI names from forcing individual
+             cells wider than their fair share. */
+          grid-template-columns: 240px repeat(5, minmax(0, 1fr)) 130px 150px;
           gap: 6px; align-items: stretch; margin-bottom: 6px; }
   .drow.drow-h .dwho, .drow.drow-h .dcell-h,
   .drow.drow-h .dcmp-h, .drow.drow-h .drat-h {
