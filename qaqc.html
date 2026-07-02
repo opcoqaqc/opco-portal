@@ -417,6 +417,9 @@
   .content { flex: 1; padding: 32px 40px 48px; min-width: 0; max-width: 1400px; }
   .eyebrow { font-size: 11px; letter-spacing: 0.3em; color: #2DD4BF;
              font-weight: 700; text-transform: uppercase; }
+  /* Dashboard now stands alone (no h1 below), so the eyebrow doubles as
+     the page heading and needs to read at that scale. */
+  #view-dashboard .eyebrow { font-size: 15px; letter-spacing: 0.22em; margin-bottom: 14px; }
   h1.page-h { font-size: 26px; color: #f0e4c9; margin: 8px 0 6px; font-weight: 700; }
 
   /* Standalone sidebar item — the top-level "KPI Dashboard" link */
@@ -462,8 +465,9 @@
   .dk-id { font-size: 9px; letter-spacing: 0.16em; color: #8b949e;
             font-weight: 700; text-transform: uppercase;
             font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
-  .dk-nm { font-size: 11px; color: #cfd6df; margin: 2px 0 6px;
-            font-weight: 600; line-height: 1.15; min-height: 26px; }
+  .dk-nm { font-size: 10.5px; color: #cfd6df; margin: 2px 0 6px;
+            font-weight: 600; line-height: 1.15; min-height: 26px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .dk-v { font-size: 18px; font-weight: 800;
            font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
   .dcmp { padding: 12px 10px; text-align: center; font-size: 22px; font-weight: 800;
@@ -1603,7 +1607,7 @@
     'KPI-2':  'NDT Throughput',
     'KPI-3':  'NCR Closure',
     'KPI-4':  'ISO Audit',
-    'KPI-5':  'Vendor Eval'
+    'KPI-5':  'Vendor Evaluation'
   };
   var TEAM_KPI_NAMES = {
     'TKPI-1': 'Productivity',
