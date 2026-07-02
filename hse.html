@@ -459,8 +459,8 @@
   .drow { display: grid; gap: 6px; align-items: stretch; margin-bottom: 6px; }
   /* minmax(0, 1fr) — without the 0 floor, long KPI names force cells to
      grow past their fair share and 7-slot rows get unequal cell widths. */
-  .drow.slots-5 { grid-template-columns: 240px repeat(5, minmax(0, 1fr)) 130px 150px; }
-  .drow.slots-7 { grid-template-columns: 240px repeat(7, minmax(0, 1fr)) 130px 150px; }
+  .drow.slots-5 { grid-template-columns: 240px repeat(5, minmax(0, 1fr)) 90px 120px; }
+  .drow.slots-7 { grid-template-columns: 240px repeat(7, minmax(0, 1fr)) 90px 120px; }
   .dwho { padding: 10px 14px; background: rgba(255,255,255,0.02);
            border-radius: 8px; position: relative; }
   .dwn { font-size: 14px; font-weight: 700; color: #f0e4c9; }
