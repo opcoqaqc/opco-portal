@@ -1143,9 +1143,12 @@
         var scoreClass = row.score == null ? 'score-na' : 'score-' + Math.round(row.score);
         var scoreText  = row.score == null ? '—' : 'score ' + Number(row.score).toFixed(2) + ' / 5';
         var nameClean = (row.label || '').replace(/^→\s*/, '');
+        // Strip trailing "- See the tabs below for details (Jan to Dec)" style
+        // boilerplate that HSE workbooks tack onto every KPI section header.
+        var displayName = (c.name || nameClean).replace(/\s*-\s*See the tabs.*$/i, '').trim();
         html += '<div class="kpi-card">';
         html += '<div class="id" style="color:' + color + ';">' + esc(c.kpi) + '</div>';
-        html += '<h3>' + esc(c.name || nameClean) + '</h3>';
+        html += '<h3>' + esc(displayName) + '</h3>';
         html += '<div class="vals">';
         html += '<div><div class="curr-lbl">' + esc(lastMon || '') + '</div><div class="curr">' + fmtVal(lastVal, row.unit) + '</div></div>';
         html += '<div><div class="ytd-lbl">YTD</div><div class="ytd">' + fmtVal(row.ytd, row.unit) + '</div></div>';
@@ -1457,7 +1460,10 @@
       // "Behavioral / HSE / Training (Manager Assessment)" fit on one line
       // in the breakdown table.
       var rawName = c.name || (c.row.label || '').replace(/^→\s*/, '');
-      var cleanName = rawName.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+      var cleanName = rawName
+        .replace(/\s*-\s*See the tabs.*$/i, '')
+        .replace(/\s*\([^)]*\)\s*/g, ' ')
+        .trim();
       return {
         kpi:      c.kpi,
         name:     cleanName,
