@@ -10528,10 +10528,10 @@
 
   // ------------- BUILD PROJECTS SIDEBAR ------------------
   var PROJECTS = [
-    {id:'skg',  label:'SKG',  desc:'Industrial Gas Pipeline (IGP)'},
-    {id:'htu',  label:'HTU',  desc:'Hydrotreater Unit'},
-    {id:'hpu',  label:'HPU',  desc:'Hydrogen Production Unit'},
-    {id:'ppcl', label:'PPCL', desc:'Crescent Petroleum-Danagas'},
+    {id:'skg',  label:'SKG',            desc:'Industrial Gas Pipeline (IGP)'},
+    {id:'ppcl', label:'PPCL (KM-18)',   desc:'Crescent Petroleum-Danagas'},
+    {id:'htu',  label:'HTU',            desc:'Hydrotreater Unit'},
+    {id:'hpu',  label:'HPU',            desc:'Hydrogen Production Unit'},
   ];
 
   var SKG_GROUPS = [
@@ -10784,16 +10784,7 @@
     showSection('sb-projects-section');
     collapseAll();
     clearActive();
-    // Default state on entry: SKG card expanded, Procedures group expanded,
-    // General discipline highlighted (mirrors the main content auto-state).
-    expandProject('skg');
-    expandSkgGroup('procedures');
-    var skgItem = document.querySelector('.sb-item[data-project="skg"]');
-    if (skgItem) skgItem.classList.add('active');
-    var procSub = document.querySelector('.sb-sub[data-skg-group="procedures"]');
-    if (procSub) procSub.classList.add('active');
-    var generalSub3 = document.querySelector('.sb-sub3[data-tab="skg-general"]');
-    if (generalSub3) generalSub3.classList.add('active');
+    // All project cards start collapsed — user opens whichever they want.
   }
   function onShowLibrary() {
     buildLibrarySidebar();
