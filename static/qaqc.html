@@ -2493,7 +2493,13 @@
     }
     var role = '';
     if (g.data.cover && g.data.cover.meta) role = g.data.cover.meta.role || g.data.cover.meta.position || '';
-    buildAndOpenReport(g.data, g.label.replace(/^QA\/QC (Manager|Team — )/, ''), role, qIdx);
+    // Team-member workbooks carry meta.member (their name); manager workbook
+    // doesn't, so hardcode the current holder so the subject line still reads
+    // like the other reports — "Ogulcan Cavdar" / "QA/QC Manager · Reports to..."
+    var subjectName = (groupKey === 'mgr')
+      ? 'Ogulcan Cavdar'
+      : g.label.replace(/^QA\/QC (Manager|Team — )/, '');
+    buildAndOpenReport(g.data, subjectName, role, qIdx);
   });
 })();
 </script>
