@@ -868,7 +868,7 @@
      hand-pressed rubber stamp; mix-blend-mode:multiply makes the
      ink read as pressed onto the paper rather than layered on top. */
   .r-sign-stamp { position: absolute; top: 6px; left: -14px;
-                   width: 140px; height: auto; transform: rotate(-12deg);
+                   width: 140px; height: auto;
                    opacity: 0.92; pointer-events: none; mix-blend-mode: multiply; }
 
   .r-footer { display: flex; justify-content: space-between; align-items: center;
@@ -2453,8 +2453,8 @@
     var _mgrStamp = (sess && sess.u === 'o.cavdar')
       ? '<img class="r-sign-stamp" src="' + MGR_STAMP_URI + '" alt="QA/QC Approved">'
       : '';
-    html += '<div class="r-sign-col"><div>Reviewed by <b>QA/QC Manager</b></div><div class="r-sign-date">Date · ____________________</div>' + _mgrStamp + '</div>';
-    html += '<div class="r-sign-col"><div>Approved by <b>Technical Director</b></div><div class="r-sign-date">Date · ____________________</div></div>';
+    html += '<div class="r-sign-col"><div>Reviewed by <b>QA/QC Manager</b></div><div class="r-sign-date">Sign / Stamp · ____________________</div>' + _mgrStamp + '</div>';
+    html += '<div class="r-sign-col"><div>Approved by <b>Technical Director</b></div><div class="r-sign-date">Sign / Stamp · ____________________</div></div>';
     html += '</div>';
 
 
