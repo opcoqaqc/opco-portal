@@ -20,7 +20,7 @@ from pathlib import Path
 
 import openpyxl
 
-XLSX = r"C:\Users\Msi\Desktop\UR-OSBL-WPR-28.xlsx"
+XLSX = r"C:\Users\Msi\Desktop\UR-OSBL-WPR-29.xlsx"
 
 ZONE_ROWS = range(10, 20)  # rows 10..19 inclusive
 COL_NAME      = 1   # B
@@ -34,7 +34,15 @@ def round1(x):
 
 def main():
     wb = openpyxl.load_workbook(XLSX, data_only=True, read_only=True)
-    sh = wb["General"]
+    # Some newer WPR workbooks rename the sheet — accept the exact name or any
+    # sheet that starts with "General" (e.g. "General +", "General2026").
+    if "General" in wb.sheetnames:
+        sh = wb["General"]
+    else:
+        matches = [n for n in wb.sheetnames if n.strip().lower().startswith("general")]
+        if not matches:
+            raise KeyError(f"No General* sheet in {XLSX}. Sheets: {wb.sheetnames}")
+        sh = wb[matches[0]]
     rows = list(sh.iter_rows(min_row=1, max_row=25, values_only=True))
 
     # Header row 3: report no in col M (12), R4 col M = date
