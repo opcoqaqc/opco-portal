@@ -1907,6 +1907,11 @@
     if (unit === 'days') return Math.round(v) + 'd';
     if (unit === 'count') return Math.round(v).toString();
     if (unit === '1-5')  return Number(v).toFixed(1);
+    if (unit === 'rate') return Number(v).toFixed(2);
+    if (unit === 'score') return Number(v).toFixed(2);
+    // Numeric fallback for any other unit (incl. undefined) — otherwise
+    // Excel-sourced floats like 3.821899484043570 render raw and look awful.
+    if (typeof v === 'number' && !isNaN(v)) return v.toFixed(2);
     return String(v);
   }
   function makeSparkSvg(months, qStart, color) {
